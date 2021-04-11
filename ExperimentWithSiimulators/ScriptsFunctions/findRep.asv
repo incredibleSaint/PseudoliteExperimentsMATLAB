@@ -138,24 +138,24 @@ if mode == 1
 elseif mode == 2
 % ------- cube topology ----------
     h = [80 100 120 90];%LRepToUser / sqrt(3);
-    d = 100;
+    d = 1000;
     x = d / tand(60);
     
-    Rep(1).X = d + 1;
-    Rep(1).Y = 0 + 1;
-    Rep(1).Z = sqrt(LRepToUser(1) ^ 2 - Rep(1).X ^ 2 - Rep(1).Y ^ 2);
+    Rep(1).X = d;
+    Rep(1).Y = 0;
+    Rep(1).Z = (LRepToUser(1) ^ 2 - Rep(1).X ^ 2 - Rep(1).Y ^ 2);
     
-    Rep(2).X = 0 + 1;
-    Rep(2).Y = x + 1;
-    Rep(2).Z = sqrt(LRepToUser(2) ^ 2 - Rep(2).X ^ 2 - Rep(2).Y ^ 2);
+    Rep(2).X = 0;
+    Rep(2).Y = x;
+    Rep(2).Z = h;
     
-    Rep(3).X = -d + 1;
-    Rep(3).Y = 0 + 1;
-    Rep(3).Z = sqrt(LRepToUser(3) ^ 2 - Rep(3).X ^ 2 - Rep(3).Y ^ 2);
+    Rep(3).X = omp(3);
+    Rep(3).Y = -horComp(3);
+    Rep(3).Z = h(3);
     
-    Rep(4).X = 0 + 1;
-    Rep(4).Y = -x + 1;
-    Rep(4).Z = sqrt(LRepToUser(4) ^ 2 - Rep(4).X ^ 2 - Rep(4).Y ^ 2);
+    Rep(4).X = -horComp(4);
+    Rep(4).Z = h(4);
+    Rep(4).Y = ;
     
 %     horComp = sqrt((LRepToUser .^ 2 - h .^ 2) / 2);
 %     Rep(1).X = horComp(1);
