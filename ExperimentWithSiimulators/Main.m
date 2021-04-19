@@ -8,7 +8,7 @@ addpath([cd '\Records']);
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
 
-fileName = '\Records\4realPseudo_200met.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
+fileName = '\Records\4realPseudo_200met_onlyOne1pps_TmsLog_v6_theSameRanges.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 
 fullName = [cd fileName];
 
@@ -27,7 +27,8 @@ for n = 1 : sizeStr(2)
     
     RawData = Mes0x1502{n};
     [ProcessedMes, fourSatIsValid] = DataProcessor(RawData);
-    if fourSatIsValid
+    if fourSatIsValid && ...
+                    CheckCANumsMatchUp(ProcessedMes.svId, PseudoCoord.svId)
         for k = 1 : length(ProcessedMes.svId)
             ind = (PseudoCoord.svId == ProcessedMes.svId(k));
             if sum(ind) && sum(ProcessedMes.trkStat{k}  - '0') >= 3
@@ -50,8 +51,39 @@ for n = 1 : sizeStr(2)
         UserPoses(posCnt, :) = UPos;
         errPos3D(posCnt, :) = err;
         diffPsRngs(posCnt, :) = psRngs - psRngs(1);
+        
     end
 end
+
+figure; plot(errPos3D);
+ylabel("3D Error, met");
+
+figure; plot(diffPsRngs);
+ylabel("diffPsRngs, m");
+
+
+figure; plot(diffPsRngs - mean(diffPsRngs))
+legend(num2str(mean(diffPsRngs)'));
+refDiffPs = [0 : 200 : 600];
+for n = 1 : 4
+   maxDiff = max(diffPsRngs(:, n)); 
+   minDiff = min(diffPsRngs(:, n));
+   
+   changesDueTime(n) = maxDiff - minDiff;
+   
+   meanDiff(n) = mean(diffPsRngs(:, n));
+   
+   
+end
+ppsErrorExp = meanDiff - refDiffPs;
+
+stdPps = 250e-9;
+
+stdPpsInMet = c * stdPps;
+if stdPpsInMet - abs(ppsErrorExp) > 0 
+   fprintf("Errors of pseudoranges satisfy 1PPS errors \n"); 
+end
+
 % 
 % xlabel('t, сек')
 % ylabel('3D error, м')

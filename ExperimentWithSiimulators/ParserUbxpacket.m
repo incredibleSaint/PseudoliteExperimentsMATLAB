@@ -115,25 +115,25 @@ if(file ~= -1)
                                 data(pos + 7) * 2^8     + ...
                                 data(pos + 6) * 2^0;
 
-                    case hex2dec('3001')
-                        pp  	=   pos + 6;
-                        numSvs  = 	data(pp + 4);
-                        tow2(cnt_el) =	data(pp + 3) * 2^24    + ...
-                                        data(pp + 2) * 2^16    + ...
-                                        data(pp + 1) * 2^8     + ...
-                                        data(pp + 0) * 2^0;
-                        for ii = 1:numSvs
-                            pp2     = pp + (ii - 1)*12;
-                            chn     = data(pp2 + 8);
-                            svId  	= data(pp2 + 9);
-
-                            cno(svId, cnt_el)  	= data(pp2 + 12);
-                            el(svId, cnt_el)  	= data(pp2 + 13);
-                            az(svId, cnt_el)	= data(pp + 15) * 2^8 + ...
-                                                    data(pp + 14) * 2^0;
-                            qual    = data(pp2 + 11);
-                        end
-                        cnt_el = cnt_el + 1;
+%                     case hex2dec('3001')
+%                         pp  	=   pos + 6;
+%                         numSvs  = 	data(pp + 4);
+%                         tow2(cnt_el) =	data(pp + 3) * 2^24    + ...
+%                                         data(pp + 2) * 2^16    + ...
+%                                         data(pp + 1) * 2^8     + ...
+%                                         data(pp + 0) * 2^0;
+%                         for ii = 1:numSvs
+%                             pp2     = pp + (ii - 1)*12;
+%                             chn     = data(pp2 + 8);
+%                             svId  	= data(pp2 + 9);
+% 
+%                             cno(svId, cnt_el)  	= data(pp2 + 12);
+%                             el(svId, cnt_el)  	= data(pp2 + 13);
+%                             az(svId, cnt_el)	= data(pp + 15) * 2^8 + ...
+%                                                     data(pp + 14) * 2^0;
+%                             qual    = data(pp2 + 11);
+%                         end
+%                         cnt_el = cnt_el + 1;
                     case hex2dec('3501')
                         pp      =   pos + 6;
                         tow3    =	data(pp + 3) * 2^24    + ...

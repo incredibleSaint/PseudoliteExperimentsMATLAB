@@ -3,7 +3,7 @@ clear;
 % 
 % mode = 1 - based on real satellites positions,
 %      = 2 - cube topology.
-mode = 2;
+mode = 1;
 
 file = matfile("for_spp.mat");
 pRObserved = file.pRObserved;
@@ -142,20 +142,20 @@ elseif mode == 2
     x = d / tand(60);
     
     Rep(1).X = d + 1;
-    Rep(1).Y = 0 + 1;
-    Rep(1).Z = sqrt(LRepToUser(1) ^ 2 - Rep(1).X ^ 2 - Rep(1).Y ^ 2);
+    Rep(1).Z = h(1);
+    Rep(1).Y = sqrt(LRepToUser(1) ^ 2 - Rep(1).X ^ 2 - Rep(1).Z ^ 2);
     
     Rep(2).X = 0 + 1;
-    Rep(2).Y = x + 1;
-    Rep(2).Z = sqrt(LRepToUser(2) ^ 2 - Rep(2).X ^ 2 - Rep(2).Y ^ 2);
+    Rep(2).Z = h(2);
+    Rep(2).Y = -sqrt(LRepToUser(2) ^ 2 - Rep(2).X ^ 2 - Rep(2).Z ^ 2);
     
     Rep(3).X = -d + 1;
-    Rep(3).Y = 0 + 1;
-    Rep(3).Z = sqrt(LRepToUser(3) ^ 2 - Rep(3).X ^ 2 - Rep(3).Y ^ 2);
+    Rep(3).Z = h(3);
+    Rep(3).Y = sqrt(LRepToUser(3) ^ 2 - Rep(3).X ^ 2 - Rep(3).Z ^ 2);
     
-    Rep(4).X = 0 + 1;
-    Rep(4).Y = -x + 1;
-    Rep(4).Z = sqrt(LRepToUser(4) ^ 2 - Rep(4).X ^ 2 - Rep(4).Y ^ 2);
+    Rep(4).X = -0 + 1;
+    Rep(4).Z = h(4);
+    Rep(4).Y = -sqrt(LRepToUser(4) ^ 2 - Rep(4).X ^ 2 - Rep(4).Z ^ 2);
     
 %     horComp = sqrt((LRepToUser .^ 2 - h .^ 2) / 2);
 %     Rep(1).X = horComp(1);
