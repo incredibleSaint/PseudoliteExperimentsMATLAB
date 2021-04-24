@@ -8,7 +8,7 @@ addpath([cd '\Records']);
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
 
-fileName = '\Records\4realPseudo_200met_onlyOne1pps_TmsLog_v6_theSameRanges.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
+fileName = '\Records\4realPseudo_200met_v2.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 
 fullName = [cd fileName];
 
@@ -19,6 +19,15 @@ load([cd '\ScriptsFunctions\PseudoliteCorrdinates.mat']);
 c = 299792458;
 
 posCnt = 0;
+
+% == if check pseudorange for some CAcodes (without positioning) ======
+flagWorkWithSomeCAcodesJustPsRngs = 0;
+if flagWorkWithSomeCAcodesJustPsRngs
+    PseudoCoord.svId = [5     7     8    13    14    18    28];
+end
+%========================
+
+
 
 for n = 1 : sizeStr(2)
     svCnt = 0;
@@ -34,29 +43,38 @@ for n = 1 : sizeStr(2)
             if sum(ind) && sum(ProcessedMes.trkStat{k}  - '0') >= 3
                 
                 svCnt = svCnt + 1;
-                SatsPoses(1, svCnt) = PseudoCoord.Rep(ind).X;
-                SatsPoses(2, svCnt) = PseudoCoord.Rep(ind).Y;
-                SatsPoses(3, svCnt) = PseudoCoord.Rep(ind).Z;
-
+                if ~flagWorkWithSomeCAcodesJustPsRngs
+                    SatsPoses(1, svCnt) = PseudoCoord.Rep(ind).X;
+                    SatsPoses(2, svCnt) = PseudoCoord.Rep(ind).Y;
+                    SatsPoses(3, svCnt) = PseudoCoord.Rep(ind).Z;
+                end
                 psRngs(svCnt) = ProcessedMes.prMes(k);
             end
         end
-        if isempty(SatsPoses)
-            continue
+        
+        if ~flagWorkWithSomeCAcodesJustPsRngs
+            if isempty(SatsPoses)
+                continue
+            end
         end
         inTimeShifts = (ProcessedMes.prMes - ProcessedMes.prMes(1)) / c;
         
-        [UPos, err] = FindRecPosition(SatsPoses, psRngs);
+        if ~flagWorkWithSomeCAcodesJustPsRngs
+            [UPos, err] = FindRecPosition(SatsPoses, psRngs);
+            UserPoses(posCnt, :) = UPos;
+            errPos3D(posCnt, :) = err;
+        end
         posCnt = posCnt + 1;
-        UserPoses(posCnt, :) = UPos;
-        errPos3D(posCnt, :) = err;
+        
         diffPsRngs(posCnt, :) = psRngs - psRngs(1);
         
     end
 end
 
-figure; plot(errPos3D);
-ylabel("3D Error, met");
+if ~flagWorkWithSomeCAcodesJustPsRngs
+    figure; plot(errPos3D);
+    ylabel("3D Error, met");
+end
 
 figure; plot(diffPsRngs);
 ylabel("diffPsRngs, m");

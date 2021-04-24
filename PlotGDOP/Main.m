@@ -26,11 +26,40 @@ clear;
 %-------------------------------
 
 % ---- Rombus topology --- 
-% 
-% d = 8.68;
+
+d = 8.68;
+x = d / tand(60);
+S = 1 / 2 * 2 * d * 2 * x;
+height = 1;
+
+Pseudolite{1}.x = 0;
+Pseudolite{1}.y = x;
+Pseudolite{1}.z = height;
+
+Pseudolite{2}.x = d;
+Pseudolite{2}.y = 0;
+Pseudolite{2}.z = height;
+
+Pseudolite{3}.x = 2 * d;
+Pseudolite{3}.y = x;
+Pseudolite{3}.z = height;
+
+Pseudolite{4}.x = d;
+Pseudolite{4}.y = 2 * x;
+Pseudolite{4}.z = height;
+
+
+% ----- UserPosition -----------
+UPos.z = 0;
+gridValX = 0 +2 : 0.1 : 2 * d -4;
+gridValY = 0 : 0.1 : 2 * x;
+[UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
+
+% -- Pyramide topology -----
+% d = 10;
 % x = d / tand(60);
-% S = 1 / 2 * 2 * d * 2 * x
-% height = 1;
+% S = 1 / 2 * 2 * d * 2 * x;
+% height = 10;
 % 
 % Pseudolite{1}.x = 0;
 % Pseudolite{1}.y = x;
@@ -45,36 +74,16 @@ clear;
 % Pseudolite{3}.z = height;
 % 
 % Pseudolite{4}.x = d;
-% Pseudolite{4}.y = 2 * x;
-% Pseudolite{4}.z = height;
+% Pseudolite{4}.y = 0.8 * x;
+% Pseudolite{4}.z = 3 * height;
+% 
+% %----- UserPosition -----------
+% UPos.z = 0;
+% gridValX = 0 +2 : 0.1 : 2 * d -4;
+% gridValY = 0 : 0.1 : 2 * x;
+% [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 
-% -- Pyramide topology -----
-d = 1000;
-x = d / tand(60);
-S = 1 / 2 * 2 * d * 2 * x;
-height = 10;
-
-Pseudolite{1}.x = 0;
-Pseudolite{1}.y = x;
-Pseudolite{1}.z = height;
-
-Pseudolite{2}.x = d;
-Pseudolite{2}.y = 0;
-Pseudolite{2}.z = height / 2;
-
-Pseudolite{3}.x = 2 * d;
-Pseudolite{3}.y = x;
-Pseudolite{3}.z = height * 2;
-
-Pseudolite{4}.x = d;
-Pseudolite{4}.y = 0.8 * x;
-Pseudolite{4}.z = 3 * height;
-
-% ----- UserPosition -----------
-UPos.z = 0;
-gridValX = 0 : 50 : 1000;
-gridValY = 0 : 50 : 1e3;
-[UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
+%===========================
 
 psSize = size(Pseudolite);
 psSizeCol = psSize(2);
