@@ -8,7 +8,7 @@ addpath([cd '\Records']);
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
 
-fileName = '\Records\4realPseudo_200met_v2.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
+fileName = '\Records\ver2of2pseudolites_Interseal.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 
 fullName = [cd fileName];
 
@@ -21,9 +21,9 @@ c = 299792458;
 posCnt = 0;
 
 % == if check pseudorange for some CAcodes (without positioning) ======
-flagWorkWithSomeCAcodesJustPsRngs = 0;
+flagWorkWithSomeCAcodesJustPsRngs = 1;
 if flagWorkWithSomeCAcodesJustPsRngs
-    PseudoCoord.svId = [5     7     8    13    14    18    28];
+    PseudoCoord.svId = [11 16];%[5     7     8    13    14    18    28];
 end
 %========================
 
@@ -36,8 +36,13 @@ for n = 1 : sizeStr(2)
     
     RawData = Mes0x1502{n};
     [ProcessedMes, fourSatIsValid] = DataProcessor(RawData);
-    if fourSatIsValid && ...
-                    CheckCANumsMatchUp(ProcessedMes.svId, PseudoCoord.svId)
+    necessarySat = CheckCANumsMatchUp(ProcessedMes.svId, PseudoCoord.svId);
+    if flagWorkWithSomeCAcodesJustPsRngs % when less than 4 CA-codes
+        fourSatIsValid = 1;
+        necessarySat = 1;
+    end
+    if fourSatIsValid && necessarySat
+                    
         for k = 1 : length(ProcessedMes.svId)
             ind = (PseudoCoord.svId == ProcessedMes.svId(k));
             if sum(ind) && sum(ProcessedMes.trkStat{k}  - '0') >= 3
@@ -70,7 +75,7 @@ for n = 1 : sizeStr(2)
         
     end
 end
-
+    
 if ~flagWorkWithSomeCAcodesJustPsRngs
     figure; plot(errPos3D);
     ylabel("3D Error, met");

@@ -25,36 +25,33 @@ len_CA = 1023;
 bandwidth = 2 * len_CA * 1000;
 %-------------------
 
-%======== Rombus poses ===========
 d = 1000;
 x = d / tand(60);
 S = 1 / 2 * 2 * d * 2 * x;
-height = d * 1e-2;
+height = d;
 
-Pseudolite{1}.x = 0 + 3;
-Pseudolite{1}.y = x + 3;
+Pseudolite{1}.x = 0;
+Pseudolite{1}.y = x;
 Pseudolite{1}.z = height;
 
-Pseudolite{2}.x = d + 3;
-Pseudolite{2}.y = 0 + 3;
+Pseudolite{2}.x = d;
+Pseudolite{2}.y = 0;
 Pseudolite{2}.z = height;
 
-Pseudolite{3}.x = 2 * d + 3;
-Pseudolite{3}.y = x + 3;
+Pseudolite{3}.x = 2 * d;
+Pseudolite{3}.y = x;
 Pseudolite{3}.z = height;
 
-Pseudolite{4}.x = d + 3;
-Pseudolite{4}.y = 2 * x + 3;
-Pseudolite{4}.z = height + 30;
+Pseudolite{4}.x = d;
+Pseudolite{4}.y = 2 * x;
+Pseudolite{4}.z = height;
 % ----- UserPosition -----------
 UPos.z = 0;
 gridValX = 0 : 2 * d / 3 : 2 * d;
 gridValY = 0 : 2 * x / 3 : 2 * x;
 [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
-% ======= End Rombus ===============
 
-%======Random pseudolites positions (works) ===============================
-
+%======Random pseudolites positions=======================================
 % load([cd '\Functions\PseudoliteCorrdinates.mat']);
 % 
 % Pseudolite{1}.x = PseudoCoord.Rep(1).X;
@@ -73,7 +70,7 @@ gridValY = 0 : 2 * x / 3 : 2 * x;
 % Pseudolite{4}.y = PseudoCoord.Rep(4).Y;
 % Pseudolite{4}.z = PseudoCoord.Rep(4).Z;
 % 
-% 
+
 % 
 % % ----- UserPosition -----------
 % UPos.z = PseudoCoord.UserPos.Z;%0;
@@ -128,7 +125,7 @@ for n = 1 : sizePoses(1) * sizePoses(2) % for each user location
                      Pseudolite{1}.y Pseudolite{2}.y Pseudolite{3}.y Pseudolite{4}.y;
                      Pseudolite{1}.z Pseudolite{2}.z Pseudolite{3}.z Pseudolite{4}.z];
         u_pos(n, :) = FindRecPosition(sat_poses, calculated_pseudo);
-        err_samples(k) = sqrt(sum((u_pos(n, :) - curr_u_pos) .^ 2))
+        err_samples(k) = sqrt(sum((u_pos(n, :) - curr_u_pos) .^ 2));
         for k = 1:length(constell)
             delete(filenames{k});
         end

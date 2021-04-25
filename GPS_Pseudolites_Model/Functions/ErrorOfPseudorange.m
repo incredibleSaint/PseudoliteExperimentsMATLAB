@@ -18,7 +18,7 @@ CalculatedPseudo = zeros(length(CalculatedTimeOfPeak(:,1)),length(constellation)
 for n = 1:length(CalculatedTimeOfPeak(:,1))
     for i = 1:length(constellation)
         if CalculatedTimeOfPeak(n,i) ~= 0 
-            CalculatedPseudo(n,i) = PseudoR(i) + C*(CalculatedTimeOfPeak(n,i) - RealTimeOfPeak(i));
+            CalculatedPseudo(n,i) = PseudoR(i);% + C*(CalculatedTimeOfPeak(n,i) - RealTimeOfPeak(i));
         end
     end
 end

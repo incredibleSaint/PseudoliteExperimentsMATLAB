@@ -134,8 +134,8 @@ while(dvMax < dv && CntMax > cnt)
 end
 
 UPos = [xU yU zU];
-errSmart = sqrt(sum((UPos - usOrig).^2))
-err = sqrt((UPos(1) - usOrig(1))^2 + (UPos(2) - usOrig(2)).^2 + (UPos(3) - usOrig(3)).^2)
+errSmart = sqrt(sum((UPos - usOrig).^2));
+err = sqrt((UPos(1) - usOrig(1))^2 + (UPos(2) - usOrig(2)).^2 + (UPos(3) - usOrig(3)).^2);
 if isnan(err)
    fprintf("\n FindRecPositioin.m: err = NaN \n");
 end
