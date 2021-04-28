@@ -18,7 +18,7 @@ sample_freq = 4;
 
 delta_f_doppl = 0;
 
-samples_num = 10;
+samples_num = 1;
 % -- Constants -----
 c = 2.99792458e8;
 len_CA = 1023;
@@ -26,31 +26,34 @@ bandwidth = 2 * len_CA * 1000;
 %-------------------
 
 %======== Rombus poses ===========
-d = 1000;
-x = d / tand(60);
-S = 1 / 2 * 2 * d * 2 * x;
-height = d * 1e-2;
+% d = 1000;
+% x = d / tand(60);
+% S = 1 / 2 * 2 * d * 2 * x;
+% height = d * 1e-2;
+% 
+% Pseudolite{1}.x = 0;
+% Pseudolite{1}.y = x;
+% Pseudolite{1}.z = height;
+% 
+% Pseudolite{2}.x = d;
+% Pseudolite{2}.y = 0;
+% Pseudolite{2}.z = height;
+% 
+% Pseudolite{3}.x = 2 * d;
+% Pseudolite{3}.y = x;
+% Pseudolite{3}.z = height;
+% 
+% Pseudolite{4}.x = d;
+% Pseudolite{4}.y = 2 * x;
+% Pseudolite{4}.z = height + 30;
+% % ----- UserPosition -----------
+% UPos.z = 0;
+% gridValX = d + 0 : 2 * d / 100 : 2 * d;
+% gridValY = x + 0 : 2 * x / 100 : 2 * x;
+% [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
+% UPos.x = d;
+% UPos.y = x;
 
-Pseudolite{1}.x = 0 + 3;
-Pseudolite{1}.y = x + 3;
-Pseudolite{1}.z = height;
-
-Pseudolite{2}.x = d + 3;
-Pseudolite{2}.y = 0 + 3;
-Pseudolite{2}.z = height;
-
-Pseudolite{3}.x = 2 * d + 3;
-Pseudolite{3}.y = x + 3;
-Pseudolite{3}.z = height;
-
-Pseudolite{4}.x = d + 3;
-Pseudolite{4}.y = 2 * x + 3;
-Pseudolite{4}.z = height + 30;
-% ----- UserPosition -----------
-UPos.z = 0;
-gridValX = 0 : 2 * d / 3 : 2 * d;
-gridValY = 0 : 2 * x / 3 : 2 * x;
-[UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 % ======= End Rombus ===============
 
 %======Random pseudolites positions (works) ===============================
@@ -81,6 +84,39 @@ gridValY = 0 : 2 * x / 3 : 2 * x;
 % gridValY = PseudoCoord.UserPos.Y + (-50 : 10 : 50);%0 : 2 * x / 3 : 2 * x;
 % [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 %============= End random pseudolites ==============
+
+% === Ideal GDOP (120 degrees)
+
+r  = 200;
+pr_x = r * sind(30);
+pr_y = r * cosd(30);
+
+height = 100;
+
+height_zenith = 10 * height;
+
+Pseudolite{1}.x = r;
+Pseudolite{1}.y = 0;
+Pseudolite{1}.z = height;
+
+Pseudolite{2}.x = -pr_x;
+Pseudolite{2}.y =  pr_y;
+Pseudolite{2}.z = height;
+
+Pseudolite{3}.x = -pr_x;
+Pseudolite{3}.y = -pr_y;
+Pseudolite{3}.z = height;
+
+Pseudolite{4}.x = 0;
+Pseudolite{4}.y = 0;
+Pseudolite{4}.z = height_zenith;
+
+%----- UserPosition -----------
+UPos.z = 0;
+gridValX = 0 : 5 : 100 ;
+gridValY = 0 : 5 : 100 ;
+[UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
+%===========================
 
 constellation = 1 : 32;
 ps_size = size(Pseudolite);
@@ -129,10 +165,10 @@ for n = 1 : sizePoses(1) * sizePoses(2) % for each user location
                      Pseudolite{1}.z Pseudolite{2}.z Pseudolite{3}.z Pseudolite{4}.z];
         u_pos(n, :) = FindRecPosition(sat_poses, calculated_pseudo);
         err_samples(k) = sqrt(sum((u_pos(n, :) - curr_u_pos) .^ 2))
-        for k = 1:length(constell)
-            delete(filenames{k});
+        for f = 1:length(constell)
+            delete(filenames{f});
         end
+        toc
     end
-    toc;
     err(n) = mean(err_samples)
 end
