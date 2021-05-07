@@ -8,7 +8,7 @@ addpath([cd '\Records']);
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
 folder = '\Records\';
-fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16__2d_launch_diff_0_met_static_position_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
+fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16__3d_launch_diff_0_met_static_position_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 
 fullName = [cd folder fileName];
 
@@ -91,23 +91,24 @@ for n = 1 : sizeStr(2)
             end
             posCnt = posCnt + 1;
 
-            tow(posCnt) = ProcessedMes.rcvTow;
+            tow(posCnt) = processedMes.rcvTow;
             diffPsRngs(posCnt, 1 : length(psRngs)) = psRngs - psRngs(1);        
         end
     end
 end
     
-figure; plot(diff(tow(1 : posCnt)));
+figure; plot(tow);
 grid on;
 title("TOW");
-ylabel("TOW, sec");
+xla");
+ylabel("
 
 if ~flagWorkWithSomeCAcodesJustPsRngs
-    figure; plot(errPos3D(1 : posCnt));
+    figure; plot(errPos3D);
     ylabel("3D Error, met");
 end
 
-figure; plot(diffPsRngs(1 : posCnt, :));
+figure; plot(diffPsRngs);
 ylabel("diffPsRngs, m");
 grid on;
 
@@ -123,7 +124,7 @@ legend(legend_text);
 
 figErr = figure;
 emitted_rng_diff = 0 : 1000 : 0;
-plot(diffPsRngs(1 : posCnt, :) - emitted_rng_diff);
+plot(diffPsRngs - emitted_rng_diff);
 xlabel("t, sec");
 ylabel("error(diff(psRng)), met");
 grid on;
