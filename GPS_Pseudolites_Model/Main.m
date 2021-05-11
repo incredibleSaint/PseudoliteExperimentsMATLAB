@@ -14,7 +14,7 @@ quant_accum = 5;
 
 sig_dur = 1; % sec
 
-sample_freq = 4;
+sample_freq = 2;
 
 delta_f_doppl = 0;
 

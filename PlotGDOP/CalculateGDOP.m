@@ -85,9 +85,9 @@ y = userPos.yNorth;
 z = userPos.zUp;
 % numofsat = 1 : length(RXPoses{p}.SatsPoses.x);
 %---------------------
+s = size(Pseudolite);
 
-
-for m=1:4
+for m = 1 : s(2)
    
 %     xsat=Xs(m,p);
 %     ysat=Ys(m,p);
