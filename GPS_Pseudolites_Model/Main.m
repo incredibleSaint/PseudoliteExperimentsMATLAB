@@ -12,7 +12,7 @@ exp_num = 1;
 
 quant_accum = 5;
 
-sig_dur = 1; % sec
+sig_dur = 3; % sec
 
 sample_freq = 4;
 
@@ -115,8 +115,8 @@ Pseudolite{4}.z = height_zenith;
 
 %----- UserPosition -----------
 UPos.z = 0;
-gridValX = 0 : 5 : 100 ;
-gridValY = 0 : 5 : 100 ;
+gridValX = 5 : 5 : 100 ;
+gridValY = 60 : 5 : 100 ;
 [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 %===========================
 
@@ -127,6 +127,7 @@ psSizeCol = ps_size(2);
 sizePoses = size(UPos.x);
 constell = constellation(1 : ps_size(2));
 
+Res = cell(1, length(constell));
 err = zeros(size(UPos.x));
 
 m = 1; 
@@ -152,15 +153,15 @@ for n = 1 : sizePoses(1) * sizePoses(2) % for each user location
 
         %--------- Detector of the C/A signal -----------------------------
         for f = 1 : length(constell)
-            Res{f} = MainExp(filenames{f});
+            Res{f} = MainExp(filenames{f}, constell(f));
             
             pos_peak(f) = Res{f}.Search.SamplesShifts - 1;
             
             angles(f, :) = angle(Res{f}.Track.CorVals{1});
             rem_pos(f) = angles(f, 1) / (2 * pi);
-            if rem_pos(f) < 0
-               rem_pos(f) = rem_pos(f) + 1; 
-            end
+%             if rem_pos(f) < 0
+%                rem_pos(f) = rem_pos(f) + 1; 
+%             end
             pos_peak(f) = pos_peak(f) + rem_pos(f);
             time_delays_calc(f) = pos_peak(f) / (f_CA * sample_freq);
         end
@@ -189,4 +190,5 @@ for n = 1 : sizePoses(1) * sizePoses(2) % for each user location
         toc
     end
     err(n) = mean(err_samples)
+    err_xy(n) = mean(err_samples_xy);
 end

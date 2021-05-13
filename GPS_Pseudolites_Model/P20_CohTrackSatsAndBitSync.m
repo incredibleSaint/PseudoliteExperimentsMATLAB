@@ -1,4 +1,4 @@
-function Res = P20_CohTrackSatsAndBitSync(inRes, isDraw)
+function Res = P20_CohTrackSatsAndBitSync(inRes, isDraw, Params)
 %
 % Функция когерентного трекинга спутников и битовой синхронизации
 %

@@ -1,4 +1,4 @@
-function Res = P10_CohSearchSats(inRes, isDraw)
+function Res = P10_CohSearchSats(inRes, isDraw, Params)
 %
 % Функция когерентного поиска спутников в файле-записи
 %
@@ -81,7 +81,8 @@ function Res = P10_CohSearchSats(inRes, isDraw)
     % Цикл по количеству искомых спутников
         % Строка состояния
             fprintf('%s Поиск спутников:\n', datestr(now));
-        for k = 1:4
+%         for k = 1:4
+        k = Params.sv_id;
             % Строка состояния
                 fprintf('%s     поиск спутника №%02d ...', ...
                     datestr(now), k);
@@ -179,7 +180,7 @@ function Res = P10_CohSearchSats(inRes, isDraw)
                     % Строка состояния
                         fprintf(' не найден;\n');
                 end
-        end
+        
 
     % Прорисовка значений пиков КФ всех спутников
         if isDraw > 0

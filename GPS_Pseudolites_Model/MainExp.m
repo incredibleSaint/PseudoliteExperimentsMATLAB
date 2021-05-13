@@ -1,7 +1,7 @@
 % clc;
 % clear;
 % close all;
-function Res = MainExp(FName)
+function Res = MainExp(FName, sv_id)
 %% УСТАНОВКА ЧАСТО ИЗМЕНЯЕМЫХ ПАРАМЕТРОВ
     % Номер процедуры, с которой надо начать выполнение Main
         StartProcNum = 1; %  1 <= StartProcNum <= length(FuncNames)
@@ -18,7 +18,7 @@ function Res = MainExp(FName)
         end
 
     % Флаг необходимости прорисовки результатов
-        isDraw = 2; % 0 - не рисовать; 1 - рисовать; 2 - рисовать и
+        isDraw = 1; % 0 - не рисовать; 1 - рисовать; 2 - рисовать и
             % сохранять; 3 - рисовать, сохранять и закрывать
 
     % Выбор имени файла-записи
@@ -169,6 +169,8 @@ function Res = MainExp(FName)
             FuncNames = AllFuncNames{2};
         end
         
+        Params = struct(...
+                        'sv_id', sv_id);
 %% ПРОВЕРКИ ЗНАЧЕНИЙ ПАРАМЕТРОВ
     if ~((StartProcNum >= 1) && (StartProcNum <= length(FuncNames)))
         fprintf(['Должно выполняться двойное неравенство ', ...
@@ -210,7 +212,7 @@ function Res = MainExp(FName)
             % Создадим указатель на нужную функцию
                 Fun = str2func(FuncNames{k});
             % Выполним функцию и перезапишем Res
-                Res = Fun(Res, isDraw);
+                Res = Fun(Res, isDraw, Params);
             % Сохраним текущие результаты
             % В вычислительно сложных функциях (P10_, P20_) рекомендуется
             % делать дополнительные сохранения для отладки

@@ -55,6 +55,15 @@ TimeOfBlockDataOfArrivalRCInFile = zeros(1,length(constellation));% 1 ms = 1e-3 
 RealTimeOfPeak = zeros(1,length(constellation));
 posPeakOrig = zeros(1,length(constellation));
 
+t_chip = 1 / (sample_freq * f_CA);
+pos_peak_first = time_diff / t_chip;
+
+rem_last_emp   = round(pos_peak_first);
+% t_rem = rem(time_diff, t_chip);
+t_rem = pos_peak_first - rem_last_emp;
+%                     Phase0 = (rem(RealTimeOfPeak(j),1e-3/len_CA)*2*pi)/(1e-3/len_CA);
+phase_0 = t_rem * 2 * pi;
+
 for j = 1 : length(constellation)
     %----------------------------------------
     %File with result signal
@@ -82,7 +91,9 @@ for j = 1 : length(constellation)
     
     empty_mod_bits = floor(shift_bits / (sample_freq * len_CA * periods_of_r_c));%Quantity of information symbols
     
-    rem_last_emp(j) = rem(shift_bits, sample_freq * len_CA * periods_of_r_c);
+%     rem_last_emp(j) = rem(shift_bits, sample_freq * len_CA * periods_of_r_c);
+    
+    
 % -------Open new file-----------------------------------------------------    
     Fid = fopen(filenameForWriting{j}, 'a');
     % 
@@ -125,14 +136,11 @@ for j = 1 : length(constellation)
                     TimeOfBlockDataOfArrivalRCInFile(j) = (QuantityOfIntegerMillisec(j)+TimeRemain(j)/len_CA)*1e-3;% 1 ms = 1e-3 = Period of C/A code 
                     RealTimeOfPeak(j) = time_diff(j) - TimeOfBlockDataOfArrivalRCInFile(j);
                     
-                    t_chip = 1 / (sample_freq * f_CA);
-                    pos_peak_first(j) = time_diff(j) / t_chip;
-                    t_rem = rem(time_diff(j), t_chip);
-%                     Phase0 = (rem(RealTimeOfPeak(j),1e-3/len_CA)*2*pi)/(1e-3/len_CA);
-                    phase_0 = (t_rem / t_chip) * 2 * pi;
                     
+%                     phase_0 = 0.9 * 2 * pi;
                 end
-                [F_doppl_1, ~] = analog(bits, delta_f_doppl, phase_0, sample_freq, len_CA);%signal conditioning
+%                 phase_0(j) = -0.2 * 2 * pi;
+                [F_doppl_1, ~] = analog(bits, delta_f_doppl, phase_0(j), sample_freq, len_CA);%signal conditioning
                 sig((jj-1)*sample_freq*len_CA+1:jj*sample_freq*len_CA) = F_doppl_1;
             end
         end
