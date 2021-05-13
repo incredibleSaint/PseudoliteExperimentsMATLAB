@@ -1,4 +1,4 @@
-function [F,phase0] = analog( bi_codeX4, delta_f_doppl,phase0,sampleCount, ...
+function [F,phase_0] = analog( bi_codeX4, delta_f_doppl,phase_0,sampleCount, ...
                                 len_CA)
 A_t = 1;
 %c = 3*1e8;
@@ -25,10 +25,12 @@ delta_w_doppl = 2 * pi * delta_f_doppl;
 len = len_CA * sampleCount;
 t = 1 : len;
 t = t * (1 / (sampleCount * len_CA * 1000));
-F = A_t * bi_codeX4(1 : len) .* exp(1j * (delta_w_doppl * t + phase0));
+% F = A_t * bi_codeX4(1 : len) .* exp(1j * (delta_w_doppl * t + phase0));
+F = A_t * bi_codeX4(1 : len) .* exp(1j * (phase_0));
+
 % phase = delta_w_doppl*(T_RC+T_RC/length(bi_codeX4));
-phase = delta_w_doppl * t + phase0;
-phase0 = phase(end);
+% phase = delta_w_doppl * t + phase_0;
+% phase_0 = phase(end);
 end
 %   t = T_RC/length(bi_codeX4) : T_RC/length(bi_codeX4): T_RC;
 % F = A_t*bi_codeX4.*exp(1j*delta_w_doppl*t)*exp(1j*phase);

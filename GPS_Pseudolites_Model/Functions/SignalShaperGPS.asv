@@ -1,7 +1,7 @@
 function [filenameForWriting, rem_last_emp, posPeakOrig, ShiftZero, ...
-                                            RealTimeOfPeak, pos_peak_first] ...
+                                                        RealTimeOfPeak] ...
                        = SignalShaperGPS(time_diff, curr_u_pos, ...
-                                         constellation, f_CA,...
+                                         constellation,...
                                          len_CA, sample_freq, bandwidth,...
                                          sig_dur, CN0, delta_f_doppl)
 %UNTITLED5 Summary of this function goes here
@@ -70,8 +70,7 @@ for j = 1 : length(constellation)
     ran_codes(2*j,:) = bi_codeX4*(-1);
     
 %     Nav_m(j,:) = NEW_Form_Nav_Mess( dur_mess, date, ephemeris(j,:) );
-%     nav_m(j, :) = randi([0 1], 1, quant_nav_m_bits);
-    nav_m(j, :) = zeros(1, quant_nav_m_bits);
+    nav_m(j, :) = randi([0 1], 1, quant_nav_m_bits);
     mod_inf(j, :) =  Neumann_Hoffman(nav_m(j, :));
 
     
@@ -125,14 +124,12 @@ for j = 1 : length(constellation)
                     TimeOfBlockDataOfArrivalRCInFile(j) = (QuantityOfIntegerMillisec(j)+TimeRemain(j)/len_CA)*1e-3;% 1 ms = 1e-3 = Period of C/A code 
                     RealTimeOfPeak(j) = time_diff(j) - TimeOfBlockDataOfArrivalRCInFile(j);
                     
-                    t_chip = 1 / (sample_freq * f_CA);
-                    pos_peak_first(j) = time_diff(j) / t_chip;
+                    t_chip = 1 / (sample_freq * sample_freq);
                     t_rem = rem(time_diff(j), t_chip);
 %                     Phase0 = (rem(RealTimeOfPeak(j),1e-3/len_CA)*2*pi)/(1e-3/len_CA);
-                    phase_0 = (t_rem / t_chip) * 2 * pi;
-                    
+
                 end
-                [F_doppl_1, ~] = analog(bits, delta_f_doppl, phase_0, sample_freq, len_CA);%signal conditioning
+                [F_doppl_1, ~] = analog( bits, delta_f_doppl, Phase0, sample_freq, len_CA);%signal conditioning
                 sig((jj-1)*sample_freq*len_CA+1:jj*sample_freq*len_CA) = F_doppl_1;
             end
         end

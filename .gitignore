@@ -1,3 +1,5 @@
 *.ubx
 *.dat
 *.emf
+*.fig
+*.mat
