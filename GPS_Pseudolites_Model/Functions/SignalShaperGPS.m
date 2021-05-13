@@ -131,10 +131,11 @@ for j = 1 : length(constellation)
                     [ ~ , posPeakOrig(j) ] = max(R);
                     flagCorr = 1;
                     ShiftZero(j) = 0;%(i-1)*2*length(sig)+2*length(sig);%+rem_last_emp(j)*2;
-                    QuantityOfIntegerMillisec(j) = floor((ShiftZero(j)-2*length(sig)+2*rem_last_emp(j))/(len_CA*sample_freq*2));% потому что в начале кратно 20 теперь сделали !!!
-                    TimeRemain(j) = rem((ShiftZero(j)-2*length(sig)),(2*sample_freq*len_CA));
-                    TimeOfBlockDataOfArrivalRCInFile(j) = (QuantityOfIntegerMillisec(j)+TimeRemain(j)/len_CA)*1e-3;% 1 ms = 1e-3 = Period of C/A code 
-                    RealTimeOfPeak(j) = time_diff(j) - TimeOfBlockDataOfArrivalRCInFile(j);
+%                     QuantityOfIntegerMillisec(j) = floor((ShiftZero(j)-2*length(sig)+2*rem_last_emp(j))/(len_CA*sample_freq*2));% потому что в начале кратно 20 теперь сделали !!!
+%                     TimeRemain(j) = rem((ShiftZero(j)-2*length(sig)),(2*sample_freq*len_CA));
+%                     TimeOfBlockDataOfArrivalRCInFile(j) = (QuantityOfIntegerMillisec(j)+TimeRemain(j)/len_CA)*1e-3;% 1 ms = 1e-3 = Period of C/A code 
+%                     RealTimeOfPeak(j) = time_diff(j) - TimeOfBlockDataOfArrivalRCInFile(j);
+                    
                     
                     
 %                     phase_0 = 0.9 * 2 * pi;
