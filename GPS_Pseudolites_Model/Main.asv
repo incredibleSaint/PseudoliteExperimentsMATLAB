@@ -12,7 +12,7 @@ exp_num = 1;
 
 quant_accum = 5;
 
-sig_dur = 1; % sec
+sig_dur = 10; % sec
 
 sample_freq = 4;
 
@@ -20,6 +20,7 @@ delta_f_doppl = 0;
 
 samples_num = 1;
 % -- Constants -----
+NUM_CA_PER_BIT = 20;
 c = 2.99792458e8;
 len_CA = 1023;
 t_CA = 1e-3;
@@ -115,8 +116,8 @@ Pseudolite{4}.z = height_zenith;
 
 %----- UserPosition -----------
 UPos.z = 0;
-gridValX = 0 : 5 : 100 ;
-gridValY = 0 : 5 : 100 ;
+gridValX = 5 : 5 : 100 ;
+gridValY = 60 : 5 : 100 ;
 [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 %===========================
 
@@ -127,7 +128,10 @@ psSizeCol = ps_size(2);
 sizePoses = size(UPos.x);
 constell = constellation(1 : ps_size(2));
 
+Res = cell(1, length(constell));
 err = zeros(size(UPos.x));
+
+angles = zeros(length(constell), sig_dur * t_CA + NUM_CA_PER_BIT);
 
 m = 1; 
 
@@ -142,8 +146,7 @@ for n = 1 : sizePoses(1) * sizePoses(2) % for each user location
         time_propog = ranges_u_ps / c;
 
     %     time_propog = [0.12184      0.12876      0.11936      0.13021];
-        [filenames, rem_last_emp, posPeakOrig, ShiftZero, RealTimeOfPeak, ...
-                    pos_peak_first] ...
+        [filenames, rem_last_emp, pos_peak_first] ...
             ...
                            = SignalShaperGPS(time_propog, curr_u_pos, ...
                                              constell, f_CA,...
@@ -152,17 +155,18 @@ for n = 1 : sizePoses(1) * sizePoses(2) % for each user location
 
         %--------- Detector of the C/A signal -----------------------------
         for f = 1 : length(constell)
-            Res{f} = MainExp(filenames{f});
+            Res{f} = MainExp(filenames{f}, constell(f));
             
             pos_peak(f) = Res{f}.Search.SamplesShifts - 1;
             
-            angles(f, :) = angle(Res{f}.Track.CorVals{1});
-            rem_pos(f) = angles(f, 1) / (2 * pi);
-            if rem_pos(f) < 0
-               rem_pos(f) = rem_pos(f) + 1; 
-            end
+            exp_phase = angle(Res{f}.Track.CorVals{1});
+            angles(f, ) = exp_phase;
+            rem_pos(f) = angles(f, 2510) / (2 * pi);
+%             if rem_pos(f) < 0
+%                rem_pos(f) = rem_pos(f) + 1; 
+%             end
             pos_peak(f) = pos_peak(f) + rem_pos(f);
-            calculated_pseudo(f) = pos_peak(f) / 
+            time_delays_calc(f) = pos_peak(f) / (f_CA * sample_freq);
         end
 %         [CA_code_pos_peak, byte_shift] = DetectorByMaxDoppl(filenames,...
 %                            ...
@@ -170,16 +174,16 @@ for n = 1 : sizePoses(1) * sizePoses(2) % for each user location
 %                            quant_accum(m), threshold(m), len_CA);
 
         %--------- Calculate PseudoRanges -------------------------------------
-        [calculated_pseudo] = ErrorOfPseudorange(...
-                    ...
-                            CA_code_pos_peak, byte_shift, ...
-                            constell, time_propog, rem_last_emp, ...
-                            ranges_u_ps, sample_freq, RealTimeOfPeak, len_CA);
+%         [calculated_pseudo] = ErrorOfPseudorange(...
+%                     ...
+%                             CA_code_pos_peak, byte_shift, ...
+%                             constell, time_propog, rem_last_emp, ...
+%                             ranges_u_ps, sample_freq, RealTimeOfPeak, len_CA);
         % --- Calculate user position ---------------
         sat_poses = [Pseudolite{1}.x Pseudolite{2}.x Pseudolite{3}.x Pseudolite{4}.x;   
                      Pseudolite{1}.y Pseudolite{2}.y Pseudolite{3}.y Pseudolite{4}.y;
                      Pseudolite{1}.z Pseudolite{2}.z Pseudolite{3}.z Pseudolite{4}.z];
-        u_pos(n, :) = FindRecPosition(sat_poses, calculated_pseudo);
+        u_pos(n, :) = FindRecPosition(sat_poses, time_delays_calc * c);
         err_samples(k) = sqrt(sum((u_pos(n, :) - curr_u_pos) .^ 2));
         err_samples_xy(k) = sqrt(sum((u_pos(n, 1 : 2) - ...
                                                 curr_u_pos(1 : 2)) .^ 2));
@@ -189,4 +193,5 @@ for n = 1 : sizePoses(1) * sizePoses(2) % for each user location
         toc
     end
     err(n) = mean(err_samples)
+    err_xy(n) = mean(err_samples_xy);
 end

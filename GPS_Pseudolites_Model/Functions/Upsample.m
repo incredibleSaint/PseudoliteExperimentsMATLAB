@@ -1,4 +1,4 @@
-function [ bi_codeX4 ] = discretizationX4( bi_code , SamplingFrequency )
+function [ bi_codeX4 ] = Upsample( bi_code , SamplingFrequency )
 
 bi_codeX4 = zeros( 1 , SamplingFrequency*length(bi_code) );% 2*length(bi_code)
 

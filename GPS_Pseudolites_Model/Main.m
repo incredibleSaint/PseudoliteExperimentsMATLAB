@@ -12,7 +12,7 @@ exp_num = 1;
 
 quant_accum = 5;
 
-sig_dur = 3; % sec
+sig_dur = 10; % sec
 
 sample_freq = 4;
 
@@ -20,6 +20,7 @@ delta_f_doppl = 0;
 
 samples_num = 1;
 % -- Constants -----
+NUM_CA_PER_BIT = 20;
 c = 2.99792458e8;
 len_CA = 1023;
 t_CA = 1e-3;
@@ -130,6 +131,8 @@ constell = constellation(1 : ps_size(2));
 Res = cell(1, length(constell));
 err = zeros(size(UPos.x));
 
+angles = zeros(length(constell), sig_dur / t_CA + NUM_CA_PER_BIT);
+
 m = 1; 
 
 for n = 1 : sizePoses(1) * sizePoses(2) % for each user location
@@ -143,8 +146,7 @@ for n = 1 : sizePoses(1) * sizePoses(2) % for each user location
         time_propog = ranges_u_ps / c;
 
     %     time_propog = [0.12184      0.12876      0.11936      0.13021];
-        [filenames, rem_last_emp, posPeakOrig, ShiftZero, RealTimeOfPeak, ...
-                    pos_peak_first] ...
+        [filenames, rem_last_emp, pos_peak_first] ...
             ...
                            = SignalShaperGPS(time_propog, curr_u_pos, ...
                                              constell, f_CA,...
@@ -157,8 +159,9 @@ for n = 1 : sizePoses(1) * sizePoses(2) % for each user location
             
             pos_peak(f) = Res{f}.Search.SamplesShifts - 1;
             
-            angles(f, :) = angle(Res{f}.Track.CorVals{1});
-            rem_pos(f) = angles(f, 1) / (2 * pi);
+            exp_phase = angle(Res{f}.Track.CorVals{1});
+            angles(f, 1 : length(exp_phase)) = exp_phase;
+            rem_pos(f) = angles(f, 9500) / (2 * pi);
 %             if rem_pos(f) < 0
 %                rem_pos(f) = rem_pos(f) + 1; 
 %             end
