@@ -14,11 +14,11 @@ quant_accum = 5;
 
 sig_dur = 10; % sec
 
-sample_freq = 4;
+sample_freq = 2;
 
 delta_f_doppl = 0;
 
-samples_num = 1;
+samples_num = 10;
 % -- Constants -----
 NUM_CA_PER_BIT = 20;
 c = 2.99792458e8;
