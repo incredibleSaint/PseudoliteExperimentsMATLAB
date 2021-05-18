@@ -41,7 +41,7 @@ function Res = P10_CohSearchSats(inRes, isDraw, Params)
         CentralFreqs = -6000 : 1000/(2*NumCA2Search) : 6000;
 
     % Порог обнаружения
-        SearchThreshold = 100;%10 - real world signal
+        SearchThreshold = 10;%10 - real world signal
 
 %% СОХРАНЕНИЕ ПАРАМЕТРОВ
     Search.NumCA2Search    = NumCA2Search;

@@ -55,17 +55,9 @@ for idx_sv = 1 : length(constellation)
     end
     nav_m = randi([0 1], 1, quant_nav_m_bits);
     nav_m(end - 50 : end) = 0;
-%     nav_m = zeros(1, quant_nav_m_bits);
 
     ones_sampl = ones(1, NUM_CA_PER_BIT);
     ca_mod_inf = zeros(1, ca_num);
-    
-    for m = 1 : length(nav_m)
-        if nav_m(m) == 1
-            ca_mod_inf((m - 1) * NUM_CA_PER_BIT + 1 : m * NUM_CA_PER_BIT) = ...
-                                                                ones_sampl;
-        end
-    end
      
     sig = zeros(1, rem_last_emp(idx_sv));
     buf = zeros(length(sig) * 2, 1);
@@ -84,43 +76,26 @@ for idx_sv = 1 : length(constellation)
     fid = fopen(fname{idx_sv}, 'a');
     status = fseek(fid, 0, 'bof');
     fwrite(fid, buf, data_type);
-%     fclose(fid);
     
     for i = 1 : quant_nav_m_bits
-%         sig = zeros(1, NUM_CA_PER_BIT * len_discr_ca);
-        if i > 450
-            a = 1;
-        end
         if nav_m(i) == 0
             chips = sig_dur_1bit(1, :);
         else
             chips = sig_dur_1bit(2, :);
         end
-%         for jj = 1 : NUM_CA_PER_BIT          
-
-            ch_sig = analog(chips, delta_f_doppl, ...
+        ch_sig = analog(chips, delta_f_doppl, ...
                                  phase_0(idx_sv), sample_freq, len_CA);
             
-            
-%             idx_start  = (jj - 1) * len_discr_ca + 1;
-%             idx_finish =  jj *      len_discr_ca;
-
-%             sig(idx_start : idx_finish) = F_doppl_1;
-%         end
-
-        ch_sig = awgn(ch_sig, SNR + 3, 'measured', 'dB');
-%         ch_sig = ch_sig + noise;
+%         ch_sig = awgn(ch_sig, SNR + 3, 'measured', 'dB');
 
         buf = zeros(NUM_CA_PER_BIT * len_discr_ca * 2, 1);% 2 - because 1 channel and signal in file consists from I(0ch)Q(0ch) (each 'int16' is I(0ch) or Q(0ch))
         buf(1 : 2 : end) = int16(real(ch_sig));
         buf(2 : 2 : end) = int16(imag(ch_sig));
-%         fid = fopen(fname{idx_sv}, 'r+');
+
         step_shift = (i - 1) * 2 * NUM_CA_PER_BIT * len_discr_ca + rem_last_emp(idx_sv) * 2;% 2 - because 1 channel and signal consists from I(0ch)Q(0ch)
         status = fseek(fid, size_int16 * step_shift, 'bof');%signal_new.txt
         count = fwrite(fid, buf, data_type);
-        
-%         sig = zeros(1, length(sig));
-
+       
     end
     fclose(fid);
 end

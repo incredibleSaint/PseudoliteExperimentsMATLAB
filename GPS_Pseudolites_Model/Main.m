@@ -4,11 +4,12 @@ clear;
 addpath('Functions')
 tic;
 % -- Parameters ----
-CN0  = [80 42 35 30 40 35];% dB-Hz 
+CN0  = [40];% 42 35 30 40 35];% dB-Hz 
 
 threshold = [0.95];
 
 exp_num = 1;
+
 
 quant_accum = 5;
 
@@ -18,7 +19,7 @@ sample_freq = 2;
 
 delta_f_doppl = 0;
 
-samples_num = 10;
+samples_num = 1;
 % -- Constants -----
 NUM_CA_PER_BIT = 20;
 c = 2.99792458e8;
@@ -116,8 +117,8 @@ Pseudolite{4}.z = height_zenith;
 
 %----- UserPosition -----------
 UPos.z = 0;
-gridValX = 5 : 5 : 100 ;
-gridValY = 60 : 5 : 100 ;
+gridValX = -30 : 5 : 0 ;
+gridValY = -10 : 5 : 0 ;
 [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 %===========================
 
@@ -127,20 +128,35 @@ psSizeCol = ps_size(2);
 
 sizePoses = size(UPos.x);
 constell = constellation(1 : ps_size(2));
+sv_num = length(constell);
 
-Res = cell(1, length(constell));
+Res = cell(1, sv_num);
 err = zeros(size(UPos.x));
 
-angles = zeros(length(constell), sig_dur / t_CA + NUM_CA_PER_BIT);
+angles = zeros(1, sig_dur / t_CA + NUM_CA_PER_BIT);
 
 m = 1; 
 
-for n = 1 : sizePoses(1) * sizePoses(2) % for each user location
-    err_samples = zeros(1, samples_num);
+poses_num = sizePoses(1) * sizePoses(2);
+
+pos_peak_orig = zeros(sv_num, poses_num);
+pos_peak = zeros(sv_num, poses_num);
+
+for n = 1 : poses_num % for each user location
+    err_samples = zeros(1 , samples_num);
+    err_samples_xy = zeros(1, samples_num);
+    
+    curr_u_pos = [UPos.x(n) UPos.y(n) UPos.z];
+    
+    sat_poses = [Pseudolite{1}.x Pseudolite{2}.x Pseudolite{3}.x Pseudolite{4}.x;   
+                 Pseudolite{1}.y Pseudolite{2}.y Pseudolite{3}.y Pseudolite{4}.y;
+                 Pseudolite{1}.z Pseudolite{2}.z Pseudolite{3}.z Pseudolite{4}.z];
     for k = 1 : samples_num
 
         disp(n)
-        curr_u_pos = [UPos.x(n) UPos.y(n) UPos.z];
+        u_pos = zeros(poses_num, 3);
+        
+        
         ranges_u_ps = FindRanges(Pseudolite, curr_u_pos);
 
         time_propog = ranges_u_ps / c;
@@ -151,47 +167,33 @@ for n = 1 : sizePoses(1) * sizePoses(2) % for each user location
                            = SignalShaperGPS(time_propog, curr_u_pos, ...
                                              constell, f_CA,...
                                              len_CA, sample_freq, bandwidth,...
-                                             sig_dur, CN0(m), delta_f_doppl);
-
+                                             sig_dur, CN0, delta_f_doppl);
+        pos_peak_orig(:, n) = pos_peak_first;
         %--------- Detector of the C/A signal -----------------------------
-        for f = 1 : length(constell)
-            Res{f} = MainExp(filenames{f}, constell(f));
+        time_delays_calc = zeros(1, sv_num);
+        for f = 1 : sv_num
+            Res = MainExp(filenames{f}, constell(f));
             
-            pos_peak(f) = Res{f}.Search.SamplesShifts - 1;
+            delay_chip = Res.Search.SamplesShifts - 1;
             
-            exp_phase = angle(Res{f}.Track.CorVals{1});
-            angles(f, 1 : length(exp_phase)) = exp_phase;
-            rem_pos(f) = angles(f, 9500) / (2 * pi);
-%             if rem_pos(f) < 0
-%                rem_pos(f) = rem_pos(f) + 1; 
-%             end
-            pos_peak(f) = pos_peak(f) + rem_pos(f);
-            time_delays_calc(f) = pos_peak(f) / (f_CA * sample_freq);
+            exp_phase = angle(Res.Track.CorVals{1});
+            
+            rem_pos = exp_phase(9500) / (2 * pi);
+            pos_peak(f, n) = delay_chip + rem_pos;
+            time_delays_calc(f) = pos_peak(f, n) / (f_CA * sample_freq);
         end
-%         [CA_code_pos_peak, byte_shift] = DetectorByMaxDoppl(filenames,...
-%                            ...
-%                            exp_num, constell, ShiftZero, sample_freq,...
-%                            quant_accum(m), threshold(m), len_CA);
-
-        %--------- Calculate PseudoRanges -------------------------------------
-%         [calculated_pseudo] = ErrorOfPseudorange(...
-%                     ...
-%                             CA_code_pos_peak, byte_shift, ...
-%                             constell, time_propog, rem_last_emp, ...
-%                             ranges_u_ps, sample_freq, RealTimeOfPeak, len_CA);
         % --- Calculate user position ---------------
-        sat_poses = [Pseudolite{1}.x Pseudolite{2}.x Pseudolite{3}.x Pseudolite{4}.x;   
-                     Pseudolite{1}.y Pseudolite{2}.y Pseudolite{3}.y Pseudolite{4}.y;
-                     Pseudolite{1}.z Pseudolite{2}.z Pseudolite{3}.z Pseudolite{4}.z];
+        
         u_pos(n, :) = FindRecPosition(sat_poses, time_delays_calc * c);
         err_samples(k) = sqrt(sum((u_pos(n, :) - curr_u_pos) .^ 2));
-        err_samples_xy(k) = sqrt(sum((u_pos(n, 1 : 2) - ...
+        err_samples_xy(k) = sqrt(sum((u_pos(n, 1:2) - ...
                                                 curr_u_pos(1 : 2)) .^ 2));
-        for f = 1:length(constell)
+        for f = 1 : sv_num
             delete(filenames{f});
         end
-        toc
+        
     end
     err(n) = mean(err_samples)
-    err_xy(n) = mean(err_samples_xy);
+    err_xy(n) = mean(err_samples_xy)
 end
+toc
