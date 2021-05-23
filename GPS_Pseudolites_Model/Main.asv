@@ -7,7 +7,7 @@ tic;
 % -- Parameters ----
 CN0  = [40 35 30];% 42 35 30 40 35];% dB-Hz 
 
-threshold = [11 7 4];
+threshold = [10 8 7];
 
 exp_num = 1;
 
@@ -118,8 +118,8 @@ Pseudolite{4}.z = height_zenith;
 
 %----- UserPosition -----------
 UPos.z = 0;
-gridValX = 15 : 5 : 25 ;
-gridValY = 15 : 5 : 25 ;
+gridValX = 20 : 5 : 20 ;
+gridValY = 20 : 5 : 20 ;
 [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 %===========================
 
@@ -134,7 +134,6 @@ sv_num = length(constell);
 Res = cell(1, sv_num);
 err = zeros(size(UPos.x));
 err_cn0 = cell(size(UPos.x));
-err_xy_cn0 = cell(size(UPos.x));
 
 angles = zeros(1, sig_dur / t_CA + NUM_CA_PER_BIT);
 
@@ -156,7 +155,7 @@ for n = 1 : poses_num % for each user location
                  Pseudolite{1}.z Pseudolite{2}.z Pseudolite{3}.z Pseudolite{4}.z];
 
     curr_err_cn0 = zeros(1, length(CN0));
-    curr_err_xy_cn0   = zeros(1, length(CN0));
+    err_xy_cn0   = zeros(1, length(CN0));
     for m = 1 : length(CN0)
 
         for k = 1 : samples_num
@@ -176,12 +175,8 @@ for n = 1 : poses_num % for each user location
                                          len_CA, sample_freq, bandwidth,...
                                          sig_dur, CN0(m), delta_f_doppl);
 
-                MainParams = struct(                    ...
-                    'sv_id',        constell(f),    ...
-                    'fname',        fname,          ...
-                    'search_thrd',  threshold(m)    ...
-                );
-                Res = MainExp(MainParams);
+                Params = struct(
+                Res = MainExp(fname, constell(f));
                 delete(fname);
 
                 delay_chip = Res.Search.SamplesShifts - 1;
@@ -206,7 +201,7 @@ for n = 1 : poses_num % for each user location
         err_xy(n) = mean(err_samples_xy)
 
         curr_err_cn0(m) = err(n);
-        curr_err_xy_cn0(m) = err_xy(n);
+        curr_err_cn0(m) = err_xy(n);
 
     end
 err_cn0{n} = curr_err_cn0;

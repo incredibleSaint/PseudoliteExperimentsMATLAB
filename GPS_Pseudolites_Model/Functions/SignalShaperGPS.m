@@ -1,12 +1,14 @@
 function [fname, rem_last_emp, pos_peak_first] ...
               ...
-                       = SignalShaperGPS(time_diff, curr_u_pos, ...
+                       = SignalShaperGPS(idx_sv, time_diff, ranges_u_ps, ...
+                                         sat_poses, curr_u_pos, ...
                                          constellation, f_CA, ...
                                          len_CA, sample_freq, bandwidth,...
                                          sig_dur, CN0, delta_f_doppl)
 % Generate signal GPS L1 (IQ):
 % - Random navigation message 
 % - Fix phase of signal
+
 %------- Data Format -------------------------------
 data_type = 'int16';
 size_int16 = 2;%int16 - 2; double - 8;
@@ -20,23 +22,30 @@ BIT_RATE = 50;%nav.bits in 1 sec (BDS/GPS: 50 bit/sec)
 % Quantity periods of Ranging code in file
 % quant_nav_m_bits = 44;% 30 = 30*20 = 600 ms, timeSvUser ~ 70-120 ms
 quant_nav_m_bits = ceil(sig_dur * BIT_RATE);
-%----------------------------------------
+
+%--------Carrier phase cos/sin--------------------------------
+[cos_table512, sin_table512] = GenTablesOfCosSin512();
+LAMBDA_L1 = 0.190293672798365;
+
 len_discr_ca = sample_freq * len_CA;
+
+
 
 ran_codes = zeros(2, len_discr_ca);
 NUM_CA_PER_BIT = 20;%quantity of ranging periods in  one NH code
 ca_num = NUM_CA_PER_BIT * quant_nav_m_bits;
 
-fname = cell(1, length(constellation));
+% fname = cell(1, length(constellation));
 
 t_chip = 1 / (sample_freq * f_CA);
-pos_peak_first = time_diff / t_chip;
+pos_peak_first = time_diff(idx_sv) / t_chip;
 
 rem_last_emp   = round(pos_peak_first);
 t_rem = pos_peak_first - rem_last_emp;
 phase_0 = t_rem * 2 * pi;
 
-for idx_sv = 1 : length(constellation)
+% for idx_sv = 1 : length(constellation)
+    r_ref = sqrt(sum(sat_poses(:, idx_sv) .^ 2));
 
     code = GenCACode(constellation(idx_sv), 1);
     
@@ -59,13 +68,13 @@ for idx_sv = 1 : length(constellation)
     ones_sampl = ones(1, NUM_CA_PER_BIT);
     ca_mod_inf = zeros(1, ca_num);
      
-    sig = zeros(1, rem_last_emp(idx_sv));
+    sig = zeros(1, rem_last_emp);
     buf = zeros(length(sig) * 2, 1);
     buf(1 : 2 : end) = real(sig);
     buf(2 : 2 : end) = imag(sig);
     
     current_time = fix(clock);
-    fname{idx_sv} = [num2str(current_time(1)), '_', ...
+    fname = [num2str(current_time(1)), '_', ...
            num2str(current_time(2)), '_', num2str(current_time(3)), '_', ...
            num2str(current_time(4)), '_',num2str(current_time(5)), ...
            '_', num2str(current_time(6)),...
@@ -73,7 +82,7 @@ for idx_sv = 1 : length(constellation)
            num2str(sample_freq), '_Sv_', num2str(constellation(idx_sv)), ...
            '__', num2str(curr_u_pos), '.dat'];
     
-    fid = fopen(fname{idx_sv}, 'a');
+    fid = fopen(fname, 'a');
     status = fseek(fid, 0, 'bof');
     fwrite(fid, buf, data_type);
     
@@ -83,20 +92,37 @@ for idx_sv = 1 : length(constellation)
         else
             chips = sig_dur_1bit(2, :);
         end
+        
+        %=== find carrier phase: ===
+        
+        
+        
+        phase_ini = (2 * r_ref - ranges_u_ps(idx_sv)) / LAMBDA_L1;
+        carr_phase = phase_ini - floor(phase_ini);
+        
+        i_table = int64(floor(carr_phase * 512));
+%         ip = chips * cos_table512(i_table);
+%         iq = chips * sin_table512(i_table);
+%         
+%         ch_sig = ip + 1j * iq;
+        % ==========================
+                
         ch_sig = analog(chips, delta_f_doppl, ...
-                                 phase_0(idx_sv), sample_freq, len_CA);
+                                 phase_0, sample_freq, len_CA);
+                             
+        
             
-%         ch_sig = awgn(ch_sig, SNR + 3, 'measured', 'dB');
+        ch_sig = awgn(ch_sig, SNR + 3, 'measured', 'dB');
 
         buf = zeros(NUM_CA_PER_BIT * len_discr_ca * 2, 1);% 2 - because 1 channel and signal in file consists from I(0ch)Q(0ch) (each 'int16' is I(0ch) or Q(0ch))
-        buf(1 : 2 : end) = int16(real(ch_sig));
-        buf(2 : 2 : end) = int16(imag(ch_sig));
+        buf(1 : 2 : end) = int16(real(ch_sig));% * (cos_table512(i_table) ));
+        buf(2 : 2 : end) = int16(imag(ch_sig));% * (sin_table512(i_table) ));
 
-        step_shift = (i - 1) * 2 * NUM_CA_PER_BIT * len_discr_ca + rem_last_emp(idx_sv) * 2;% 2 - because 1 channel and signal consists from I(0ch)Q(0ch)
+        step_shift = (i - 1) * 2 * NUM_CA_PER_BIT * len_discr_ca + rem_last_emp * 2;% 2 - because 1 channel and signal consists from I(0ch)Q(0ch)
         status = fseek(fid, size_int16 * step_shift, 'bof');%signal_new.txt
         count = fwrite(fid, buf, data_type);
        
     end
     fclose(fid);
-end
+% end
 

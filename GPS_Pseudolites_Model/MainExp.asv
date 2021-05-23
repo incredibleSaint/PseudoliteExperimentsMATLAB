@@ -2,7 +2,7 @@
 % clear;
 % close all;
 function Res = MainExp(MainParams)
-%% УСТАНОВКА ЧАСТО ИЗМЕНЯЕМЫХ ПАРАМЕТРОВ
+%% УСТАНОВКА ЧАСТО ИЗМЕНЯЕМЫХ ПАРАМЕТРОВ FName, sv_id
     % Номер процедуры, с которой надо начать выполнение Main
         StartProcNum = 1; %  1 <= StartProcNum <= length(FuncNames)
 
@@ -55,7 +55,7 @@ function Res = MainExp(MainParams)
             Dir = [cd '\Records\'];
             
             Name = '2021_5_12_19_21_11_CN0_80_int16_SamplFreq_4_Sv_2ByteShiftToFindSat100%_24396372_0  0  0.dat';
-            FName = MainParams.fname;
+            FName = [Name];
 
     % Имя файла для загрузки результатов
     % Если StartProcNum = 1, то не надо ничего загружать
@@ -72,7 +72,7 @@ function Res = MainExp(MainParams)
         % Определим структуру файла-записи - описание полей см. в
         % ReadSignalFromFile
             File = struct( ...
-                'Name',           FName, ...
+                'Name',           MainParams.FName, ...
                 'HeadLenInBytes', 0, ... %
                 'NumOfChannels',  1, ... %1
                 'ChanNum',        0, ... %0
@@ -169,10 +169,8 @@ function Res = MainExp(MainParams)
             FuncNames = AllFuncNames{2};
         end
         
-        Params = struct(                                    ...
-                        'sv_id', MainParams.sv_id,          ...
-                        'threshold', MainParams.search_thrd ...
-        );
+        Params = struct(...
+                        'sv_id', sv_id);
 %% ПРОВЕРКИ ЗНАЧЕНИЙ ПАРАМЕТРОВ
     if ~((StartProcNum >= 1) && (StartProcNum <= length(FuncNames)))
         fprintf(['Должно выполняться двойное неравенство ', ...
