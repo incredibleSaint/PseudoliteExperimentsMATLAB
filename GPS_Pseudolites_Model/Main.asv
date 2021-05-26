@@ -156,8 +156,8 @@ for n = 1 : poses_num % for each user location
                  Pseudolite{1}.y Pseudolite{2}.y Pseudolite{3}.y Pseudolite{4}.y;
                  Pseudolite{1}.z Pseudolite{2}.z Pseudolite{3}.z Pseudolite{4}.z];
 
-    curr_err_cn0 = zeros(length(CN0), samples_num);
-    curr_err_xy_cn0   = zeros(length(CN0), samples_num);
+    curr_err_cn0 = zeros(1, length(CN0));
+    curr_err_xy_cn0   = zeros(1, length(CN0));
     for m = 1 : length(CN0)
 
         for k = 1 : samples_num
@@ -192,11 +192,11 @@ for n = 1 : poses_num % for each user location
 
                 rem_pos = exp_phase(end - 200) / (2 * pi);
                 pos = delay_chip + rem_pos;
-                if abs(pos - pos_peak_first(f)) > 0.5
+                if abs(pos - pos_peak_first(f)) > 0.75
                    pos = pos - 1;
                    cnt_err_peaks(end + 1) = m;
                 end
-                if abs(pos - pos_peak_first(f)) > 0.5
+                if abs(pos - pos_peak_first(f)) > 0.75
                    pos = pos + 2; 
                 end
                 pos_peak(f, n) = pos;
@@ -215,11 +215,11 @@ for n = 1 : poses_num % for each user location
         err = mean(err_samples);
         err_xy = mean(err_samples_xy);
 
-        curr_err_cn0(   m, :) = err_samples;
-        curr_err_xy_cn0(m, :) = err_samples_xy;
+        curr_err_cn0(m) = err_samples;
+        curr_err_xy_cn0(m) = err_samples_xy;
 
     end
-    err_cn0{n} = curr_err_cn0;
-    err_xy_cn0{n} = curr_err_xy_cn0;
+err_cn0{n} = curr_err_cn0;
+err_xy_cn0{n} = curr_err_xy_cn0;
 end
 toc
