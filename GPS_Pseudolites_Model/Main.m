@@ -5,22 +5,23 @@ close all;
 addpath('Functions')
 tic;
 % -- Parameters ----
-CN0  = [40 35 30];% 42 35 30 40 35];% dB-Hz 
+CN0  = [50];% 40 35 30];% 42 35 30 40 35];% dB-Hz 
 
-threshold = [11 7 4];
+threshold = [12 11 7 4];
+%-------------------
+samples_num = 3;
 
 exp_num = 1;
 
 
 quant_accum = 5;
 
-sig_dur = 20; % sec
+sig_dur = 8; % sec
 
 sample_freq = 2;
 
 delta_f_doppl = 0;
 
-samples_num = 1;
 % -- Constants -----
 NUM_CA_PER_BIT = 20;
 c = 2.99792458e8;
@@ -119,7 +120,7 @@ Pseudolite{4}.z = height_zenith;
 %----- UserPosition -----------
 UPos.z = 0;
 gridValX = 15 : 5 : 25 ;
-gridValY = 15 : 5 : 25 ;
+gridValY = 20 : 5 : 25 ;
 [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 %===========================
 
@@ -202,11 +203,11 @@ for n = 1 : poses_num % for each user location
 
         end
 
-        err(n) = mean(err_samples)
-        err_xy(n) = mean(err_samples_xy)
+        err = mean(err_samples)
+        err_xy = mean(err_samples_xy)
 
-        curr_err_cn0(m) = err(n);
-        curr_err_xy_cn0(m) = err_xy(n);
+        curr_err_cn0(m) = err;
+        curr_err_xy_cn0(m) = err_xy;
 
     end
 err_cn0{n} = curr_err_cn0;
