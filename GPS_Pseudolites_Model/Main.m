@@ -5,7 +5,7 @@ close all;
 addpath('Functions')
 tic;
 % -- Parameters ----
-CN0  = [50];% 40 35 30];% 42 35 30 40 35];% dB-Hz 
+CN0  = [50 40 35 30];% 40 35 30];% 42 35 30 40 35];% dB-Hz 
 
 threshold = [12 11 7 4];
 %-------------------
@@ -16,7 +16,7 @@ exp_num = 1;
 
 quant_accum = 5;
 
-sig_dur = 8; % sec
+sig_dur = 10; % sec
 
 sample_freq = 2;
 
@@ -182,15 +182,23 @@ for n = 1 : poses_num % for each user location
                     'fname',        fname,          ...
                     'search_thrd',  threshold(m)    ...
                 );
+                % Tracking:
                 Res = MainExp(MainParams);
                 delete(fname);
 
-                delay_chip = Res.Search.SamplesShifts - 1;
+                delay_chip = Res.Search.SamplesShifts;
 
                 exp_phase = angle(Res.Track.CorVals{1});
 
                 rem_pos = exp_phase(end - 200) / (2 * pi);
-                pos_peak(f, n) = delay_chip + rem_pos;
+                pos = delay_chip + rem_pos;
+                if abs(pos - pos_peak_first(f)) > 0.75
+                   pos = pos - 1; 
+                end
+                if abs(pos - pos_peak_first(f)) > 0.75
+                   pos = pos + 2; 
+                end
+                pos_peak(f, n) = pos;
                 time_delays_calc(f) = pos_peak(f, n) / (f_CA * sample_freq);
             end
             pos_peak_orig(:, n) = pos_peak_first;
