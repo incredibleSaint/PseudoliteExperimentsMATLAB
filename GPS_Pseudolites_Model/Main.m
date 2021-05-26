@@ -16,7 +16,7 @@ samples_num = 10;
 
 quant_accum = 5;
 
-sig_dur = 10; % sec
+sig_dur = 7; % sec
 
 sample_freq = 2;
 
@@ -224,6 +224,9 @@ for n = 1 : poses_num % for each user location
                 end
                 if abs(pos - pos_peak_first(f)) > 0.5
                    pos = pos + 2; 
+                end
+                if abs(pos - pos_peak_first(f)) > 0.5
+                   pos = pos - 1;
                 end
                 pos_peak(f, n) = pos;
                 time_delays_calc(f) = pos_peak(f, n) / (f_CA * sample_freq);
