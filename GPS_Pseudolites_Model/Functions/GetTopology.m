@@ -26,34 +26,34 @@ function [Pseudolite, UPos, topology] = GetTopology()
 
 % ==================================
 % ---- Rombus topology --- 
-topology = "Rombus topology";
-d = 200;
-x = d / tand(40);
-S = 1 / 2 * 2 * d * 2 * x;
-height = 20;
-
-Pseudolite{1}.x = 0;
-Pseudolite{1}.y = x;
-Pseudolite{1}.z = height + 10;
-
-Pseudolite{2}.x = d;
-Pseudolite{2}.y = 0;
-Pseudolite{2}.z = height - 10;
-
-Pseudolite{3}.x = 2 * d;
-Pseudolite{3}.y = x;
-Pseudolite{3}.z = height;
-
-Pseudolite{4}.x = d;
-Pseudolite{4}.y = 2 * x;
-Pseudolite{4}.z = height;
-
+% topology = "Rombus topology";
+% d = 200;
+% x = d / tand(40);
+% S = 1 / 2 * 2 * d * 2 * x;
+% height = 20;
 % 
-% % ----- UserPosition -----------
-UPos.z = 0;
-gridValX = 20 : 50 : 100;
-gridValY = 20 : 40 : 100;
-[UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
+% Pseudolite{1}.x = 0;
+% Pseudolite{1}.y = x;
+% Pseudolite{1}.z = height + 10;
+% 
+% Pseudolite{2}.x = d;
+% Pseudolite{2}.y = 0;
+% Pseudolite{2}.z = height - 10;
+% 
+% Pseudolite{3}.x = 2 * d;
+% Pseudolite{3}.y = x;
+% Pseudolite{3}.z = height;
+% 
+% Pseudolite{4}.x = d;
+% Pseudolite{4}.y = 2 * x;
+% Pseudolite{4}.z = height;
+% 
+% % 
+% % % ----- UserPosition -----------
+% UPos.z = 0;
+% gridValX = 20 : 50 : 100;
+% gridValY = 20 : 40 : 100;
+% [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 
 
 % ==================================
@@ -89,36 +89,36 @@ gridValY = 20 : 40 : 100;
 % ==================================
 % === Ideal GDOP (120 degrees) =====
 % 
-% topology = "Ideal_GDOP_tetrahedron";
-% r = 200;
-% pr_x = r * sind(30);
-% pr_y = r * cosd(30);
-% 
-% height = 100;
-% 
-% height_zenith = height * 3;
-% 
-% Pseudolite{1}.x = r;
-% Pseudolite{1}.y = 0;
-% Pseudolite{1}.z = height;
-% 
-% Pseudolite{2}.x = -pr_x;
-% Pseudolite{2}.y =  pr_y;
-% Pseudolite{2}.z = height;
-% 
-% Pseudolite{3}.x = -pr_x;
-% Pseudolite{3}.y = -pr_y;
-% Pseudolite{3}.z = height;
-% 
-% Pseudolite{4}.x = 0;
-% Pseudolite{4}.y = 0;
-% Pseudolite{4}.z = height_zenith;
-% 
-% %----- UserPosition -----------
-% UPos.z = 0;
-% gridValX = -50 : 10 : 100 ;
-% gridValY = -50 : 10 : 100 ;
-% [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
+topology = "Ideal_GDOP_tetrahedron";
+r = 200;
+pr_x = r * sind(30);
+pr_y = r * cosd(30);
+
+height = 100;
+
+height_zenith = height * 3;
+
+Pseudolite{1}.x = r;
+Pseudolite{1}.y = 0;
+Pseudolite{1}.z = height;
+
+Pseudolite{2}.x = -pr_x;
+Pseudolite{2}.y =  pr_y;
+Pseudolite{2}.z = height;
+
+Pseudolite{3}.x = -pr_x;
+Pseudolite{3}.y = -pr_y;
+Pseudolite{3}.z = height;
+
+Pseudolite{4}.x = 0;
+Pseudolite{4}.y = 0;
+Pseudolite{4}.z = height_zenith;
+
+%----- UserPosition -----------
+UPos.z = 0;
+gridValX = -50 : 50 : 100 ;
+gridValY = -50 : 50 : 100 ;
+[UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 %===========================
 
 

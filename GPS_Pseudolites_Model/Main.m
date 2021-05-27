@@ -5,18 +5,18 @@ close all;
 addpath('Functions')
 tic;
 % -- Parameters ----
-CN0  = [50 40 35 30];% 42 35 30 40 35];% dB-Hz 
+CN0  = [50 40 35];% 42 35 30 40 35];% dB-Hz 
 
 threshold = [12 11 7 4];
 %-------------------
-samples_num = 10;
+samples_num = 20;
 
 % exp_num = 1;
 
 
 quant_accum = 5;
 
-sig_dur = 7; % sec
+sig_dur = 6; % sec
 
 sample_freq = 2;
 
@@ -172,6 +172,8 @@ Params = struct(                                       ...
 
 Res = cell(size(UPos.x));
 
+
+
 for n = 1 : poses_num % for each user location
     err_samples = zeros(1 , samples_num);
     err_samples_xy = zeros(1, samples_num);
@@ -194,15 +196,17 @@ for n = 1 : poses_num % for each user location
             time_propog = ranges_u_ps / c;        
             %--------- Detector of the C/A signal -----------------------------
             time_delays_calc = zeros(1, sv_num);
-            for f = 1 : sv_num
-                [fname, rem_last_emp(f), pos_peak_first(f)] ...
+            
+            rem_last_emp = zeros(1, sv_num);
+            parfor f = 1 : sv_num
+                [fname, temp, pos_peak_first] ...
                 ...
                        = SignalShaperGPS(f, time_propog, ranges_u_ps, ...
                                          sat_poses, curr_u_pos, ...
                                          constell, f_CA,...
                                          len_CA, sample_freq, bandwidth,...
                                          sig_dur, CN0(m), delta_f_doppl);
-
+                rem_last_emp(f) = temp;
                 MainParams = struct(                    ...
                     'sv_id',        constell(f),    ...
                     'fname',        fname,          ...
@@ -218,20 +222,20 @@ for n = 1 : poses_num % for each user location
 
                 rem_pos = exp_phase(end - 200) / (2 * pi);
                 pos = delay_chip + rem_pos;
-                if abs(pos - pos_peak_first(f)) > 0.5
+                if abs(pos - pos_peak_first) > 0.5
                    pos = pos - 1;
-                   cnt_err_peaks(end + 1) = m;
+%                    cnt_err_peaks(end + 1) = m;
                 end
-                if abs(pos - pos_peak_first(f)) > 0.5
+                if abs(pos - pos_peak_first) > 0.5
                    pos = pos + 2; 
                 end
-                if abs(pos - pos_peak_first(f)) > 0.5
+                if abs(pos - pos_peak_first) > 0.5
                    pos = pos - 1;
                 end
-                pos_peak(f, n) = pos;
-                time_delays_calc(f) = pos_peak(f, n) / (f_CA * sample_freq);
+%                 pos_peak(f, n) = pos;
+                time_delays_calc(f) = pos / (f_CA * sample_freq);
             end
-            pos_peak_orig(:, n) = pos_peak_first;
+%             pos_peak_orig(:, n) = pos_peak_first;
             % --- Calculate user position ---------------
 
             u_pos(n, :) = FindRecPosition(sat_poses, time_delays_calc * c);
