@@ -139,13 +139,13 @@ function Res = P20_CohTrackSatsAndBitSync(inRes, isDraw, Params)
 
 %% ОСНОВНАЯ ЧАСТЬ ФУНКЦИИ - ТРЕКИНГ И БИТОВАЯ СИНХРОНИЗАЦИЯ
     % Строка состояния
-        fprintf('%s Трекинг спутников и битовая синхронизация\n', ...
-            datestr(now));
+%         fprintf('%s Трекинг спутников и битовая синхронизация\n', ...
+%             datestr(now));
     for k = 1:Res.Search.NumSats
         % Строка состояния
-            fprintf('%s     Для спутника №%02d (%d из %d) ...\n', ...
-                datestr(now), Res.Search.SatNums(k), k, ...
-                Res.Search.NumSats);
+%             fprintf('%s     Для спутника №%02d (%d из %d) ...\n', ...
+%                 datestr(now), Res.Search.SatNums(k), k, ...
+%                 Res.Search.NumSats);
 
         % Сформируем CA-код
             CA = GenCACode(Res.Search.SatNums(k));
@@ -495,8 +495,8 @@ function Res = P20_CohTrackSatsAndBitSync(inRes, isDraw, Params)
                     CACounter = CACounter + 1;
                 % Строка состояния
                     if mod(CACounter, NumCA2Disp) == 0
-                        fprintf(['%s         обработано %d периодов ', ...
-                            'CA-кода\n'], datestr(now), CACounter);
+%                         fprintf(['%s         обработано %d периодов ', ...
+%                             'CA-кода\n'], datestr(now), CACounter);
                     end
                     
                 % Принудительное окончание!
@@ -653,11 +653,11 @@ function Res = P20_CohTrackSatsAndBitSync(inRes, isDraw, Params)
             end
 
         % Строка состояния
-            fprintf('%s         Завершено.\n', datestr(now));
+%             fprintf('%s         Завершено.\n', datestr(now));
     end
     % Добавим новые поля с результатами в Res
         Res.Track   = Track;
         Res.BitSync = BitSync;
 
     % Строка состояния
-        fprintf('%s     Завершено.\n', datestr(now));
+%         fprintf('%s     Завершено.\n', datestr(now));
