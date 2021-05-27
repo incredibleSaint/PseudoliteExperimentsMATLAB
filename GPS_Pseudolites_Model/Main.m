@@ -14,14 +14,14 @@ CN0  = [50 45 40 35];% 42 35 30 40 35];% dB-Hz
 
 threshold = [12 11 7 4];
 %-------------------
-samples_num = 2;
+samples_num = 20;
 
 % exp_num = 1;
 
 
 quant_accum = 5;
 
-sig_dur = 5; % sec
+sig_dur = 4; % sec
 
 sample_freq = 2;
 
@@ -85,7 +85,12 @@ Params = struct(                                       ...
 
 Res = cell(size(UPos.x));
 
-
+% sat_poses = [ Pseudolite{1}.x Pseudolite{2}.x Pseudolite{3}.x Pseudolite{4}.x;   
+%                   Pseudolite{1}.y Pseudolite{2}.y Pseudolite{3}.y Pseudolite{4}.y;
+%                   Pseudolite{1}.z Pseudolite{2}.z Pseudolite{3}.z Pseudolite{4}.z ];
+for k = 1 : sv_num
+    sat_poses(: , k) = [Pseudolite{k}.x Pseudolite{k}.y Pseudolite{k}.z];
+end
 
 for n = 1 : poses_num % for each user location
     err_samples = zeros(1 , samples_num);
@@ -94,9 +99,7 @@ for n = 1 : poses_num % for each user location
     
     curr_u_pos = [UPos.x(n) UPos.y(n) UPos.z];
     
-    sat_poses = [ Pseudolite{1}.x Pseudolite{2}.x Pseudolite{3}.x Pseudolite{4}.x;   
-                  Pseudolite{1}.y Pseudolite{2}.y Pseudolite{3}.y Pseudolite{4}.y;
-                  Pseudolite{1}.z Pseudolite{2}.z Pseudolite{3}.z Pseudolite{4}.z ];
+    
 
     curr_err_cn0 = zeros(length(CN0), samples_num);
     curr_err_xy_cn0   = zeros(length(CN0), samples_num);
@@ -104,7 +107,7 @@ for n = 1 : poses_num % for each user location
     for m = 1 : length(CN0)
 
         for k = 1 : samples_num
-            disp(n)
+%             disp(n)
             u_pos = zeros(poses_num, 3);
 
             ranges_u_ps = FindRanges(Pseudolite, curr_u_pos);
