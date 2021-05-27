@@ -5,13 +5,13 @@ close all;
 addpath('Functions')
 tic;
 % -- Parameters ----
-CN0  = [50 40 35 30];% 40 35 30];% 42 35 30 40 35];% dB-Hz 
+CN0  = [50 40 35 30];% 42 35 30 40 35];% dB-Hz 
 
 threshold = [12 11 7 4];
 %-------------------
-samples_num = 3;
+samples_num = 10;
 
-exp_num = 1;
+% exp_num = 1;
 
 
 quant_accum = 5;
@@ -92,37 +92,38 @@ bandwidth = 2 * len_CA * 1000;
 %============= End random pseudolites ==============
 
 % === Ideal GDOP (120 degrees)
-
-r  = 200;
-pr_x = r * sind(30);
-pr_y = r * cosd(30);
-
-height = 100;
-
-height_zenith = height * 3;
-
-Pseudolite{1}.x = r;
-Pseudolite{1}.y = 0;
-Pseudolite{1}.z = height;
-
-Pseudolite{2}.x = -pr_x;
-Pseudolite{2}.y =  pr_y;
-Pseudolite{2}.z = height;
-
-Pseudolite{3}.x = -pr_x;
-Pseudolite{3}.y = -pr_y;
-Pseudolite{3}.z = height;
-
-Pseudolite{4}.x = 0;
-Pseudolite{4}.y = 0;
-Pseudolite{4}.z = height_zenith;
-
-%----- UserPosition -----------
-UPos.z = 0;
-gridValX = 0 : 5 : 25 ;
-gridValY = 0 : 5 : 25 ;
-[UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
+% topology = "Ideal_GDOP_tetrahedron";
+% r = 200;
+% pr_x = r * sind(30);
+% pr_y = r * cosd(30);
+% 
+% height = 100;
+% 
+% height_zenith = height * 3;
+% 
+% Pseudolite{1}.x = r;
+% Pseudolite{1}.y = 0;
+% Pseudolite{1}.z = height;
+% 
+% Pseudolite{2}.x = -pr_x;
+% Pseudolite{2}.y =  pr_y;
+% Pseudolite{2}.z = height;
+% 
+% Pseudolite{3}.x = -pr_x;
+% Pseudolite{3}.y = -pr_y;
+% Pseudolite{3}.z = height;
+% 
+% Pseudolite{4}.x = 0;
+% Pseudolite{4}.y = 0;
+% Pseudolite{4}.z = height_zenith;
+% 
+% %----- UserPosition -----------
+% UPos.z = 0;
+% gridValX = 0 : 5 : 25 ;
+% gridValY = 0 : 5 : 25 ;
+% [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 %===========================
+[Pseudolite, UPos, topology] = GetTopology();
 
 constellation = 1 : 32;
 ps_size = size(Pseudolite);
@@ -146,15 +147,40 @@ poses_num = sizePoses(1) * sizePoses(2);
 pos_peak_orig = zeros(sv_num, poses_num);
 pos_peak = zeros(sv_num, poses_num);
 
+Errs = struct(  'err3D',      zeros(length(CN0), samples_num),    ...
+                'err2D',      zeros(length(CN0), samples_num)     ...
+                );
+%                'UsrCrdsTrue',     zeros(1, 3),               ...
+%                'PseudolitePoses', Pseudolite,         ...
+%                'CN0_dB_Hz',       CN0,                ...
+%                'srch_thrld',      threshold,          ...
+%                'sig_dur_sec',     sig_dur,            ...
+%                'smpl_freq_hz',    bandwidth,          ...
+%                'topology',        topology,           ...
+%                'sample_size',     samples_num         ...
+
+Params = struct(                                       ...
+                'UsrCrdsTrue',     UPos,        ...
+                'PseudolitePoses', {Pseudolite},       ...
+                'CN0_dB_Hz',       CN0,                ...
+                'srch_thrld',      threshold,          ...
+                'sig_dur_sec',     sig_dur,            ...
+                'smpl_freq_hz',    bandwidth,          ...
+                'topology',        topology,           ...
+                'sample_size',     samples_num         );
+
+
+Res = cell(size(UPos.x));
+
 for n = 1 : poses_num % for each user location
     err_samples = zeros(1 , samples_num);
     err_samples_xy = zeros(1, samples_num);
     
     curr_u_pos = [UPos.x(n) UPos.y(n) UPos.z];
     
-    sat_poses = [Pseudolite{1}.x Pseudolite{2}.x Pseudolite{3}.x Pseudolite{4}.x;   
-                 Pseudolite{1}.y Pseudolite{2}.y Pseudolite{3}.y Pseudolite{4}.y;
-                 Pseudolite{1}.z Pseudolite{2}.z Pseudolite{3}.z Pseudolite{4}.z];
+    sat_poses = [ Pseudolite{1}.x Pseudolite{2}.x Pseudolite{3}.x Pseudolite{4}.x;   
+                  Pseudolite{1}.y Pseudolite{2}.y Pseudolite{3}.y Pseudolite{4}.y;
+                  Pseudolite{1}.z Pseudolite{2}.z Pseudolite{3}.z Pseudolite{4}.z ];
 
     curr_err_cn0 = zeros(length(CN0), samples_num);
     curr_err_xy_cn0   = zeros(length(CN0), samples_num);
@@ -183,12 +209,12 @@ for n = 1 : poses_num % for each user location
                     'search_thrd',  threshold(m)    ...
                 );
                 % Tracking:
-                Res = MainExp(MainParams);
+                Receiver = MainExp(MainParams);
                 delete(fname);
 
-                delay_chip = Res.Search.SamplesShifts;
+                delay_chip = Receiver.Search.SamplesShifts;
 
-                exp_phase = angle(Res.Track.CorVals{1});
+                exp_phase = angle(Receiver.Track.CorVals{1});
 
                 rem_pos = exp_phase(end - 200) / (2 * pi);
                 pos = delay_chip + rem_pos;
@@ -212,8 +238,8 @@ for n = 1 : poses_num % for each user location
 
         end
 
-        err = mean(err_samples);
-        err_xy = mean(err_samples_xy);
+%         err = mean(err_samples);
+%         err_xy = mean(err_samples_xy);
 
         curr_err_cn0(   m, :) = err_samples;
         curr_err_xy_cn0(m, :) = err_samples_xy;
@@ -221,5 +247,12 @@ for n = 1 : poses_num % for each user location
     end
     err_cn0{n} = curr_err_cn0;
     err_xy_cn0{n} = curr_err_xy_cn0;
+    
+    Errs.err3D = curr_err_cn0;
+    Errs.err2D = curr_err_xy_cn0;
+    
+    Res{n} = Errs;
+    Data = struct('Params', Params, 'Errs', {Res});
+    save('Results\Res.mat', 'Data');
 end
 toc
