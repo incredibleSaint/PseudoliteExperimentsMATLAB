@@ -1,5 +1,8 @@
 close all; 
 clear;
+cd ..
+addpath('Common');
+cd PlotGDOP
 
 [Pseudolite, UPos] = GetTopology();
 
