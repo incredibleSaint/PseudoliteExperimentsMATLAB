@@ -3,6 +3,11 @@
 clear;
 close all;
 addpath('Functions')
+
+cd ..
+addpath('Common');
+cd GPS_Pseudolites_Model
+
 tic;
 % -- Parameters ----
 CN0  = [50 40 35];% 42 35 30 40 35];% dB-Hz 
