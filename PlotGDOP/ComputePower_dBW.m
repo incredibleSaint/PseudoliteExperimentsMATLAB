@@ -15,7 +15,7 @@ x = userPos.x;
 y = userPos.y;
 z = userPos.z;
 
-d = sqrt(sum(([xsat ysat zsat] - [x y z]) .^ 2))
+d = sqrt(sum(([xsat ysat zsat] - [x y z]) .^ 2));
 
 Ls = (lambda / (4 * pi * d)) ^ 2;
 Prec = Ls * Ptr_Gtr;

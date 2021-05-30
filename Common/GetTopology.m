@@ -168,9 +168,9 @@ Pseudolite{9}.x = 0;
 Pseudolite{9}.y = -(d_y + side);
 Pseudolite{9}.z = height;
 
-Pseudolite{1}.x = x;
-Pseudolite{1}.y = y;
-Pseudolite{1}.z = z;
+Pseudolite{10}.x = d_x;
+Pseudolite{10}.y = -side;
+Pseudolite{10}.z = height;
 
 Pseudolite{11}.x = -2 * d_x;
 Pseudolite{11}.y = -(d_y + side);
@@ -230,8 +230,10 @@ Pseudolite{23}.z = height;
 % ----- UserPosition -----------
 UPos.z = 0;
 coeffSq = 3;
-gridValX = -coeffSq * d_x: coeffSq * d_x / 5 : coeffSq * d_x;
-gridValY = -coeffSq * d_y : coeffSq * d_x / 5 : d_y + side + d_y;
+% gridValX = -coeffSq * d_x: coeffSq * d_x / 5 : coeffSq * d_x;
+% gridValY = -coeffSq * d_y : coeffSq * d_x / 5 : d_y + side + d_y;
+gridValX = 0: coeffSq * d_x / 5 : coeffSq * d_x;
+gridValY = 0;
 [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 
 
