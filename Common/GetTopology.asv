@@ -232,8 +232,8 @@ UPos.z = 0;
 coeffSq = 3;
 % gridValX = -coeffSq * d_x: coeffSq * d_x / 5 : coeffSq * d_x;
 % gridValY = -coeffSq * d_y : coeffSq * d_x / 5 : d_y + side + d_y;
-gridValX = 0 : 10 : 10;
-gridValY = 0;
+gridValX = 1020 : coeffSq * d_x / 5 : coeffSq * d_x;
+gridValY = -990;
 [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 
 

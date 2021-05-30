@@ -14,7 +14,10 @@ CN0  = [55 50 45 40 35];% 42 35 30 40 35];% dB-Hz
 
 threshold = [12 12 11 7 4];
 %-------------------
-samples_num = 2;
+samples_num = 50;
+
+% exp_num = 1;
+
 
 quant_accum = 5;
 
@@ -111,14 +114,8 @@ for n = 1 : poses_num % for each user location
     if sv_num > 16
         sv_num = 16;
         [~, idx] = sort(ranges_u_ps);
-        sv_id = idx(1 : sv_num);
         sat_poses = zeros(3, sv_num);
-        for k = 1 : sv_num
-            sat_poses(:, k) = [Pseudolite{idx(k)}.x Pseudolite{idx(k)}.y...
-                          Pseudolite{idx(k)}.z];
-        end
-        ranges_u_ps = sqrt(sum((sat_poses - curr_u_pos') .^ 2));
-        time_propog = ranges_u_ps / c;
+        
     end
     
     err_samples = zeros(1 , samples_num);

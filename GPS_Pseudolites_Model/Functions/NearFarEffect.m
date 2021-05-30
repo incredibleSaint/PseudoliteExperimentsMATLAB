@@ -1,6 +1,6 @@
 %close all; clear;
 % This script research Near-Far Effect
-% (when some pseudolites isn't seen because of others (not enough power))
+% (when some pseudolite is'nt seen because of others (not enough power))
 % cd ..
 % addpath('Common');
 % cd PlotGDOP
@@ -12,11 +12,11 @@ SNR_MIN = -25;
 k = 1.38e-23;
 T0 = 300;
 
-% UPos.z = 0;
-gridValX = -1500 : 10 : 1500;
-gridValY = -1500 : 10 : 1500;
-
-[UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
+% % UPos.z = 0;
+% gridValX = -1500 : 10 : 1500;
+% gridValY = -1500 : 10 : 1500;
+% 
+% [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 
 psSize = size(Pseudolite);
 
@@ -41,7 +41,7 @@ for n = 1 : pointsNum
     for m = 1 : psSize(2)
         Prec_dBW = circshift(Prec_dBW, 1);
         SNR = Prec_dBW(1) / (k * T0 + sum(Prec_dBW(2 : psSize(2))));
-        if (10 * log10(SNR) > SNR_MIN) && cnt <= 16
+        if (10 * log10(SNR) > SNR_MIN)
               cnt = cnt + 1;
               idxVisibArr(psSize(2) - m + 1) = 1;
         end
