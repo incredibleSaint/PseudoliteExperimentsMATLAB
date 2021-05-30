@@ -220,8 +220,8 @@ function Res = P10_CohSearchSats(inRes, isDraw, Params)
         Res.Search = Search;
 
     % Строка состояния
-%         fprintf(['%s     номера найденных спутников в порядке ', ...
-%             'убывания мощности сигнала:\n'], datestr(now));
-%         Buf = sprintf('% d', Search.SatNums);
-%         fprintf('%s     [%s]\n', datestr(now), Buf(2:end));
-%         fprintf('%s     завершено.\n', datestr(now));
+        fprintf(['%s     номера найденных спутников в порядке ', ...
+            'убывания мощности сигнала:\n'], datestr(now));
+        Buf = sprintf('% d', Search.SatNums);
+        fprintf('%s     [%s]\n', datestr(now), Buf(2:end));
+        fprintf('%s     завершено.\n', datestr(now));

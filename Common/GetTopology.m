@@ -232,7 +232,7 @@ UPos.z = 0;
 coeffSq = 3;
 % gridValX = -coeffSq * d_x: coeffSq * d_x / 5 : coeffSq * d_x;
 % gridValY = -coeffSq * d_y : coeffSq * d_x / 5 : d_y + side + d_y;
-gridValX = 0 : 10 : 10;
+gridValX = [-1410 -1210 -600 0  170 440 920 1400];
 gridValY = 0;
 [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 

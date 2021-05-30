@@ -10,11 +10,11 @@ cd GPS_Pseudolites_Model
 
 tic;
 % -- Parameters ----
-CN0  = [55 50 45 40 35];% 42 35 30 40 35];% dB-Hz 
+CN0  = [55 50 ];%45 40 35];% 42 35 30 40 35];% dB-Hz 
 
 threshold = [12 12 11 7 4];
 %-------------------
-samples_num = 1;
+samples_num = 10;
 
 quant_accum = 5;
 
@@ -82,6 +82,7 @@ for n = 1 : poses_num % for each user location
     sv_num = length(sv_id);
     
     if sv_num < 4
+        fprintf('%Point d: Less than 4 pseudolites \n \n', n);
         continue;
     end
     
