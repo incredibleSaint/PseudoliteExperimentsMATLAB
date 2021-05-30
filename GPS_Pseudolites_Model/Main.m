@@ -14,7 +14,7 @@ CN0  = [55 50 45 40 35];% 42 35 30 40 35];% dB-Hz
 
 threshold = [12 12 11 7 4];
 %-------------------
-samples_num = 2;
+samples_num = 1;
 
 quant_accum = 5;
 
@@ -76,10 +76,6 @@ Params = struct(                                       ...
 
 Res = cell(size(UPos.x));
 
-% for k = 1 : sv_num
-%     sat_poses(: , k) = [Pseudolite{k}.x Pseudolite{k}.y Pseudolite{k}.z];
-% end
-
 for n = 1 : poses_num % for each user location
     vis_arr = idxVisib{n};% сделать функцию, которая находит теперь ближайшие 16 и уже по ним считать
     sv_id = find(vis_arr == 1);
@@ -88,11 +84,6 @@ for n = 1 : poses_num % for each user location
     if sv_num < 4
         continue;
     end
-    
-%     if sv_num > 16
-%         sv_num = 16;
-%     end
-    
     
     sat_poses = zeros(3, sv_num); 
     % Сохраним координаты спутников, которые видны в данной точке:
@@ -124,10 +115,6 @@ for n = 1 : poses_num % for each user location
     err_samples = zeros(1 , samples_num);
     err_samples_xy = zeros(1, samples_num);
     err_ranges = zeros(sv_num, samples_num);
-    
-    
-    
-    
 
     curr_err_cn0 = zeros(length(CN0), samples_num);
     curr_err_xy_cn0   = zeros(length(CN0), samples_num);
@@ -135,8 +122,6 @@ for n = 1 : poses_num % for each user location
     for m = 1 : length(CN0)
 
         for k = 1 : samples_num
-%             disp(n)
-                   
             %--------- Detector of the C/A signal -----------------------------
             time_delays_calc = zeros(1, sv_num);
             
@@ -175,10 +160,9 @@ for n = 1 : poses_num % for each user location
                 if abs(pos - pos_peak_first) > 0.5
                    pos = pos - 1;
                 end
-%                 pos_peak(f, n) = pos;
+
                 time_delays_calc(f) = pos / (f_CA * sample_freq);
             end
-%             pos_peak_orig(:, n) = pos_peak_first;
             % --- Calculate user position ---------------
 
             u_pos(n, :) = FindRecPosition(sat_poses, time_delays_calc * c);
@@ -198,6 +182,8 @@ for n = 1 : poses_num % for each user location
     Errs.err3D = curr_err_cn0;
     Errs.err2D = curr_err_xy_cn0;
     Errs.err_psrng = curr_err_rng_cn0;
+    Errs.sv_id = sv_id;
+    Errs.sv_num = sv_num;
     
     Res{n} = Errs;
     Data = struct('Params', Params, 'Errs', {Res});
