@@ -126,7 +126,7 @@ function [Pseudolite, UPos, topology] = GetTopology()
 % ==== Pseudolite Rombus Array =====
 topology = "cell rombus array";
 d_x = 500;%8.68;
-d_y = d_x / tand(50);
+d_y = d_x / tand(45);
 side = sqrt(d_x ^ 2 + d_y ^ 2);
 
 S = 1 / 2 * 2 * d_x * 2 * d_y;

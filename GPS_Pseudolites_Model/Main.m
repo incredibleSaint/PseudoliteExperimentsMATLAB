@@ -10,11 +10,11 @@ cd GPS_Pseudolites_Model
 
 tic;
 % -- Parameters ----
-CN0  = [55 50 ];%45 40 35];% 42 35 30 40 35];% dB-Hz 
+CN0  = [55 50 45 40 35];% 42 35 30 40 35];% dB-Hz 
 
 threshold = [12 12 11 7 4];
 %-------------------
-samples_num = 10;
+samples_num = 100;
 
 quant_accum = 5;
 

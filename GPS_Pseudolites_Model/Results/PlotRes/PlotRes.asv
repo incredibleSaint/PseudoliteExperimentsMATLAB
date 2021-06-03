@@ -2,8 +2,7 @@
 clear;
 % load('Res_-1200...-300.mat')
 % load('Res_romb_50deg_CN0_45_40_35_(x_-1410 -1210 -600 0  170 440 920 1400,y_ 0).mat')
-filename = 'Merged_Res_CN0_55__35_(x_-1410 -1210 -600 0  170 440 920 1400,y_ 0)';
-load([filename '.mat'])
+load('Merged_Res_CN0_55...35_(x_-1410 -1210 -600 0  170 440 920 1400,y_ 0).mat')
 f = figure; grid on;
 hold on;
 
@@ -36,7 +35,4 @@ legend('1', '2', '3', '4', '5', '6', '7', '8');
 xlabel('CN0, дБ-Гц');
 % ylabel('Ошибка определения горизонтальной составляющей, м');
 ylabel('{\Delta}R, m');
-
-cd Images
-saveas(f, filename);
-cd ..
+saveas(f, ['Images\' 

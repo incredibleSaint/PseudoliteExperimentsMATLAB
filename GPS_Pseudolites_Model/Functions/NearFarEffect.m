@@ -12,7 +12,7 @@ SNR_MIN = -25;
 k = 1.38e-23;
 T0 = 300;
 
-% % UPos.z = 0;
+% UPos.z = 0;
 % gridValX = -1500 : 10 : 1500;
 % gridValY = -1500 : 10 : 1500;
 % 
@@ -58,7 +58,7 @@ if s(1) > 1
     contourf(UPos.x, UPos.y, cntVisib);
     colorbar;
     grid on;
-    title("Количество видимых спутников");
+%     title("Количество видимых спутников");
     xlabel("X, м");
     ylabel("Y, м");
 end
