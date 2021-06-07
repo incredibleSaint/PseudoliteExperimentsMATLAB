@@ -126,7 +126,7 @@ function [Pseudolite, UPos, topology] = GetTopology()
 % ==== Pseudolite Rombus Array =====
 topology = "cell rombus array";
 d_x = 500;%8.68;
-d_y = d_x / tand(45);
+d_y = d_x / tand(50);
 side = sqrt(d_x ^ 2 + d_y ^ 2);
 
 S = 1 / 2 * 2 * d_x * 2 * d_y;
@@ -232,7 +232,8 @@ UPos.z = 0;
 coeffSq = 3;
 % gridValX = -coeffSq * d_x: coeffSq * d_x / 5 : coeffSq * d_x;
 % gridValY = -coeffSq * d_y : coeffSq * d_x / 5 : d_y + side + d_y;
-gridValX = [-1410 -1210 -600 0  170 440 920 1400];
+% gridValX = [420 -1410  0  170 440 920 1400];
+gridValX = 0 : 50 : 600;
 gridValY = 0;
 [UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 
@@ -325,7 +326,7 @@ if flag_draw
     
     if flag_2D 
         figure; hold on;
-        grid on; title("Pseudolite Array");
+        grid on; title("Массив псевдолитов");
         
         for n = 1 : s(2)
             if flag_2D
@@ -339,7 +340,7 @@ if flag_draw
     
     if flag_3D 
         figure; hold on;
-        grid on; title("Pseudolite Array");
+        grid on; title("Массив псевдолитов");
         
         for n = 1 : s(2)
             if flag_3D

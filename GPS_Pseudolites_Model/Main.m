@@ -10,11 +10,11 @@ cd GPS_Pseudolites_Model
 
 tic;
 % -- Parameters ----
-CN0  = [55 50 45 40 35];% 42 35 30 40 35];% dB-Hz 
+CN0  = [ 55 50 45 40 35];% 42 35 30 40 35];% dB-Hz 
 
 threshold = [12 12 11 7 4];
 %-------------------
-samples_num = 100;
+samples_num = 1;
 
 quant_accum = 5;
 
@@ -112,7 +112,7 @@ for n = 1 : poses_num % for each user location
         ranges_u_ps = sqrt(sum((sat_poses - curr_u_pos') .^ 2));
         time_propog = ranges_u_ps / c;
     end
-    
+ 
     err_samples = zeros(1 , samples_num);
     err_samples_xy = zeros(1, samples_num);
     err_ranges = zeros(sv_num, samples_num);
@@ -123,7 +123,7 @@ for n = 1 : poses_num % for each user location
     for m = 1 : length(CN0)
 
         for k = 1 : samples_num
-            %--------- Detector of the C/A signal -----------------------------
+            %--------- Detector of the C/A signal ------------------------
             time_delays_calc = zeros(1, sv_num);
             
             rem_last_emp = zeros(1, sv_num);

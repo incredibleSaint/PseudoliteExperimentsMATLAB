@@ -142,5 +142,6 @@ GDOP = sqrt(Tr);
 %--- PDOP -------
 TrPDOP = trace(D(1 : 3, 1 : 3));
 PDOP = sqrt(TrPDOP);
-HDOP = sqrt(D(1, 1) + D(2, 2));
+% HDOP = sqrt(D(1, 1) + D(2, 2));
+HDOP = sqrt(trace(D(1 : 2, 1 : 2)));
 VDOP = sqrt(D(3, 3));

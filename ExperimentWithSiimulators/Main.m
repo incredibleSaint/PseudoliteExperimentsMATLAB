@@ -8,8 +8,11 @@ addpath([cd '\Records']);
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
 folder = '\Records\';
-fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16__2d_launch_diff_0_met_static_position_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
-
+% -- File with 4 interseals, 4 pps, 4 clocks: -----
+% fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
+%--------------------------------------------------
+fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_2d_launch.ubx';
+% fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_1st_launch.ubx';
 fullName = [cd folder fileName];
 
 [Mes0x1502] = ParserUbxpacket(fullName);
@@ -33,14 +36,16 @@ if flagWorkWithSomeCAcodesJustPsRngs
     % Big_Case #4:
 %         PseudoCoord.svId = [2 5 16 18 20 25 26 29 31];
     % Big_Case #5:
-%         PseudoCoord.svId = [5 16 18 20 23 26 29 31];
+        PseudoCoord.svId = [5 16 18 20 23 26 29 31];
 
     % Big_Case #6:
         PseudoCoord.svId = [10 11 15 16];
+%     PseudoCoord.svId = [7 10 16 23];
         
     diffPsRngs = zeros(sizeStr(2), length(PseudoCoord.svId));
     % Old Interseal (one simulator)
 %     PseudoCoord.svId = [5     7     8    13    14    18    28];
+    svNum = length(PseudoCoord.svId);
 end
 %========================
 
@@ -58,14 +63,14 @@ for n = 1 : sizeStr(2)
         necessarySat = CheckCANumsMatchUp(ProcessedMes.svId, ...
                                                         PseudoCoord.svId);
         if flagWorkWithSomeCAcodesJustPsRngs % when less than 4 CA-codes
-    %         fourSatIsValid = 1;
-    %         necessarySat = 1;
+            fourSatIsValid = 1;
+            necessarySat = 1;
         end
         if fourSatIsValid && necessarySat
 
             for k = 1 : length(ProcessedMes.svId)
                 ind = (PseudoCoord.svId == ProcessedMes.svId(k));
-                if sum(ind) && sum(ProcessedMes.trkStat{k}  - '0') >= 3
+                if sum(ind) && sum(ProcessedMes.trkStat{k}  - '0') >= 2
 
                     svCnt = svCnt + 1;
                     if ~flagWorkWithSomeCAcodesJustPsRngs
@@ -112,21 +117,25 @@ ylabel("diffPsRngs, m");
 grid on;
 
 
-num_sv = 9;
-legend_text = cell(1, num_sv);
-for i = 1 : num_sv
+legend_text = cell(1, svNum);
+for i = 1 : svNum
     legend_text{i} = num2str(i);
 end
-legend(legend_text);
-
+leg = legend(legend_text);
+title(leg, 'Номер псевдолита');
 % -- Plot Error of pseudorange difference --------
 
 figErr = figure;
 emitted_rng_diff = 0 : 1000 : 0;
-plot(diffPsRngs(1 : posCnt, :) - emitted_rng_diff);
-xlabel("t, sec");
-ylabel("error(diff(psRng)), met");
+% plot(diffPsRngs(1 : posCnt, :) - emitted_rng_diff);
+plot(diffPsRngs(1 : 150, :) - emitted_rng_diff);
+xlabel("t, сек");
+ylabel('{\Delta}R, м');
 grid on;
+leg = legend(legend_text);
+title(leg, 'Номер псевдолита');
+leg.NumColumnsMode = 'manual';
+led.NumColumns = 2;
 
 cd 'Results'
 saveas(figErr, [fileName '.emf']);

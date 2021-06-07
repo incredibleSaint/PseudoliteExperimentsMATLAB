@@ -1,10 +1,13 @@
-close all; 
+% close all; 
 clear;
 cd ..
 addpath('Common');
 cd PlotGDOP
 
 [Pseudolite, UPos] = GetTopology();
+gridValX = -1500 : 100 : 1500;
+gridValY = -1500 : 100 : 1500;
+[UPos.x, UPos.y] = meshgrid(gridValX, gridValY);
 
 psSize = size(Pseudolite);
 psSizeCol = psSize(2);
