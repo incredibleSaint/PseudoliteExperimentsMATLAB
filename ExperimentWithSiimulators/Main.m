@@ -1,24 +1,24 @@
 clear;
 
-folderPath = [cd '\ScriptsFunctions'];
+folderPath = [cd '/ScriptsFunctions'];
 addpath(folderPath);
-addpath([cd '\Records']);
+addpath([cd '/Records']);
 %---------------------------------
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '\Records\';
+folder = '/Records/';
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
-fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_2d_launch.ubx';
+fileName = 'COM33___115200_220227_203911.ubx';
 % fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_1st_launch.ubx';
 fullName = [cd folder fileName];
 
 [Mes0x1502] = ParserUbxpacket(fullName);
 
 sizeStr = size(Mes0x1502);
-load([cd '\ScriptsFunctions\PseudoliteCorrdinates.mat']);
+load([cd '/ScriptsFunctions/PseudoliteCorrdinates.mat']);
 c = 299792458;
 
 posCnt = 0;
@@ -36,11 +36,14 @@ if flagWorkWithSomeCAcodesJustPsRngs
     % Big_Case #4:
 %         PseudoCoord.svId = [2 5 16 18 20 25 26 29 31];
     % Big_Case #5:
-        PseudoCoord.svId = [5 16 18 20 23 26 29 31];
+        PseudoCoord.svId = [1 16 18 20 23 26 29 31];
 
     % Big_Case #6:
         PseudoCoord.svId = [10 11 15 16];
 %     PseudoCoord.svId = [7 10 16 23];
+
+% PocketZynq:
+       PseudoCoord.svId = [ 8 9 11 12 13 14];
         
     diffPsRngs = zeros(sizeStr(2), length(PseudoCoord.svId));
     % Old Interseal (one simulator)
@@ -137,9 +140,17 @@ title(leg, 'Номер псевдолита');
 leg.NumColumnsMode = 'manual';
 led.NumColumns = 2;
 
-cd 'Results'
-saveas(figErr, [fileName '.emf']);
-cd ..
+figure; plot(diff(diffPsRngs));
+xlabel("t, сек");
+ylabel('diff(R), м');
+grid on;
+leg = legend(legend_text);
+title(leg, 'Номер псевдолита');
+leg.NumColumnsMode = 'manual';
+led.NumColumns = 2;
+% cd 'Results'
+% saveas(figErr, [fileName '.emf']);
+% cd ..
 
 % figure; plot(diffPsRngs - mean(diffPsRngs))
 % legend(num2str(mean(diffPsRngs)'));
@@ -163,6 +174,8 @@ if stdPpsInMet - abs(ppsErrorExp) > 0
    fprintf("Errors of pseudoranges satisfy 1PPS errors \n"); 
 end
 
+disp ("Ublox Diff PsRnges ");
+diffPsRngs(20, :) - diffPsRngs(20, 1)
 % 
 % xlabel('t, сек')
 % ylabel('3D error, м')
