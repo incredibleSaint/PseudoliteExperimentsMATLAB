@@ -17,7 +17,11 @@ fileName = 'COM33_220303_100600.ubx';
 fileName = 'COM33_220303_144854.ubx';
 fileName = 'COM33_220304_095833.ubx';
 fileName = 'COM33_220304_130253.ubx'; % non-constant speed of psR changing is working
-fileName = '';
+fileName = 'COM33___115200_220307_083208.ubx'; %486973 common error on 60 ms
+fileName = 'COM33___115200_220307_111931.ubx';
+fileName = 'COM33___115200_220308_111151.ubx'; % error should be 1 sec. Why error is 2 sec?
+fileName = 'COM33___115200_220308_112436.ubx';
+fileName = 'COM33___115200_220308_113533.ubx';
 % fileName = 'ReferenceForDebugSimulation_COM53_210702_151500.ubx';
 % fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_1st_launch.ubx';
 fullName = [cd folder fileName];
@@ -50,7 +54,7 @@ if flagWorkWithSomeCAcodesJustPsRngs
 %     PseudoCoord.svId = [7 10 16 23];
 
 % PocketZynq:
-       PseudoCoord.svId = [  9 11 12 13 14];
+       PseudoCoord.svId = [  9 11 12 14];
     size_debug_file = size('ReferenceForDebugSimulation_COM53_210702_151500.ubx');
     if(size_debug_file(2) == size(fileName))
         if(fileName == 'ReferenceForDebugSimulation_COM53_210702_151500.ubx') 
@@ -196,16 +200,34 @@ end
 % ylabel('3D error, м')
 % grid on;
 
+%% Diff between ARM and Ublox
+TOW = 486937;%487108;
+idx = find(round(tow) == TOW);
+%-- TOW = 486973 -------
+fpga_del = [702359320  672934480 704034960 746439360] / 1e10 * 2.99792458e8;
+
+d_fpga = [-274.53 -128.52 160.56 -588.54];
+d_fpga = [-282.81 -142.11 151.14 -595.23];
+err_ubx = diffPsRngs(idx, :) -diffPsRngs(idx, 1) - ( fpga_del - fpga_del(1)) %- (d_fpga - d_fpga(1));% * (-0.06);
+%----TOW = 486937 ----------------------
+fpga_del = [702700440  673107880 703855560 747155040] / 1e10 * 2.99792458e8;
+
+d_fpga = [-285.63 -146.76 147.9 -597.48];
+err_ubx = diffPsRngs(idx, :) -diffPsRngs(idx, 1) - ( fpga_del - fpga_del(1)) - (d_fpga - d_fpga(1)) * (-0.06);
+% ---------------------------Second record------------------------------
+fpga_del = [702700400 673107920 703855560 747155040] / 1e10 * 2.99792458e8;
+err_ubx = diffPsRngs(idx, :) -diffPsRngs(idx, 1) - ( fpga_del - fpga_del(1)) - (d_fpga - d_fpga(1)) * (0)
 %=== find diffPsRng for given TOW: ===
-TOW = 487899;%487108;
+
 
 % diff_arm = [-273 -123 163.2 277.2 -588];
 diff_arm = [-27.6 228 354 -537.6 -274.8];
 fprintf("Arm diff = "); fprintf("%d ", diff_arm - diff_arm(1));
 
-idx = find(round(tow) == TOW);
+
 % idx = idx + 50;
-fprintf("\nUblox:\nTOW = %d\n", tow(idx(1))); fprintf( "diffPsRngs = %d\n", ...
+fprintf("\nUblox:\nTOW = %d\n", tow(idx(1))); 
+fprintf( "diffPsRngs = %d\n", ...
                                                 diffPsRngs(idx(1), :));
 delta_calc = round(tow(idx)) - tow(idx);
 d_psR_err = speed_diffPsRngs(idx, :) * (delta_calc - 7);
@@ -213,8 +235,8 @@ d_psR_err = speed_diffPsRngs(idx, :) * (delta_calc - 7);
 
 % psRng_arm = [816175360 701092200 672325680 704752960 717769800 743740920]
 % / 1e10 * 3e8; % 107
-psRng_arm = [701083160 672321560 704758360 717779080 743721400] / 1e10 * 3e8; % 108
-psRng_arm = [670463040 709531600 725498720 730029360 765041400] / 1e10 * 3e8;
+% psRng_arm = [701083160 672321560 704758360 717779080 743721400] / 1e10 * 3e8; % 108
+% psRng_arm = [670463040 709531600 725498720 730029360 765041400] / 1e10 * 3e8;
 fprintf("ARM:\n"); fprintf("diffPsRngs = %d\n", psRng_arm - psRng_arm(1));
 fprintf("double diff: ");
 disp(diffPsRngs(idx(1), :) - ((psRng_arm - psRng_arm(1)) - d_psR_err));
