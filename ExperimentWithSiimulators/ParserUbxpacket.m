@@ -1,4 +1,4 @@
-function [Mes0x1502] = ParserUbxpacket(full_name, varargin)
+function [Mes0x0101, Mes0x0102, Mes0x1502] = ParserUbxpacket(full_name, varargin)
 MAGIC0 = hex2dec('B5');
 MAGIC1 = hex2dec('62');
 temp = dir(full_name);
@@ -17,6 +17,9 @@ tow = -1;
 tow2 = -1;
 % Init --------
 cnt1502 = 0;
+cnt0101 = 0;
+cnt0102 = 0;
+Mes0x0102 = [];
 if(file ~= -1)
     while(portPos < portCnt)
         fseek(file, portion * portPos, 'bof');
@@ -109,11 +112,57 @@ if(file ~= -1)
                         end
                         Mes0x1502{cnt1502} = Data;
                         Data = [];
+                  
                     case hex2dec('0101')
-                        tow =   data(pos + 9) * 2^24    + ...
+                        cnt0101 = cnt0101 + 1;
+                        pp = pos + 6;
+                        Data.tow =   data(pos + 9) * 2^24    + ...
                                 data(pos + 8) * 2^16    + ...
                                 data(pos + 7) * 2^8     + ...
                                 data(pos + 6) * 2^0;
+                        
+                        x_ecef_cm = data(pp + (4 : 7));
+                        Data.x_ecef = typecast(uint8(x_ecef_cm), 'int32');
+
+                        y_ecef_cm = data(pp + (8 : 11));
+                        Data.y_ecef = typecast(uint8(y_ecef_cm), 'int32');
+
+                        z_ecef_cm = data(pp + (12 : 15));
+                        Data.z_ecef = typecast(uint8(z_ecef_cm), 'int32');
+
+                        acc = data(pp + (16 : 19));
+                        Data.acc = typecast(uint8(acc), 'uint32');
+
+                        Mes0x0101{cnt0101} = Data;
+                        Data = [];
+                    case hex2dec('0201')
+                        cnt0102 = cnt0102 + 1;
+                        pp = pos + 6;
+                        Data.tow =   data(pos + 9) * 2^24    + ...
+                                data(pos + 8) * 2^16    + ...
+                                data(pos + 7) * 2^8     + ...
+                                data(pos + 6) * 2^0;
+                        
+                        lon = data(pp + (4 : 7));
+                        Data.lon = typecast(uint8(lon), 'int32');
+
+                        lat = data(pp + (8 : 11));
+                        Data.lat = typecast(uint8(lat), 'int32');
+
+                        height = data(pp + (12 : 15));
+                        Data.height = typecast(uint8(height), 'int32');
+
+                        height_msl = data(pp + (16 : 19));
+                        Data.height_msl = typecast(uint8(height_msl), 'int32');
+
+                        horiz_acc = data(pp + (20 : 23));
+                        Data.height_acc = typecast(uint8(horiz_acc), 'uint32');
+
+                        vert_acc = data(pp + (24 : 27));
+                        Data.height_acc = typecast(uint8(vert_acc), 'uint32');
+
+                        Mes0x0102{cnt0102} = Data;
+                        Data = [];
 
 %                     case hex2dec('3001')
 %                         pp  	=   pos + 6;
