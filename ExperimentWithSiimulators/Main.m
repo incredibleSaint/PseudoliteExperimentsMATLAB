@@ -1,5 +1,5 @@
 clear;
-close all;
+% close all;
 folderPath = [cd '/ScriptsFunctions'];
 addpath(folderPath);
 addpath([cd '/Records']);
@@ -7,7 +7,7 @@ addpath([cd '/Records']);
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/Records/';
+folder = '/home/s/Documents/';
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
@@ -22,11 +22,23 @@ fileName = 'COM33___115200_220307_111931.ubx';
 fileName = 'COM33___115200_220308_111151.ubx'; % error should be 1 sec. Why error is 2 sec?
 fileName = 'COM33___115200_220308_112436.ubx';
 fileName = 'COM33___115200_220308_113533.ubx';
+fileName = 'COM33___115200_220308_112436.ubx';
+fileName = 'COM33___115200_220308_113533.ubx';
+fileName = 'GPS_220407_112629.ubx'; % Maks variant
+% fileName = 'GPS_1Hz_upd_220408_125353.ubx'; % t_propag shouldn't be
+fileName = 'GPS_my_without_t_propag_114333.ubx';
 % fileName = 'ReferenceForDebugSimulation_COM53_210702_151500.ubx';
 % fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_1st_launch.ubx';
-fullName = [cd folder fileName];
+fullName = [folder fileName];
 
-[Mes0x1502] = ParserUbxpacket(fullName);
+[Mes0x0101, Mes0x0102, Mes0x1502] = ParserUbxpacket(fullName);
+
+true_position = [2758750.0, 1617300.0, 5500165.0]; % STC 
+% true_position = [2758762.10206624 1617141.40083576 5500196.86403367]; % Misha
+[err_3D, t] = Process0x0101(Mes0x0101, true_position, fileName);
+h_error = Process0x0102(Mes0x0102, true_position, fileName);
+HorizontalError(err_3D, h_error, t, fileName);
+
 
 sizeStr = size(Mes0x1502);
 load([cd '/ScriptsFunctions/PseudoliteCorrdinates.mat']);
@@ -122,7 +134,8 @@ for n = 1 : sizeStr(2)
         end
     end
 end
-    
+isDraw = 0;
+if isDraw
 figure; plot(tow(1 : posCnt -1), diff(tow(1 : posCnt)));
 grid on;
 title("TOW");
@@ -192,7 +205,7 @@ stdPpsInMet = c * stdPps;
 if stdPpsInMet - abs(ppsErrorExp) > 0 
    fprintf("Errors of pseudoranges satisfy 1PPS errors \n"); 
 end
-
+end
 % disp ("Ublox Diff PsRnges ");
 % diffPsRngs(20, :) - diffPsRngs(20, 1)
 % 
@@ -201,55 +214,55 @@ end
 % grid on;
 
 %% Diff between ARM and Ublox
-TOW = 486937;%487108;
-idx = find(round(tow) == TOW);
-%-- TOW = 486973 -------
-fpga_del = [702359320  672934480 704034960 746439360] / 1e10 * 2.99792458e8;
-
-d_fpga = [-274.53 -128.52 160.56 -588.54];
-d_fpga = [-282.81 -142.11 151.14 -595.23];
-err_ubx = diffPsRngs(idx, :) -diffPsRngs(idx, 1) - ( fpga_del - fpga_del(1)) %- (d_fpga - d_fpga(1));% * (-0.06);
-%----TOW = 486937 ----------------------
-fpga_del = [702700440  673107880 703855560 747155040] / 1e10 * 2.99792458e8;
-
-d_fpga = [-285.63 -146.76 147.9 -597.48];
-err_ubx = diffPsRngs(idx, :) -diffPsRngs(idx, 1) - ( fpga_del - fpga_del(1)) - (d_fpga - d_fpga(1)) * (-0.06);
-% ---------------------------Second record------------------------------
-fpga_del = [702700400 673107920 703855560 747155040] / 1e10 * 2.99792458e8;
-err_ubx = diffPsRngs(idx, :) -diffPsRngs(idx, 1) - ( fpga_del - fpga_del(1)) - (d_fpga - d_fpga(1)) * (0)
-%=== find diffPsRng for given TOW: ===
-
-
-% diff_arm = [-273 -123 163.2 277.2 -588];
-diff_arm = [-27.6 228 354 -537.6 -274.8];
-fprintf("Arm diff = "); fprintf("%d ", diff_arm - diff_arm(1));
-
-
-% idx = idx + 50;
-fprintf("\nUblox:\nTOW = %d\n", tow(idx(1))); 
-fprintf( "diffPsRngs = %d\n", ...
-                                                diffPsRngs(idx(1), :));
-delta_calc = round(tow(idx)) - tow(idx);
-d_psR_err = speed_diffPsRngs(idx, :) * (delta_calc - 7);
-
-
-% psRng_arm = [816175360 701092200 672325680 704752960 717769800 743740920]
-% / 1e10 * 3e8; % 107
-% psRng_arm = [701083160 672321560 704758360 717779080 743721400] / 1e10 * 3e8; % 108
-% psRng_arm = [670463040 709531600 725498720 730029360 765041400] / 1e10 * 3e8;
-fprintf("ARM:\n"); fprintf("diffPsRngs = %d\n", psRng_arm - psRng_arm(1));
-fprintf("double diff: ");
-disp(diffPsRngs(idx(1), :) - ((psRng_arm - psRng_arm(1)) - d_psR_err));
-
-vvv = [150 200 250 300 350];
-ch_num = 3 : 7;
-prev_a = zeros(1, 5);
-for i = 1 : 100
-    if i == 99 
-        b = 3;
-    end
-    a = prev_a + vvv + i * 0.1 * ch_num; 
-    prev_a = a;
-end
-fprintf("preva = %d, a = %d\n", prev_a, a);
-fprintf("delta = %d\n", a)
+% TOW = 486937;%487108;
+% idx = find(round(tow) == TOW);
+% %-- TOW = 486973 -------
+% fpga_del = [702359320  672934480 704034960 746439360] / 1e10 * 2.99792458e8;
+% 
+% d_fpga = [-274.53 -128.52 160.56 -588.54];
+% d_fpga = [-282.81 -142.11 151.14 -595.23];
+% err_ubx = diffPsRngs(idx, :) -diffPsRngs(idx, 1) - ( fpga_del - fpga_del(1)) %- (d_fpga - d_fpga(1));% * (-0.06);
+% %----TOW = 486937 ----------------------
+% fpga_del = [702700440  673107880 703855560 747155040] / 1e10 * 2.99792458e8;
+% 
+% d_fpga = [-285.63 -146.76 147.9 -597.48];
+% err_ubx = diffPsRngs(idx, :) -diffPsRngs(idx, 1) - ( fpga_del - fpga_del(1)) - (d_fpga - d_fpga(1)) * (-0.06);
+% % ---------------------------Second record------------------------------
+% fpga_del = [702700400 673107920 703855560 747155040] / 1e10 * 2.99792458e8;
+% err_ubx = diffPsRngs(idx, :) -diffPsRngs(idx, 1) - ( fpga_del - fpga_del(1)) - (d_fpga - d_fpga(1)) * (0)
+% %=== find diffPsRng for given TOW: ===
+% 
+% 
+% % diff_arm = [-273 -123 163.2 277.2 -588];
+% diff_arm = [-27.6 228 354 -537.6 -274.8];
+% fprintf("Arm diff = "); fprintf("%d ", diff_arm - diff_arm(1));
+% 
+% 
+% % idx = idx + 50;
+% fprintf("\nUblox:\nTOW = %d\n", tow(idx(1))); 
+% fprintf( "diffPsRngs = %d\n", ...
+%                                                 diffPsRngs(idx(1), :));
+% delta_calc = round(tow(idx)) - tow(idx);
+% d_psR_err = speed_diffPsRngs(idx, :) * (delta_calc - 7);
+% 
+% 
+% % psRng_arm = [816175360 701092200 672325680 704752960 717769800 743740920]
+% % / 1e10 * 3e8; % 107
+% % psRng_arm = [701083160 672321560 704758360 717779080 743721400] / 1e10 * 3e8; % 108
+% % psRng_arm = [670463040 709531600 725498720 730029360 765041400] / 1e10 * 3e8;
+% fprintf("ARM:\n"); fprintf("diffPsRngs = %d\n", psRng_arm - psRng_arm(1));
+% fprintf("double diff: ");
+% disp(diffPsRngs(idx(1), :) - ((psRng_arm - psRng_arm(1)) - d_psR_err));
+% 
+% vvv = [150 200 250 300 350];
+% ch_num = 3 : 7;
+% prev_a = zeros(1, 5);
+% for i = 1 : 100
+%     if i == 99 
+%         b = 3;
+%     end
+%     a = prev_a + vvv + i * 0.1 * ch_num; 
+%     prev_a = a;
+% end
+% fprintf("preva = %d, a = %d\n", prev_a, a);
+% fprintf("delta = %d\n", a)
