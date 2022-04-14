@@ -7,7 +7,7 @@ addpath([cd '/Records']);
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/home/incredible/Documents/';
+folder = '/home/s/Documents/';
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
@@ -27,7 +27,13 @@ fileName = 'COM33___115200_220308_113533.ubx';
 fileName = 'GPS_220407_112629.ubx'; % Maks variant
 fileName = 'GPS_1Hz_upd_220408_125353.ubx'; % t_propag shouldn't be
 fileName = 'GPS_1Hz_upd_v2_220408_125353.ubx';
-fileName = 'Gps_relat_effect_sat_time.ubx';
+fileName = 'gps_5ch_11_12_13_14_22.ubx';
+fileName = 'gps_5ch_11_12_13_14_22_v2.ubx';
+fileName = 'gps_5ch_11_12_13_14_22_with_propag.ubx';
+fileName = 'gps_new.ubx';
+fileName = 'gps_comment_t_prop.ubx';
+% fileName = 'gps_5ch_11_12_13_14_22_20ms.ubx';
+% fileName = 'gps_5ch_11_12_13_14_22_15ms.ubx';
 % fileName = 'gps_start_clk_time_corr.ubx';
 % fileName = 'gps_2Hz_start_clk_time_corr.ubx';
 % fileName = 'gps_start_clk_time_corr_10Hz.ubx';
@@ -47,6 +53,11 @@ true_position = [2758750.0, 1617300.0, 5500165.0]; % STC
 h_error = Process0x0102(Mes0x0102, true_position, fileName);
 HorizontalError(err_3D, h_error, t, fileName);
 
+Params = Setup();
+
+UPos.x = true_position(1); UPos.y = true_position(2); UPos.z = true_position(3);
+[UPos.Lat, UPos.Lon, UPos.Alt] = P74_Cartesian2Spherical([UPos.x UPos.y UPos.z]);
+P76_ExportResults(UPos, Params);
 
 sizeStr = size(Mes0x1502);
 load([cd '/ScriptsFunctions/PseudoliteCorrdinates.mat']);
