@@ -7,7 +7,7 @@ addpath([cd '/Records']);
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/home/s/Documents/';
+folder = '/home/incredible/Documents/';
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
@@ -25,8 +25,16 @@ fileName = 'COM33___115200_220308_113533.ubx';
 fileName = 'COM33___115200_220308_112436.ubx';
 fileName = 'COM33___115200_220308_113533.ubx';
 fileName = 'GPS_220407_112629.ubx'; % Maks variant
-% fileName = 'GPS_1Hz_upd_220408_125353.ubx'; % t_propag shouldn't be
-fileName = 'GPS_my_without_t_propag_114333.ubx';
+fileName = 'GPS_1Hz_upd_220408_125353.ubx'; % t_propag shouldn't be
+fileName = 'GPS_1Hz_upd_v2_220408_125353.ubx';
+fileName = 'Gps_relat_effect_sat_time.ubx';
+% fileName = 'gps_start_clk_time_corr.ubx';
+% fileName = 'gps_2Hz_start_clk_time_corr.ubx';
+% fileName = 'gps_start_clk_time_corr_10Hz.ubx';
+% fileName = 'gps_start_clk_time_corr_backwards_1Hz.ubx';
+% fileName = 'gps_20ms_delay_set_freq.ubx';
+% fileName = 'gps_start_clk_time_corr_backwards_1Hz_v2.ubx';
+% fileName = 'gps_start_clk_time_corr_backwards_1Hz_v3.ubx';
 % fileName = 'ReferenceForDebugSimulation_COM53_210702_151500.ubx';
 % fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_1st_launch.ubx';
 fullName = [folder fileName];
