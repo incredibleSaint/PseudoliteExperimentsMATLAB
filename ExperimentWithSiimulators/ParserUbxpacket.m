@@ -1,4 +1,5 @@
-function [Mes0x0101, Mes0x0102, Mes0x1502] = ParserUbxpacket(full_name, varargin)
+function [Mes0x0101, Mes0x0102, Mes0x1502, Mes0x0135] ...
+                                                    = ParserUbxpacket(full_name, varargin)
 MAGIC0 = hex2dec('B5');
 MAGIC1 = hex2dec('62');
 temp = dir(full_name);
@@ -19,6 +20,7 @@ tow2 = -1;
 cnt1502 = 0;
 cnt0101 = 0;
 cnt0102 = 0;
+cnt0135 = 0;
 Mes0x0102 = [];
 if(file ~= -1)
     while(portPos < portCnt)
@@ -112,6 +114,34 @@ if(file ~= -1)
                         end
                         Mes0x1502{cnt1502} = Data;
                         Data = [];
+                        
+                    case hex2dec('3501') 
+                        cnt0135 = cnt0135 + 1;
+                        pp = pos + 6;
+                        Data.tow =   data(pos + 9) * 2^24    + ...
+                                data(pos + 8) * 2^16    + ...
+                                data(pos + 7) * 2^8     + ...
+                                data(pos + 6) * 2^0;
+                            
+                        version = data(pp + 4);
+                        Data.version = typecast(uint8(version), 'uint8');
+                        
+                        Data.num_svs = data(pp + 5);
+%                         Data.num_svs = typecast(uint8(num_svs), 'uint8');
+                        
+                        for n = 1 : Data.num_svs
+                            Data.gnss_id(n) = data(pp + (8   + 12 * (n -1)));
+                            Data.sv_id(n)      = data(pp + (9   + 12 * (n -1)));
+                            Data.cn0(n)       = data(pp + (10 + 12 * (n -1)));
+                            elev                     = data(pp + (11 + 12 * (n -1)));
+                            Data.elev(n)     = typecast(uint8(elev), 'int8');
+%                             ff   = data(pp + (40 + 32 * (n - 1) + 0 : 2));
+                            pr_res =    data(pp + (14 + 12 * (n - 1) + (0 : 1)));
+                            Data.pr_res(n) = 0.1 * typecast(uint8(pr_res), 'int16');
+                            Data.flags{n}  = data(pp + (16 + 12 * (n -1) + (0 : 3)));
+                        end
+                        Mes0x0135{cnt1502} = Data;
+                        Data = [];
                   
                     case hex2dec('0101')
                         cnt0101 = cnt0101 + 1;
@@ -183,12 +213,12 @@ if(file ~= -1)
 %                             qual    = data(pp2 + 11);
 %                         end
 %                         cnt_el = cnt_el + 1;
-                    case hex2dec('3501')
-                        pp      =   pos + 6;
-                        tow3    =	data(pp + 3) * 2^24    + ...
-                                    data(pp + 2) * 2^16    + ...
-                                    data(pp + 1) * 2^8     + ...
-                                    data(pp + 0) * 2^0;
+%                     case hex2dec('3501')
+%                         pp      =   pos + 6;
+%                         tow3    =	data(pp + 3) * 2^24    + ...
+%                                     data(pp + 2) * 2^16    + ...
+%                                     data(pp + 1) * 2^8     + ...
+%                                     data(pp + 0) * 2^0;
 
                 end
 %{

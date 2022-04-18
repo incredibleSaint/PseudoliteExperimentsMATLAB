@@ -20,7 +20,7 @@ end
                                                                  true_position(3));
 h_error = h - h_true;
 
-figure; 
+% figure; 
 plot(t, abs(h_error)); 
 title("Height Error (abs), m"); 
 grid on; xlabel(file_name);

@@ -7,7 +7,7 @@ addpath([cd '/Records']);
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/home/s/Documents/';
+folder = '/home/incredible/Documents/';
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
@@ -31,7 +31,30 @@ fileName = 'gps_5ch_11_12_13_14_22.ubx';
 fileName = 'gps_5ch_11_12_13_14_22_v2.ubx';
 fileName = 'gps_5ch_11_12_13_14_22_with_propag.ubx';
 fileName = 'gps_new.ubx';
-fileName = 'gps_comment_t_prop.ubx';
+fileName = 'gps_start_clk_time_corr_backwards_1Hz_v3.ubx';
+fileName = 'GPS_with_corr_220407_204053';
+fileName = 'gps_8_apr_version';
+fileName = 'gps_ionosph_null_3';
+% fileName = 'gps_ionosph_null_sv_clk_err_null_9sv_dt_sv_like_in_commit_2'; % good
+fileName = 'gps_ionosph_null_dt_sv_only_relat_effect'; %good
+% fileName = 'gps_with_ionosph_and_dt_sv_only_relat_effect';
+% fileName = 'gps_ionosph_null_sv_clk_err_null';
+% fileName = 'gps_ionosph_null_sv_clk_err_null_5sv';
+% fileName = 'gps_ionosph_null_sv_clk_err_null_5sv_without_t_prop';
+% fileName = 'gps_ionosph_null_sv_clk_err_null_5sv_with_2_t_prop';
+% ========== With ionosphere constant: ====================
+% fileName = 'gps_ionosph_null_sv_clk_err_null_9sv_1_t_prop';
+% fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff';
+fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff_2';
+fileName = 'gps_ionosph_constant_and_relat_eff_maks';
+% =======================================================
+% fileName = 'gps_usual_corr_start_time_clk_9sv';
+% fileName = 'gps_maks_release_9sv';
+% fileName = 'gps_maks_release_9sv_v2';
+% fileName = 'gps_maks_release_9sv_new_2_propag';
+% fileName = 'gps_maks_release_9sv_new_2_propag_plus';
+% fileName = 'gps_maks_release_9sv_new_2_propag_with_bits_delay';
+% fileName = 'gps_maks_release_9sv_new_2_propag_minus';
 % fileName = 'gps_5ch_11_12_13_14_22_20ms.ubx';
 % fileName = 'gps_5ch_11_12_13_14_22_15ms.ubx';
 % fileName = 'gps_start_clk_time_corr.ubx';
@@ -43,21 +66,53 @@ fileName = 'gps_comment_t_prop.ubx';
 % fileName = 'gps_start_clk_time_corr_backwards_1Hz_v3.ubx';
 % fileName = 'ReferenceForDebugSimulation_COM53_210702_151500.ubx';
 % fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_1st_launch.ubx';
-fullName = [folder fileName];
+fullName = [folder fileName '.ubx'];
 
-[Mes0x0101, Mes0x0102, Mes0x1502] = ParserUbxpacket(fullName);
+[Mes0x0101, Mes0x0102, Mes0x1502, Mes0x0135] = ParserUbxpacket(fullName);
 
 true_position = [2758750.0, 1617300.0, 5500165.0]; % STC 
 % true_position = [2758762.10206624 1617141.40083576 5500196.86403367]; % Misha
-[err_3D, t] = Process0x0101(Mes0x0101, true_position, fileName);
+mins = 60;
+x_min_val = 379900 * 1e3;
+x_max_val = (379900 + 60 * mins) * 1e3;
+y_min_val = 0;
+y_max_val = 20;
+figure;
+subplot(5, 1, 1);
+[err_3D, t, x, y, z] = Process0x0101(Mes0x0101, true_position, fileName);
+xlim([x_min_val x_max_val]); ylim([y_min_val y_max_val]);
+
+subplot(5, 1, 2);
 h_error = Process0x0102(Mes0x0102, true_position, fileName);
+xlim([x_min_val x_max_val]); ylim([y_min_val y_max_val]);
+
+subplot(5, 1, 3);
 HorizontalError(err_3D, h_error, t, fileName);
+xlim([x_min_val x_max_val]); ylim([y_min_val 10]);
 
-Params = Setup();
+subplot(5, 1, 4);
+[el, pr_res] = Process0x0135(Mes0x0135, t);
+xlim([x_min_val x_max_val]); %ylim([y_min_val 10]);
 
-UPos.x = true_position(1); UPos.y = true_position(2); UPos.z = true_position(3);
-[UPos.Lat, UPos.Lon, UPos.Alt] = P74_Cartesian2Spherical([UPos.x UPos.y UPos.z]);
-P76_ExportResults(UPos, Params);
+subplot(5, 1, 5);
+PlotCoordsError(t, x, y, z, true_position);
+xlim([x_min_val x_max_val]); ylim([-15 15]);
+
+figure;
+lengths = [length(t) length(el)];
+min_len = min(lengths);
+subplot(2, 1, 1);
+p = plot(t(1 : min_len), el(1 : min_len, :), '.'); % Elevations
+% p.MarkerSize = 15;
+xlim([x_min_val x_max_val]); ylim([-15 90]);
+grid on;
+legend('9', '8', '11', '12', '13', '14', '18', '20', '22');
+
+subplot(2, 1, 2);
+plot(t(1 : min_len), pr_res(1 : min_len, :), '.');
+xlim([x_min_val x_max_val]); %ylim([-15 90]);
+grid on;
+legend('9', '8', '11', '12', '13', '14', '18', '20', '22');
 
 sizeStr = size(Mes0x1502);
 load([cd '/ScriptsFunctions/PseudoliteCorrdinates.mat']);

@@ -6,7 +6,8 @@ min_len = min([len_2D len_3D]);
 
 err_2D = sqrt(err_3D(1 : min_len) .^ 2 - h_error(1 : min_len)' .^ 2);
 
-figure; plot(t(1 : min_len), err_2D);
+% figure; 
+plot(t(1 : min_len), err_2D);
 title("2D Error, m");
 xlabel(file_name);
 grid on;
