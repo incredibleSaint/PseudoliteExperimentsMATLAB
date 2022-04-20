@@ -46,7 +46,17 @@ fileName = 'gps_ionosph_null_dt_sv_only_relat_effect'; %good
 % fileName = 'gps_ionosph_null_sv_clk_err_null_9sv_1_t_prop';
 % fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff';
 fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff_2';
-fileName = 'gps_ionosph_constant_and_relat_eff_maks';
+% fileName = 'gps_ionosph_constant_and_relat_eff_maks';
+% fileName = 'gps_trop_iono_relat_effect';
+% fileName = 'gps_only_relat_effect';
+% fileName = 'gps_check_old_my_way';
+% fileName = 'gps_with_troposp_satell_time';
+% fileName = 'gps_iono_trop_relat_eff';
+% fileName = 'gps_only_full_ionosph_and_relat_eff';
+fileName = 'gps_only_full_ionosph_and_relat_eff';
+fileName = 'gps_ideal start';
+fileName = 'gps_with_all_sat_time'; % start = 379920 + 60 * 25;   WITHOUT troposph
+fileName = 'gps_with_all_sat_time_379920_maybe_wrong_tgd'; % WITHOUT troposh
 % =======================================================
 % fileName = 'gps_usual_corr_start_time_clk_9sv';
 % fileName = 'gps_maks_release_9sv';
@@ -72,7 +82,7 @@ fullName = [folder fileName '.ubx'];
 
 true_position = [2758750.0, 1617300.0, 5500165.0]; % STC 
 % true_position = [2758762.10206624 1617141.40083576 5500196.86403367]; % Misha
-mins = 60;
+mins = 120;
 x_min_val = 379900 * 1e3;
 x_max_val = (379900 + 60 * mins) * 1e3;
 y_min_val = 0;
