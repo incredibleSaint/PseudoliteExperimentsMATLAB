@@ -7,7 +7,7 @@ addpath([cd '/Records']);
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/home/incredible/Documents/';
+folder = '/home/s/Documents/';
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
@@ -44,8 +44,8 @@ fileName = 'gps_ionosph_null_dt_sv_only_relat_effect'; %good
 % fileName = 'gps_ionosph_null_sv_clk_err_null_5sv_with_2_t_prop';
 % ========== With ionosphere constant: ====================
 % fileName = 'gps_ionosph_null_sv_clk_err_null_9sv_1_t_prop';
-% fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff';
-fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff_2';
+fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff';
+% fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff_2';
 % fileName = 'gps_ionosph_constant_and_relat_eff_maks';
 % fileName = 'gps_trop_iono_relat_effect';
 % fileName = 'gps_only_relat_effect';
@@ -53,10 +53,20 @@ fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff_2';
 % fileName = 'gps_with_troposp_satell_time';
 % fileName = 'gps_iono_trop_relat_eff';
 % fileName = 'gps_only_full_ionosph_and_relat_eff';
-fileName = 'gps_only_full_ionosph_and_relat_eff';
-fileName = 'gps_ideal start';
-fileName = 'gps_with_all_sat_time'; % start = 379920 + 60 * 25;   WITHOUT troposph
-fileName = 'gps_with_all_sat_time_379920_maybe_wrong_tgd'; % WITHOUT troposh
+% fileName = 'gps_only_full_ionosph_and_relat_eff';
+% fileName = 'gps_ideal start';
+% fileName = 'gps_with_all_sat_time'; % start = 379920 + 60 * 25;   WITHOUT troposph
+% fileName = 'gps_with_all_sat_time_379920_maybe_wrong_tgd'; % WITHOUT troposh
+% fileName = 'gps_fix_int_clk_count';
+% fileName = 'gps_user_time_fix_int_clk';
+% fileName = 'gps_379920';
+% fileName = 'gps_uint_clk_count';
+% fileName = 'withou_iono';
+% fileName = 'with_constant_iono_without_troposphere'; %non-zero alpha, betta in almanac ((
+% fileName = 'with_const_iono';
+% fileName = 'fix_int_clk_const_iono_without_tropo_with_sv_clk_err';
+% fileName = 'gps_const_iono_without_tropo'; % user time
+fileName = 'gps_my_way_const_iono_full_clk_error_without_tropo';
 % =======================================================
 % fileName = 'gps_usual_corr_start_time_clk_9sv';
 % fileName = 'gps_maks_release_9sv';
@@ -76,6 +86,7 @@ fileName = 'gps_with_all_sat_time_379920_maybe_wrong_tgd'; % WITHOUT troposh
 % fileName = 'gps_start_clk_time_corr_backwards_1Hz_v3.ubx';
 % fileName = 'ReferenceForDebugSimulation_COM53_210702_151500.ubx';
 % fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_1st_launch.ubx';
+
 fullName = [folder fileName '.ubx'];
 
 [Mes0x0101, Mes0x0102, Mes0x1502, Mes0x0135] = ParserUbxpacket(fullName);
@@ -89,48 +100,31 @@ y_min_val = 0;
 y_max_val = 20;
 figure;
 subplot(5, 1, 1);
-[err_3D, t, x, y, z] = Process0x0101(Mes0x0101, true_position, fileName);
-xlim([x_min_val x_max_val]); ylim([y_min_val y_max_val]);
-
+[err_3D, t0101, x, y, z] = Process0x0101(Mes0x0101, true_position, fileName, ...
+                                         x_min_val, x_max_val);
 subplot(5, 1, 2);
-h_error = Process0x0102(Mes0x0102, true_position, fileName);
-xlim([x_min_val x_max_val]); ylim([y_min_val y_max_val]);
+[h_error, t0102] = Process0x0102(Mes0x0102, true_position, fileName, x_min_val, x_max_val);
 
 subplot(5, 1, 3);
-HorizontalError(err_3D, h_error, t, fileName);
-xlim([x_min_val x_max_val]); ylim([y_min_val 10]);
+HorizontalError(err_3D, h_error, t0101, t0102, fileName, ...
+                x_min_val, x_max_val);
 
 subplot(5, 1, 4);
-[el, pr_res] = Process0x0135(Mes0x0135, t);
-xlim([x_min_val x_max_val]); %ylim([y_min_val 10]);
+[el, pr_res, t0135, sv_id] = Process0x0135(Mes0x0135, x_min_val, x_max_val);
 
 subplot(5, 1, 5);
-PlotCoordsError(t, x, y, z, true_position);
+PlotCoordsError(t0101, x, y, z, true_position);
 xlim([x_min_val x_max_val]); ylim([-15 15]);
 
-figure;
-lengths = [length(t) length(el)];
-min_len = min(lengths);
-subplot(2, 1, 1);
-p = plot(t(1 : min_len), el(1 : min_len, :), '.'); % Elevations
-% p.MarkerSize = 15;
-xlim([x_min_val x_max_val]); ylim([-15 90]);
-grid on;
-legend('9', '8', '11', '12', '13', '14', '18', '20', '22');
-
-subplot(2, 1, 2);
-plot(t(1 : min_len), pr_res(1 : min_len, :), '.');
-xlim([x_min_val x_max_val]); %ylim([-15 90]);
-grid on;
-legend('9', '8', '11', '12', '13', '14', '18', '20', '22');
+% PlotElevationAndResidual(sv_id, t0135, el, pr_res, fileName, ...
+%                          x_min_val, x_max_val);
 
 sizeStr = size(Mes0x1502);
 load([cd '/ScriptsFunctions/PseudoliteCorrdinates.mat']);
 c = 299792458;
 
 posCnt = 0;
-
-% == if check pseudorange for some CAcodes (without positioning) ======
+% ==  Check pseudorange for some CAcodes (without positioning) ======
 flagWorkWithSomeCAcodesJustPsRngs = 1;
 if flagWorkWithSomeCAcodesJustPsRngs
     % Big_Case #1:
