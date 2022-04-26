@@ -140,7 +140,7 @@ if(file ~= -1)
                             Data.pr_res(n) = 0.1 * typecast(uint8(pr_res), 'int16');
                             Data.flags{n}  = data(pp + (16 + 12 * (n -1) + (0 : 3)));
                         end
-                        Mes0x0135{cnt1502} = Data;
+                        Mes0x0135{cnt0135} = Data;
                         Data = [];
                   
                     case hex2dec('0101')
