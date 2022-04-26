@@ -1,5 +1,5 @@
 clear;
-% close all;
+close all;
 folderPath = [cd '/ScriptsFunctions'];
 addpath(folderPath);
 addpath([cd '/Records']);
@@ -45,6 +45,7 @@ fileName = 'gps_ionosph_null_dt_sv_only_relat_effect'; %good
 % ========== With ionosphere constant: ====================
 % fileName = 'gps_ionosph_null_sv_clk_err_null_9sv_1_t_prop';
 fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff';
+
 % fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff_2';
 % fileName = 'gps_ionosph_constant_and_relat_eff_maks';
 % fileName = 'gps_trop_iono_relat_effect';
@@ -66,7 +67,11 @@ fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff';
 % fileName = 'with_const_iono';
 % fileName = 'fix_int_clk_const_iono_without_tropo_with_sv_clk_err';
 % fileName = 'gps_const_iono_without_tropo'; % user time
-fileName = 'gps_my_way_const_iono_full_clk_error_without_tropo';
+% fileName = 'gps_my_way_const_iono_full_clk_error_without_tropo';
+fileName = 'gps_full_iono_cold_start_on_high_error';
+fileName = 'gps_full_iono_cold_start_on_high_error_2';
+fileName = 'const_iono_sv_time_with_cold_start';
+fileName = 'const_iono_sv_time_with_several_cold_start';
 % =======================================================
 % fileName = 'gps_usual_corr_start_time_clk_9sv';
 % fileName = 'gps_maks_release_9sv';
@@ -87,18 +92,27 @@ fileName = 'gps_my_way_const_iono_full_clk_error_without_tropo';
 % fileName = 'ReferenceForDebugSimulation_COM53_210702_151500.ubx';
 % fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_1st_launch.ubx';
 
+% Draw elevations and residuals of satellites, used in navigation:
+draw_elev_res = 0;
+% Start time in *.ubx file. GNSS time of week (seconds)
+start_time = 379900;
+% Limit for plot (minutes)
+mins = 120;
+
 fullName = [folder fileName '.ubx'];
 
 [Mes0x0101, Mes0x0102, Mes0x1502, Mes0x0135] = ParserUbxpacket(fullName);
 
 true_position = [2758750.0, 1617300.0, 5500165.0]; % STC 
 % true_position = [2758762.10206624 1617141.40083576 5500196.86403367]; % Misha
-mins = 120;
-x_min_val = 379900 * 1e3;
-x_max_val = (379900 + 60 * mins) * 1e3;
+
+x_min_val = start_time * 1e3;
+x_max_val = (start_time + 60 * mins) * 1e3;
 y_min_val = 0;
 y_max_val = 20;
+
 figure;
+title(fileName);
 subplot(5, 1, 1);
 [err_3D, t0101, x, y, z] = Process0x0101(Mes0x0101, true_position, fileName, ...
                                          x_min_val, x_max_val);
@@ -108,16 +122,16 @@ subplot(5, 1, 2);
 subplot(5, 1, 3);
 HorizontalError(err_3D, h_error, t0101, t0102, fileName, ...
                 x_min_val, x_max_val);
-
 subplot(5, 1, 4);
 [el, pr_res, t0135, sv_id] = Process0x0135(Mes0x0135, x_min_val, x_max_val);
 
 subplot(5, 1, 5);
-PlotCoordsError(t0101, x, y, z, true_position);
-xlim([x_min_val x_max_val]); ylim([-15 15]);
+PlotCoordsError(t0101, x, y, z, true_position, x_min_val, x_max_val);
 
-% PlotElevationAndResidual(sv_id, t0135, el, pr_res, fileName, ...
-%                          x_min_val, x_max_val);
+if draw_elev_res
+    PlotElevationAndResidual(sv_id, t0135, el, pr_res, fileName, ...
+                         x_min_val, x_max_val);
+end
 
 sizeStr = size(Mes0x1502);
 load([cd '/ScriptsFunctions/PseudoliteCorrdinates.mat']);

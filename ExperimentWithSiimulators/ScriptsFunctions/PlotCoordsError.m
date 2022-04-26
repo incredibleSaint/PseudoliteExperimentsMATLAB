@@ -1,4 +1,4 @@
-function  PlotCoordsError(t, x, y, z, true_pos)
+function  PlotCoordsError(t, x, y, z, true_pos, x_min_val, x_max_val)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
     err_x = x - true_pos(1);
@@ -9,5 +9,6 @@ function  PlotCoordsError(t, x, y, z, true_pos)
     grid on;
     title("ECEF Errors, m");
     legend('x', 'y', 'z');
+    xlim([x_min_val x_max_val]); ylim([-15 15]);
 end
 
