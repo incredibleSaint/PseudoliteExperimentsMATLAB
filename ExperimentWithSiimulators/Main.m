@@ -7,7 +7,7 @@ addpath([cd '/Records']);
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/home/incredible/Documents/';
+folder = '/home/s/Documents/';
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
@@ -83,6 +83,9 @@ fileName = 'full_iono_user_time_usual_tow';
 fileName = 'check_after_merge';
 fileName = 'check_after_new_commit';
 fileName = 'fpga_log_together';
+fileName = 'without_0_ch_with_fpga_log';
+fileName = 'log_fpga_without_0ch_user_time_second';
+fileName = 'minus_70min_user_time_rec4_const_iono';
 % =======================================================
 % fileName = 'gps_usual_corr_start_time_clk_9sv';
 % fileName = 'gps_maks_release_9sv';
@@ -103,16 +106,61 @@ fileName = 'fpga_log_together';
 % fileName = 'ReferenceForDebugSimulation_COM53_210702_151500.ubx';
 % fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_1st_launch.ubx';
 
+draw_log_fpga = 1;
 %=== check fpga log ===========
 filename = 'LogFpga_together_user_time.txt';
- ReadFpgaLog([folder filename]);
+filename = 'LogFpga_second.txt';
+filename = 'LogFpga.txt';
+filename = 'LogFpga_simult_dump.txt';
+% filename = 'LogFpga_4Hz.txt';
+
+
+[t, time, sv_id_fpga, chs_num] = ReadFpgaLog([folder filename]);
+if draw_log_fpga
+    figure; plot(diff(time));
+    for n = 1 : length(sv_id_fpga)
+        idx = find(t.sv_num == sv_id_fpga(n));
+        if(sv_id_fpga(n) == 24)
+            a = 1;
+        end
+%         log_idx(n) = idx;
+        curr_del_calc = t.curr_delay_calc(idx);
+        curr_clk_cnt  = t.curr_clk_count( idx);
+        tow = t.tow(idx);
+       
+        bits_delay = floor(curr_del_calc(idx(1)) / 1e10 / 20e-3);
+        fpga_delay_sec = bits_delay * 20e-3 + curr_clk_cnt / 250e6;
+        diff_secs = fpga_delay_sec - curr_del_calc / 1e10;
+        figure;
+        subplot(2, 1, 1)
+        plot(tow, diff_secs * 3e8);
+        grid on;
+        xlim([min(time(2 : end)) max(time)]);
+        
+        sv_str = num2str(t.sv_num(idx(1)));
+        ch_str = num2str(t.ch_num(idx(1)));
+        title([ 'Channel = ' ch_str ' ' 'Sv num = '  sv_str]);
+        ylim([-2 2]);
+    
+        subplot(2, 1, 2);
+        plot(tow, floor(curr_del_calc / 1e10 / 20e-3))
+        grid on;
+    
+%         subplot(3, 1, 3);
+%         plot(tow(2 : end), diff(curr_del_calc) / 1e10 * 3e8);
+%         grid on;
+    end
+    figure;
+    plot(t.curr_clk_count(10 : 12 : end) / 250e6);
+    title("Channel for diff(f_fpga - f_arm");
+end   
 
 % Draw elevations and residuals of satellites, used in navigation:
 draw_elev_res = 0;
 % Start time in *.ubx file. GNSS time of week (seconds)
 start_time = 379900;
 % Limit for plot (minutes)
-mins = 30;
+mins = 60;
 
 fullName = [folder fileName '.ubx'];
 

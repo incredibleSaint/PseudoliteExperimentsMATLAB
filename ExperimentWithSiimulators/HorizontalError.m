@@ -13,7 +13,7 @@ h_error = h_error(ind_h);
 
 err_2D = sqrt(err_3D .^ 2 - h_error' .^ 2);
 
-plot(t_common(1 : min_len), err_2D);
+plot(t_common, err_2D);
 title("2D Error, m");
 xlabel(file_name);
 grid on;
