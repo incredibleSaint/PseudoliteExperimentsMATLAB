@@ -1,5 +1,5 @@
 clear;
-close all;
+% close all;
 folderPath = [cd '/ScriptsFunctions'];
 addpath(folderPath);
 addpath([cd '/Records']);
@@ -7,7 +7,7 @@ addpath([cd '/Records']);
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/home/s/Documents/';
+folder = '/home/incredible/Documents/';
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
@@ -72,6 +72,17 @@ fileName = 'gps_full_iono_cold_start_on_high_error';
 fileName = 'gps_full_iono_cold_start_on_high_error_2';
 fileName = 'const_iono_sv_time_with_cold_start';
 fileName = 'const_iono_sv_time_with_several_cold_start';
+fileName = 'gps_1Hz_full_iono_user_time';
+% fileName = '10_sv_usual_tow_full_iono_sv_time';
+fileName = '10_sv_tow_min_70_min_full_iono_sv_time';
+
+
+% fileName = 'const_iono_sv_time_with_several_cold_start';
+% fileName = '380826_cold_start';
+fileName = 'full_iono_user_time_usual_tow';
+fileName = 'check_after_merge';
+fileName = 'check_after_new_commit';
+fileName = 'fpga_log_together';
 % =======================================================
 % fileName = 'gps_usual_corr_start_time_clk_9sv';
 % fileName = 'gps_maks_release_9sv';
@@ -92,12 +103,16 @@ fileName = 'const_iono_sv_time_with_several_cold_start';
 % fileName = 'ReferenceForDebugSimulation_COM53_210702_151500.ubx';
 % fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_1st_launch.ubx';
 
+%=== check fpga log ===========
+filename = 'LogFpga_together_user_time.txt';
+ ReadFpgaLog([folder filename]);
+
 % Draw elevations and residuals of satellites, used in navigation:
 draw_elev_res = 0;
 % Start time in *.ubx file. GNSS time of week (seconds)
 start_time = 379900;
 % Limit for plot (minutes)
-mins = 120;
+mins = 30;
 
 fullName = [folder fileName '.ubx'];
 
@@ -106,7 +121,8 @@ fullName = [folder fileName '.ubx'];
 true_position = [2758750.0, 1617300.0, 5500165.0]; % STC 
 % true_position = [2758762.10206624 1617141.40083576 5500196.86403367]; % Misha
 
-x_min_val = start_time * 1e3;
+
+x_min_val = (start_time  -  60 * 75 ) * 1e3 ;
 x_max_val = (start_time + 60 * mins) * 1e3;
 y_min_val = 0;
 y_max_val = 20;
@@ -141,24 +157,12 @@ posCnt = 0;
 % ==  Check pseudorange for some CAcodes (without positioning) ======
 flagWorkWithSomeCAcodesJustPsRngs = 1;
 if flagWorkWithSomeCAcodesJustPsRngs
-    % Big_Case #1:
-%     PseudoCoord.svId = [2 3 6 12 19 24 25 29 31 32];
-    
-    % Big_Case #2:
-%     PseudoCoord.svId = [2 6 24 25 29 31];
-    % Big_Case #3:
-%       PseudoCoord.svId = [2 9 12 18 25 26 29 31 4];
-    % Big_Case #4:
-%         PseudoCoord.svId = [2 5 16 18 20 25 26 29 31];
-    % Big_Case #5:
-        PseudoCoord.svId = [1 16 18 20 23 26 29 31];
-
     % Big_Case #6:
         PseudoCoord.svId = [10 11 15 16];
 %     PseudoCoord.svId = [7 10 16 23];
 
 % PocketZynq:
-       PseudoCoord.svId = [  9 11 12 14];
+       PseudoCoord.svId = sv_id;%[  9 11 12 14];
     size_debug_file = size('ReferenceForDebugSimulation_COM53_210702_151500.ubx');
     if(size_debug_file(2) == size(fileName))
         if(fileName == 'ReferenceForDebugSimulation_COM53_210702_151500.ubx') 
@@ -226,7 +230,7 @@ for n = 1 : sizeStr(2)
         end
     end
 end
-isDraw = 0;
+isDraw = 1;
 if isDraw
 figure; plot(tow(1 : posCnt -1), diff(tow(1 : posCnt)));
 grid on;
