@@ -1,4 +1,4 @@
-clear;
+% clear;
 % close all;
 folderPath = [cd '/ScriptsFunctions'];
 addpath(folderPath);
@@ -7,7 +7,7 @@ addpath([cd '/Records']);
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/home/s/Documents/';
+folder = '/home/incredible/Documents/';
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
@@ -74,7 +74,7 @@ fileName = 'const_iono_sv_time_with_cold_start';
 fileName = 'const_iono_sv_time_with_several_cold_start';
 fileName = 'gps_1Hz_full_iono_user_time';
 % fileName = '10_sv_usual_tow_full_iono_sv_time';
-fileName = '10_sv_tow_min_70_min_full_iono_sv_time';
+% fileName = '10_sv_tow_min_70_min_full_iono_sv_time';
 
 
 % fileName = 'const_iono_sv_time_with_several_cold_start';
@@ -83,9 +83,10 @@ fileName = 'full_iono_user_time_usual_tow';
 fileName = 'check_after_merge';
 fileName = 'check_after_new_commit';
 fileName = 'fpga_log_together';
-fileName = 'without_0_ch_with_fpga_log';
-fileName = 'log_fpga_without_0ch_user_time_second';
-fileName = 'minus_70min_user_time_rec4_const_iono';
+% fileName = 'without_0_ch_with_fpga_log';
+% fileName = 'log_fpga_without_0ch_user_time_second';
+% fileName = 'minus_70min_user_time_rec4_const_iono';
+fileName = 'gps_full_iono_log_379920_user_time';
 % =======================================================
 % fileName = 'gps_usual_corr_start_time_clk_9sv';
 % fileName = 'gps_maks_release_9sv';
@@ -106,24 +107,64 @@ fileName = 'minus_70min_user_time_rec4_const_iono';
 % fileName = 'ReferenceForDebugSimulation_COM53_210702_151500.ubx';
 % fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_1st_launch.ubx';
 
-draw_log_fpga = 1;
+draw_log_fpga = 0;
 %=== check fpga log ===========
-filename = 'LogFpga_together_user_time.txt';
-filename = 'LogFpga_second.txt';
-filename = 'LogFpga.txt';
+% filename = 'LogFpga_together_user_time.txt';
+% filename = 'LogFpga_second.txt';
+% filename = 'LogFpga.txt';
 filename = 'LogFpga_simult_dump.txt';
 % filename = 'LogFpga_4Hz.txt';
+filename = 'LogFpga_gps_full_iono_log_379920_user_time.txt';
 
+%% Compare u-blox and fpga simulator
+% case 1:
+ubx_log = 'gps_full_iono_log_379920_user_time';
+fpga_log = 'LogFpga_gps_full_iono_log_379920_user_time.txt';
 
-[t, time, sv_id_fpga, chs_num] = ReadFpgaLog([folder filename]);
+% % % case 2:
+ubx_log = 'check_psr_minus_10mins';
+fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time.txt';
+
+% % case 3:
+ubx_log = 'log_fpga_min10mins_full_iono_user_time_v2';
+fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_v2.txt';
+
+% % case 4:
+% ubx_log = 'log_fpga_min10mins_full_iono_user_time_v3';
+% fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_v3.txt';
+
+% case 5:
+% ubx_log = 'log_fpga_min10mins_full_iono_user_time_doppl_exper_delta_v4';
+% fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_exper_delta_v4.txt';
+
+% case 6
+% ubx_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz';
+% fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz.txt';
+
+% cold start 380150
+% ubx_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz_just_temp_exp';
+% fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz_cold_start_380150.txt';
+
+% coef_freq = -temp_theor / (1.0 - 5e-6);
+ubx_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz_coef_freq_5e6';
+fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz_coef_freq_5e6.txt';
+
+ubx_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz_both_coef_5e6';
+fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz_both_coef_5e6.txt';
+
+ubx_log = 'update_1e9_min_5e6';
+fpga_log = 'update_1e9_min_5e6.txt';
+
+ubx_log   = 'both_exper_delta_delay';
+fpga_log = 'both_exper_delta_delay.txt';
+
+ubx_log = 'both_exper_delta_user_time_minus70mins';
+
+[t, time, sv_id_fpga, chs_num] = ReadFpgaLog([folder fpga_log]);
 if draw_log_fpga
     figure; plot(diff(time));
     for n = 1 : length(sv_id_fpga)
         idx = find(t.sv_num == sv_id_fpga(n));
-        if(sv_id_fpga(n) == 24)
-            a = 1;
-        end
-%         log_idx(n) = idx;
         curr_del_calc = t.curr_delay_calc(idx);
         curr_clk_cnt  = t.curr_clk_count( idx);
         tow = t.tow(idx);
@@ -140,10 +181,14 @@ if draw_log_fpga
         sv_str = num2str(t.sv_num(idx(1)));
         ch_str = num2str(t.ch_num(idx(1)));
         title([ 'Channel = ' ch_str ' ' 'Sv num = '  sv_str]);
+        ylabel("error(R), met");
+        xlabel("TOW, sec");
         ylim([-2 2]);
     
         subplot(2, 1, 2);
         plot(tow, floor(curr_del_calc / 1e10 / 20e-3))
+        ylabel("Delay in navmess bits");
+        xlabel("TOW, sec");
         grid on;
     
 %         subplot(3, 1, 3);
@@ -162,7 +207,7 @@ start_time = 379900;
 % Limit for plot (minutes)
 mins = 60;
 
-fullName = [folder fileName '.ubx'];
+fullName = [folder ubx_log '.ubx'];
 
 [Mes0x0101, Mes0x0102, Mes0x1502, Mes0x0135] = ParserUbxpacket(fullName);
 
@@ -176,15 +221,15 @@ y_min_val = 0;
 y_max_val = 20;
 
 figure;
-title(fileName);
+title(ubx_log);
 subplot(5, 1, 1);
-[err_3D, t0101, x, y, z] = Process0x0101(Mes0x0101, true_position, fileName, ...
+[err_3D, t0101, x, y, z] = Process0x0101(Mes0x0101, true_position, ubx_log, ...
                                          x_min_val, x_max_val);
 subplot(5, 1, 2);
-[h_error, t0102] = Process0x0102(Mes0x0102, true_position, fileName, x_min_val, x_max_val);
+[h_error, t0102] = Process0x0102(Mes0x0102, true_position, ubx_log, x_min_val, x_max_val);
 
 subplot(5, 1, 3);
-HorizontalError(err_3D, h_error, t0101, t0102, fileName, ...
+HorizontalError(err_3D, h_error, t0101, t0102, ubx_log, ...
                 x_min_val, x_max_val);
 subplot(5, 1, 4);
 [el, pr_res, t0135, sv_id] = Process0x0135(Mes0x0135, x_min_val, x_max_val);
@@ -193,7 +238,7 @@ subplot(5, 1, 5);
 PlotCoordsError(t0101, x, y, z, true_position, x_min_val, x_max_val);
 
 if draw_elev_res
-    PlotElevationAndResidual(sv_id, t0135, el, pr_res, fileName, ...
+    PlotElevationAndResidual(sv_id, t0135, el, pr_res, ubx_log, ...
                          x_min_val, x_max_val);
 end
 
@@ -203,34 +248,31 @@ c = 299792458;
 
 posCnt = 0;
 % ==  Check pseudorange for some CAcodes (without positioning) ======
-flagWorkWithSomeCAcodesJustPsRngs = 1;
+flagWorkWithSomeCAcodesJustPsRngs = 0;
 if flagWorkWithSomeCAcodesJustPsRngs
-    % Big_Case #6:
-        PseudoCoord.svId = [10 11 15 16];
-%     PseudoCoord.svId = [7 10 16 23];
-
-% PocketZynq:
-       PseudoCoord.svId = sv_id;%[  9 11 12 14];
     size_debug_file = size('ReferenceForDebugSimulation_COM53_210702_151500.ubx');
-    if(size_debug_file(2) == size(fileName))
-        if(fileName == 'ReferenceForDebugSimulation_COM53_210702_151500.ubx') 
+    if(size_debug_file(2) == size(ubx_log))
+        if(ubx_log == 'ReferenceForDebugSimulation_COM53_210702_151500.ubx') 
             PseudoCoord.svId =[10 22 1 21 32 3];
         end
     end
-
-    diffPsRngs = zeros(sizeStr(2), length(PseudoCoord.svId));
-    % Old Interseal (one simulator)
-%     PseudoCoord.svId = [5     7     8    13    14    18    28];
-    svNum = length(PseudoCoord.svId);
 end
 %========================
-
+PseudoCoord.svId = sv_id_fpga;
+svNum = length(PseudoCoord.svId);
 tow = zeros(1, sizeStr(2));
+ps_rng = zeros(sizeStr(2), svNum);
+diffPsRngs = zeros(sizeStr(2), svNum);
+doppl_ubx = zeros(sizeStr(2), svNum);
 
 for n = 1 : sizeStr(2)
     svCnt = 0;
     SatsPoses = [];
     psRngs = [];
+    
+    if (posCnt == 3711) 
+        a  = 1;
+    end
 
     RawData = Mes0x1502{n};
     
@@ -250,34 +292,50 @@ for n = 1 : sizeStr(2)
 
                     svCnt = svCnt + 1;
                     if ~flagWorkWithSomeCAcodesJustPsRngs
-                        SatsPoses(1, ind) = PseudoCoord.Rep(ind).X;
-                        SatsPoses(2, ind) = PseudoCoord.Rep(ind).Y;
-                        SatsPoses(3, ind) = PseudoCoord.Rep(ind).Z;
+%                         SatsPoses(1, ind) = PseudoCoord.Rep(ind).X;
+%                         SatsPoses(2, ind) = PseudoCoord.Rep(ind).Y;
+%                         SatsPoses(3, ind) = PseudoCoord.Rep(ind).Z;
                     end
                     psRngs(ind) = ProcessedMes.prMes(k);
+                    doppler(ind) = ProcessedMes.doMes(k);
                 end
             end
 
-            if ~flagWorkWithSomeCAcodesJustPsRngs
-                if isempty(SatsPoses)
-                    continue
-                end
-            end
+%             if ~flagWorkWithSomeCAcodesJustPsRngs
+%                 if isempty(SatsPoses)
+%                     continue
+%                 end
+%             end
             inTimeShifts = (ProcessedMes.prMes - ProcessedMes.prMes(1)) / c;
 
             if ~flagWorkWithSomeCAcodesJustPsRngs
-                [UPos, err] = FindRecPosition(SatsPoses, psRngs);
-                UserPoses(posCnt, :) = UPos;
-                errPos3D(posCnt, :) = err;
+%                 [UPos, err] = FindRecPosition(SatsPoses, psRngs);
+%                 UserPoses(posCnt, :) = UPos;
+%                 errPos3D(posCnt, :) = err;
             end
             posCnt = posCnt + 1;
+            if posCnt == 500 
+                a = 1;
+%                 curr_theor_01ns = [800948551 799688193  722718258
+%                 827920047 829444202 728981469 691569373 677257785 804165966];
+%                 ps_rng_theor = curr_theor_01ns / 1e10 * 3e8
+%                 ps_rng_theor - ps_rng_theor(1) - (psRngs - psRngs(1))
+%                 ans = [ 0         -33.4616240784526
+%                 -1630.63952538371          60.2115170620382          561.940843828022         -2272.69398476928          593.911151405424         -1494.46435207129          -2569.8585446775]
+            end
 
             tow(posCnt) = ProcessedMes.rcvTow;
+            ps_rng(posCnt, 1 : length(psRngs)) = psRngs;
+            diffPsRngs(posCnt, 1 : length(psRngs)) = psRngs - psRngs(1);
+            doppl_ubx(posCnt, 1 : length(doppler)) = doppler;
             
-            diffPsRngs(posCnt, 1 : length(psRngs)) = psRngs - psRngs(1);        
         end
     end
 end
+%%
+CompareUbloxAndFpgaPseudoranges(sv_id_fpga, t, tow, ps_rng, ...
+                                                                            doppl_ubx);
+
 isDraw = 1;
 if isDraw
 figure; plot(tow(1 : posCnt -1), diff(tow(1 : posCnt)));
@@ -286,42 +344,44 @@ title("TOW");
 ylabel("TOW, sec");
 
 if ~flagWorkWithSomeCAcodesJustPsRngs
-    figure; plot(errPos3D(1 : posCnt));
-    ylabel("3D Error, met");
+%     figure; plot(errPos3D(1 : posCnt));
+%     ylabel("3D Error, met");
 end
-
-figure; plot(tow(1 : posCnt), diffPsRngs(1 : posCnt, :));
-ylabel("diffPsRngs, m");
-grid on;
-
-
-legend_text = cell(1, svNum);
+%%
 for i = 1 : svNum
-    legend_text{i} = num2str(i);
+    legend_text{i} = num2str(PseudoCoord.svId(i));
 end
-leg = legend(legend_text);
-title(leg, 'Номер псевдолита');
+% figure; plot(tow(1 : posCnt), diffPsRngs(1 : posCnt, :));
+% ylabel("diffPsRngs, m");
+% grid on;
+% legend_text = cell(1, svNum);
+
+% leg = legend(legend_text);
+% title(leg, 'Номер псевдолита');
+
 % -- Plot Error of pseudorange difference --------
-
-figErr = figure;
-emitted_rng_diff = 0 : 1000 : 0;
-% plot(diffPsRngs(1 : posCnt, :) - emitted_rng_diff);
-plot(diffPsRngs(1 : posCnt, :));% - emitted_rng_diff);
-xlabel("t, сек");
-ylabel('{\Delta}R, м');
-grid on;
+is_draw_psr_error = 0;
+if is_draw_psr_error 
+    figErr = figure;
+    emitted_rng_diff = 0 : 1000 : 0;
+    plot(diffPsRngs(1 : posCnt, :));% - emitted_rng_diff);
+    xlabel("t, сек");
+    ylabel('{\Delta}R, м');
+    grid on;
+    leg = legend(legend_text);
+    title(leg, 'Номер псевдолита');
+    leg.NumColumnsMode = 'manual';
+    led.NumColumns = 2;
+end
+% --- Plot speed of changing difference pseudoranges (Ublox) ------
+speed_ubx_ps_rng = diff(ps_rng(1 : posCnt, :));
+figure; plot(tow(1 : posCnt -1), speed_ubx_ps_rng);
+title("diff(psR_{ubx}), m");
+xlabel('t, сек');
+ylabel('speed diff(R), м/c');
+grid on; ylim([-2e3 1e3]);
 leg = legend(legend_text);
-title(leg, 'Номер псевдолита');
-leg.NumColumnsMode = 'manual';
-led.NumColumns = 2;
-
-speed_diffPsRngs = diff(diffPsRngs(1 : posCnt, :));
-figure; plot(tow(1 : posCnt -1), speed_diffPsRngs);
-xlabel("t, сек");
-ylabel('diff(R), м');
-grid on;
-leg = legend(legend_text);
-title(leg, 'Номер псевдолита');
+title(leg, 'CA number');
 leg.NumColumnsMode = 'manual';
 led.NumColumns = 2;
 % cd 'Results'
@@ -330,25 +390,25 @@ led.NumColumns = 2;
 
 % figure; plot(diffPsRngs - mean(diffPsRngs))
 % legend(num2str(mean(diffPsRngs)'));
-refDiffPs = [0 : 200 : 600];
-for n = 1 : 4
-   maxDiff = max(diffPsRngs(:, n)); 
-   minDiff = min(diffPsRngs(:, n));
-   
-   changesDueTime(n) = maxDiff - minDiff;
-   
-   meanDiff(n) = mean(diffPsRngs(:, n));
-   
-   
-end
-ppsErrorExp = meanDiff - refDiffPs;
-
-stdPps = 250e-9;
-
-stdPpsInMet = c * stdPps;
-if stdPpsInMet - abs(ppsErrorExp) > 0 
-   fprintf("Errors of pseudoranges satisfy 1PPS errors \n"); 
-end
+% refDiffPs = [0 : 200 : 600];
+% for n = 1 : 4
+%    maxDiff = max(diffPsRngs(:, n)); 
+%    minDiff = min(diffPsRngs(:, n));
+%    
+%    changesDueTime(n) = maxDiff - minDiff;
+%    
+%    meanDiff(n) = mean(diffPsRngs(:, n));
+%    
+%    
+% end
+% ppsErrorExp = meanDiff - refDiffPs;
+% 
+% stdPps = 250e-9;
+% 
+% stdPpsInMet = c * stdPps;
+% if stdPpsInMet - abs(ppsErrorExp) > 0 
+%    fprintf("Errors of pseudoranges satisfy 1PPS errors \n"); 
+% end
 end
 % disp ("Ublox Diff PsRnges ");
 % diffPsRngs(20, :) - diffPsRngs(20, 1)
