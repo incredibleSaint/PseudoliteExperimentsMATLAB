@@ -7,7 +7,7 @@ addpath([cd '/Records']);
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/home/incredible/Documents/';
+folder = '/home/s/Documents/';
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
@@ -160,6 +160,38 @@ fpga_log = 'both_exper_delta_delay.txt';
 
 ubx_log = 'both_exper_delta_user_time_minus70mins';
 
+ubx_log = 'upd_time_1e9minus5e6';
+fpga_log = 'upd_time_1e9minus5e6.txt';
+
+ubx_log = 'update_time_1e9minus5e3_user_time';
+fpga_log = 'update_time_1e9minus5e3_user_time.txt';
+
+%% const iono really
+ubx_log = '1e9minus1mcsec'; %% minus 10 mcs really
+fpga_log = '1e9minus1mcsec.txt';
+
+ubx_log = 'update_time_1e9minux10e3_2';
+fpga_log = 'update_time_1e9minux10e3_2.txt';
+
+ubx_log = 'update_time1e9min10e3_3';
+fpga_log = 'update_time1e9min10e3_3.txt';
+%% end const iono
+
+%% full iono
+ubx_log = '1e9min10e3_full_iono';
+fpga_log = '1e9min10e3_full_iono.txt';
+%% end iono
+
+%% full iono and tropo
+ubx_log = 'full_iono_full_tropo_user_time_upd_time_minus_10e3';
+fpga_log = 'full_iono_full_tropo_user_time_upd_time_minus_10e3.txt';
+
+ubx_log ='check_start_delay';
+fpga_log = 'check_start_delay.txt';
+
+ubx_log = 'plus5msForSetPsrng';
+fpga_log = 'plus5msForSetPsrng.txt';
+
 [t, time, sv_id_fpga, chs_num] = ReadFpgaLog([folder fpga_log]);
 if draw_log_fpga
     figure; plot(diff(time));
@@ -205,7 +237,7 @@ draw_elev_res = 0;
 % Start time in *.ubx file. GNSS time of week (seconds)
 start_time = 379900;
 % Limit for plot (minutes)
-mins = 60;
+mins = 30;
 
 fullName = [folder ubx_log '.ubx'];
 
@@ -215,7 +247,7 @@ true_position = [2758750.0, 1617300.0, 5500165.0]; % STC
 % true_position = [2758762.10206624 1617141.40083576 5500196.86403367]; % Misha
 
 
-x_min_val = (start_time  -  60 * 75 ) * 1e3 ;
+x_min_val = (start_time  -  60 * 10 ) * 1e3 ;
 x_max_val = (start_time + 60 * mins) * 1e3;
 y_min_val = 0;
 y_max_val = 20;
@@ -334,7 +366,7 @@ for n = 1 : sizeStr(2)
 end
 %%
 CompareUbloxAndFpgaPseudoranges(sv_id_fpga, t, tow, ps_rng, ...
-                                                                            doppl_ubx);
+                                doppl_ubx, x_min_val, x_max_val);
 
 isDraw = 1;
 if isDraw

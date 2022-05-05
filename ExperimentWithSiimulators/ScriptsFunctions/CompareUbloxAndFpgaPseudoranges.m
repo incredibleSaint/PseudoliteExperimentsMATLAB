@@ -1,14 +1,14 @@
 function CompareUbloxAndFpgaPseudoranges(sv_id, t, tow_ubx, ps_rng_ubx, ...
-                                                                                            doppl_ubx)
+                                                      doppl_ubx, x_min_val, x_max_val)
 c =  2.99792458e8;
 diff_ps_rng_ublox = ps_rng_ubx - ps_rng_ubx(:, 1);
 diff_doppl_ubx = doppl_ubx - doppl_ubx(:, 1);
 % Round ublox data to integer TOW: 
 diff_speed = diff(ps_rng_ubx);
-delta_time = round(tow_ubx) - tow_ubx;
+delta_time = round(tow_ubx) - tow_ubx -5e-3;
 add_psrange = diff_speed' .* delta_time(2 : end);
 
-diff_ps_rng_ublox = diff_ps_rng_ublox(2 : end, :); % add_psrange';
+diff_ps_rng_ublox = diff_ps_rng_ublox(2 : end, :) + add_psrange';
 diff_doppl_ubx = diff_doppl_ubx(2 : end, :);
 tow_ubx = round(tow_ubx(2 : end));
         
@@ -21,6 +21,7 @@ for n = 1 : length(sv_id)
         doppl_calc = t.doppler_calc(idx);
 
         % Intersect with ublox TOW:
+        tow_fpga = round(tow_fpga);%delete this if update_freq ~= 1 Hz
         common_tow = intersect(tow_fpga, tow_ubx);
         
         fpga_idx = ismember(tow_fpga, common_tow);
@@ -51,6 +52,7 @@ diff_delay_theor = theor_delay - theor_delay(1, :);
 diff_doppl_theor = doppl_theor - doppl_theor(1, :);
 
 diff_ubx_theor = ubx_diff_psrange - diff_delay_theor;
+diff_ubx_theor = ubx_diff_psrange - diff_delay_theor;
 diff_doppl_ubx_theor = -diff_doppl_ubx_proc - diff_doppl_theor;
 
 figure;
@@ -59,14 +61,15 @@ plot(comm_tow(1, :), diff_doppl_ubx_theor');
 grid on;
 leg = legend(legend_text);
 
-plots_num = 3; figure; 
+plots_num = 3; figure;
+x_lims = [379000 381720];
 subplot(plots_num, 1, 1);
-plot(comm_tow(1, :), diff_ubx_theor');
+plot(comm_tow(1, :)', diff_ubx_theor');
 grid on;
 title("Diff between ublox and theor, met");
 xlabel("TOW, sec");
 ylabel("(psR_{ubx} - psR_{ubx}(1, :)) - (psR_{theor} - psR_{theor}(1, :)), m");
-xlim([379e3 381e3]); ylim([-10 25]);
+xlim(x_lims); ylim([-2 2]);
 
 leg = legend(legend_text);
 
@@ -81,10 +84,11 @@ leg = legend(legend_text);
 % xlim([379e3 381e3]); ylim([-20 30]);
 % leg = legend(legend_text);
 
-% subplot(plots_num, 1, 2);
-% res1 = (diff_ubx_theor(:, 2 : end))';
-% res2 = diff(fpga_delay');
-% plot(comm_tow(1, 2 : end), res1 ./ res2);
+subplot(plots_num, 1, 2);
+res1 = (diff_ubx_theor(:, 2 : end))';
+res2 = diff(fpga_delay');
+plot(comm_tow(1, 2 : end), res1 ./ res2);
+xlim(x_lims); ylim([-0.2 0.2]);
 % plot(comm_tow(1, 3 : end), a);
 
 % a = diff(diff((theor_delay(:, 1 : 10 : end))'));
@@ -99,10 +103,10 @@ leg = legend(legend_text);
 % leg = legend(legend_text);
 
 subplot(plots_num, 1, 3);
-plot((comm_tow(1, 2 : end))', diff(theor_delay')); 
+plot((comm_tow(1, 2 : end))', diff((theor_delay - theor_delay(1, :))')); 
 title("diff(psR_{theor}), m");
 xlabel("TOW, sec");
 grid on; 
-xlim([379e3 381e3]); ylim([-600 800]);
+xlim(x_lims); ylim([-600 800]);
 leg = legend(legend_text);
 
