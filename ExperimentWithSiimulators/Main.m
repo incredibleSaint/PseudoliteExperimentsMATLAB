@@ -192,6 +192,33 @@ fpga_log = 'check_start_delay.txt';
 ubx_log = 'plus5msForSetPsrng';
 fpga_log = 'plus5msForSetPsrng.txt';
 
+ubx_log = 'check_start_plus_5e6';
+fpga_log = 'check_start_plus_5e6.txt';
+
+ubx_log = 'chech_6e6_start_time';
+fpga_log = 'chech_6e6_start_time.txt';
+
+ubx_log = 'check_plus11e6_start_clk_time';
+
+% First ARM reboot =========
+ubx_log = 'start_clk_time_6e6';%% 6 ms
+
+ubx_log = 'check_6e6_start_clk_time_again';%% 6 ms
+
+ubx_log = 'start_clk_time_6e6_again_again';%% 6 ms
+
+% Second ARM reboot ========
+ubx_log = 'start_clk_time_6e6_third_time'; %% 11 ms delay
+
+% ubx_log = 'check_after_reset_arm_6e6_second'; %% 6 ms
+
+%% =========== Glonass ==============
+ubx_log = 'glonass_check_psrng';
+ubx_log = 'glonass_check_psrng_2';
+
+fpga_log = [ubx_log '.txt'];
+ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
+
 [t, time, sv_id_fpga, chs_num] = ReadFpgaLog([folder fpga_log]);
 if draw_log_fpga
     figure; plot(diff(time));
@@ -290,6 +317,7 @@ if flagWorkWithSomeCAcodesJustPsRngs
     end
 end
 %========================
+glonass_id = 6;
 PseudoCoord.svId = sv_id_fpga;
 svNum = length(PseudoCoord.svId);
 tow = zeros(1, sizeStr(2));
@@ -355,12 +383,22 @@ for n = 1 : sizeStr(2)
 %                 ans = [ 0         -33.4616240784526
 %                 -1630.63952538371          60.2115170620382          561.940843828022         -2272.69398476928          593.911151405424         -1494.46435207129          -2569.8585446775]
             end
-
-            tow(posCnt) = ProcessedMes.rcvTow;
+            
+            if(ProcessedMes.gnssId == glonass_id)
+                gps_ls = 18;
+                glonass_ls = 0;
+%                 ProcessedMes.rcvTow = 380137; % glonass tod = 45319
+                tod_gps = rem(ProcessedMes.rcvTow, 24 * 60 * 60); % - (gps_ls - glonass_ls);
+                utc_moscow = 3;
+                tod_glonass = tod_gps + utc_moscow * 60 * 60 - (gps_ls - glonass_ls);% + 1; ???? check in u-center
+                tow(posCnt) = tod_glonass;
+%             else
+%                 tow(posCnt) = ProcessedMes.rcvTow;
+%             end
             ps_rng(posCnt, 1 : length(psRngs)) = psRngs;
             diffPsRngs(posCnt, 1 : length(psRngs)) = psRngs - psRngs(1);
             doppl_ubx(posCnt, 1 : length(doppler)) = doppler;
-            
+            end
         end
     end
 end
