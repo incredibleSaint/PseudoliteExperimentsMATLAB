@@ -40,7 +40,7 @@ if(file ~= -1)
         cnt_el = 1;
 
         
-        while(pos < (size - packet_len) && pos < 5 * 60 * 5000)
+        while(pos < (size - packet_len) && pos < 20 * 60 * 5000)
             if((data(pos) == MAGIC0) & (data(pos + 1) == MAGIC1))
                 command = data(pos + 3) * 2^8 + data(pos + 2); % id | class
                 length  = data(pos + 5) * 2^8 + data(pos + 4);

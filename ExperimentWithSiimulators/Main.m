@@ -7,7 +7,7 @@ addpath([cd '/Records']);
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/home/s/Documents/';
+folder = '/home/incredible/Documents/';
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
@@ -215,9 +215,18 @@ ubx_log = 'start_clk_time_6e6_third_time'; %% 11 ms delay
 %% =========== Glonass ==============
 ubx_log = 'glonass_check_psrng';
 ubx_log = 'glonass_check_psrng_2';
+ubx_log = 'glonass_new_check';
+ubx_log = 'glonass_using_t_propag_for_calc';
+ubx_log = 'glonass_calc_min_1_sec';
+ubx_log = 'glon_plus_1sec';
+ubx_log = 'glon_plus_1sec_v3';
+ubx_log = 'glon_min_1sec_in_calc';
+ubx_log = 'glon_min_1sec_ch_num_plus_1';
+ubx_log = 'glon_minus_1sec_in_calc_without_sv12';
+ubx_log = 'glonass_minus_1sec_in_calc_without_sv12';
 
 fpga_log = [ubx_log '.txt'];
-ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
+% ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
 
 [t, time, sv_id_fpga, chs_num] = ReadFpgaLog([folder fpga_log]);
 if draw_log_fpga
@@ -297,7 +306,7 @@ subplot(5, 1, 5);
 PlotCoordsError(t0101, x, y, z, true_position, x_min_val, x_max_val);
 
 if draw_elev_res
-    PlotElevationAndResidual(sv_id, t0135, el, pr_res, ubx_log, ...
+    PlotElevationAndResidual(sv_id_fpga, t0135, el, pr_res, ubx_log, ...
                          x_min_val, x_max_val);
 end
 
@@ -330,14 +339,15 @@ for n = 1 : sizeStr(2)
     SatsPoses = [];
     psRngs = [];
     
-    if (posCnt == 3711) 
+    if (posCnt == 97) 
         a  = 1;
     end
 
     RawData = Mes0x1502{n};
     
     if RawData.numMeas > 0
-        [ProcessedMes, fourSatIsValid] = DataProcessor(RawData);
+        [ProcessedMes, fourSatIsValid] = DataProcessor(RawData, ...
+                                                                                                       glonass_id);
         necessarySat = CheckCANumsMatchUp(ProcessedMes.svId, ...
                                                         PseudoCoord.svId);
         if flagWorkWithSomeCAcodesJustPsRngs % when less than 4 CA-codes

@@ -1,4 +1,4 @@
-function [ProcessedData, fourSatIsValid] = DataProcessor(RawData)
+function [ProcessedData, fourSatIsValid] = DataProcessor(RawData, test_gnss)
 ProcessedData = RawData;
 fourSatIsValid = 1;
 if ~isfield(RawData, 'svId')
@@ -8,19 +8,28 @@ if ~isfield(RawData, 'svId')
 end
 uniqueSvId = unique(RawData.svId);
 svCntUse = 0;
-cnt = zeros(1, length(uniqueSvId));
-for k = 1 : length(uniqueSvId)
-    cnt(k) = sum(uniqueSvId(k) == RawData.svId);
-end
-uniqInd = (cnt == 1);
-usingSvId = uniqueSvId(uniqInd);
-for n = 1 : length(usingSvId)
-    ind = find(RawData.svId == usingSvId(n));
-    if sum((RawData.trkStat{ind}) - '0') >= 3
+% cnt = zeros(1, length(uniqueSvId));
+% for k = 1 : length(uniqueSvId)
+%     cnt(k) = sum(uniqueSvId(k) == RawData.svId);
+% end
+% uniqInd = (cnt == 1);
+% usingSvId = uniqueSvId(uniqInd);
+% for n = 1 : length(usingSvId)
+%     ind = find(RawData.svId == usingSvId(n));
+%     if (sum((RawData.trkStat{ind}) - '0') >= 3 && ...
+%          RawData.gnssId(ind) == test_gnss)
+%         svCntUse = svCntUse + 1;
+%         indPrMes(svCntUse) = ind;
+%     end
+% %      = RawData.prMes;  
+% end
+
+for n = 1 : length(RawData.svId)
+    if(sum(RawData.trkStat{n} - '0') >= 3 && ...
+         RawData.gnssId(n) == test_gnss)
         svCntUse = svCntUse + 1;
-        indPrMes(svCntUse) = ind;
+        indPrMes(svCntUse) = n;
     end
-%      = RawData.prMes;  
 end
 
 if svCntUse < 4
