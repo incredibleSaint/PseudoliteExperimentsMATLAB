@@ -4,6 +4,7 @@ MAGIC0 = hex2dec('B5');
 MAGIC1 = hex2dec('62');
 temp = dir(full_name);
 size_all = temp.bytes;
+size_all = 30 * 60 * 5000;
 clear temp;
 file = fopen(full_name, 'r');
 
@@ -40,7 +41,7 @@ if(file ~= -1)
         cnt_el = 1;
 
         
-        while(pos < (size - packet_len) && pos < 20 * 60 * 5000)
+        while(pos < (size - packet_len) )
             if((data(pos) == MAGIC0) & (data(pos + 1) == MAGIC1))
                 command = data(pos + 3) * 2^8 + data(pos + 2); % id | class
                 length  = data(pos + 5) * 2^8 + data(pos + 4);

@@ -7,7 +7,7 @@ addpath([cd '/Records']);
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/home/incredible/Documents/';
+folder = '/home/s/Documents/';
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
@@ -224,9 +224,10 @@ ubx_log = 'glon_min_1sec_in_calc';
 ubx_log = 'glon_min_1sec_ch_num_plus_1';
 ubx_log = 'glon_minus_1sec_in_calc_without_sv12';
 ubx_log = 'glonass_minus_1sec_in_calc_without_sv12';
+ubx_log = 'glonass_3D_fix';
 
 fpga_log = [ubx_log '.txt'];
-% ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
+ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
 
 [t, time, sv_id_fpga, chs_num] = ReadFpgaLog([folder fpga_log]);
 if draw_log_fpga
@@ -333,6 +334,7 @@ tow = zeros(1, sizeStr(2));
 ps_rng = zeros(sizeStr(2), svNum);
 diffPsRngs = zeros(sizeStr(2), svNum);
 doppl_ubx = zeros(sizeStr(2), svNum);
+raw_time = zeros(1, sizeStr(2));
 
 for n = 1 : sizeStr(2)
     svCnt = 0;
@@ -344,6 +346,7 @@ for n = 1 : sizeStr(2)
     end
 
     RawData = Mes0x1502{n};
+    raw_time(n) = RawData.rcvTow;
     
     if RawData.numMeas > 0
         [ProcessedMes, fourSatIsValid] = DataProcessor(RawData, ...
@@ -413,6 +416,7 @@ for n = 1 : sizeStr(2)
     end
 end
 %%
+figure; plot(diff(raw_time));
 CompareUbloxAndFpgaPseudoranges(sv_id_fpga, t, tow, ps_rng, ...
                                 doppl_ubx, x_min_val, x_max_val);
 
