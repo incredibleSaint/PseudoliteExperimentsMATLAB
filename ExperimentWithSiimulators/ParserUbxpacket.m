@@ -4,7 +4,8 @@ MAGIC0 = hex2dec('B5');
 MAGIC1 = hex2dec('62');
 temp = dir(full_name);
 size_all = temp.bytes;
-size_all = 30 * 60 * 5000;
+size_all_user = 300 * 60 * 5000;
+size_all = min([size_all size_all_user]);
 clear temp;
 file = fopen(full_name, 'r');
 

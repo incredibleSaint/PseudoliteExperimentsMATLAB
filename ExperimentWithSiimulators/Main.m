@@ -7,7 +7,7 @@ addpath([cd '/Records']);
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/home/s/Documents/';
+folder = '/home/incredible/Documents/';
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
@@ -225,9 +225,14 @@ ubx_log = 'glon_min_1sec_ch_num_plus_1';
 ubx_log = 'glon_minus_1sec_in_calc_without_sv12';
 ubx_log = 'glonass_minus_1sec_in_calc_without_sv12';
 ubx_log = 'glonass_3D_fix';
+% ubx_log = 'glonass_3dfix_min_omega_dote';
+% ubx_log = 'glonass_minus_omega_dot_e_calc_minus_1sec';
+% ubx_log = 'glonass_minus_omega_dot_e_calc_plus_1sec';
+ubx_log = 'gps_check_new_message';
+ubx_log = 'gps_new_message_check';
 
 fpga_log = [ubx_log '.txt'];
-ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
+% ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
 
 [t, time, sv_id_fpga, chs_num] = ReadFpgaLog([folder fpga_log]);
 if draw_log_fpga
@@ -327,7 +332,7 @@ if flagWorkWithSomeCAcodesJustPsRngs
     end
 end
 %========================
-glonass_id = 6;
+glonass_id = 0;
 PseudoCoord.svId = sv_id_fpga;
 svNum = length(PseudoCoord.svId);
 tow = zeros(1, sizeStr(2));
@@ -398,19 +403,24 @@ for n = 1 : sizeStr(2)
             end
             
             if(ProcessedMes.gnssId == glonass_id)
-                gps_ls = 18;
-                glonass_ls = 0;
-%                 ProcessedMes.rcvTow = 380137; % glonass tod = 45319
-                tod_gps = rem(ProcessedMes.rcvTow, 24 * 60 * 60); % - (gps_ls - glonass_ls);
-                utc_moscow = 3;
-                tod_glonass = tod_gps + utc_moscow * 60 * 60 - (gps_ls - glonass_ls);% + 1; ???? check in u-center
-                tow(posCnt) = tod_glonass;
-%             else
-%                 tow(posCnt) = ProcessedMes.rcvTow;
-%             end
-            ps_rng(posCnt, 1 : length(psRngs)) = psRngs;
-            diffPsRngs(posCnt, 1 : length(psRngs)) = psRngs - psRngs(1);
-            doppl_ubx(posCnt, 1 : length(doppler)) = doppler;
+%                 gps_ls = 18;
+%                 glonass_ls = 0;
+% %                 ProcessedMes.rcvTow = 380137; % glonass tod = 45319
+%                 tod_gps = rem(ProcessedMes.rcvTow, 24 * 60 * 60); % - (gps_ls - glonass_ls);
+%                 utc_moscow = 3;
+%                 tod_glonass = tod_gps + utc_moscow * 60 * 60 - (gps_ls - glonass_ls);% + 1; ???? check in u-center
+%                 tow(posCnt) = tod_glonass;
+% %             else
+% %                 tow(posCnt) = ProcessedMes.rcvTow;
+% %             end
+%             ps_rng(posCnt, 1 : length(psRngs)) = psRngs;
+%             diffPsRngs(posCnt, 1 : length(psRngs)) = psRngs - psRngs(1);
+%             doppl_ubx(posCnt, 1 : length(doppler)) = doppler;
+%             else 
+                 tow(posCnt) = ProcessedMes.rcvTow;
+                 ps_rng(posCnt, 1 : length(psRngs)) = psRngs;
+                diffPsRngs(posCnt, 1 : length(psRngs)) = psRngs - psRngs(1);
+                doppl_ubx(posCnt, 1 : length(doppler)) = doppler;
             end
         end
     end
