@@ -240,10 +240,17 @@ ubx_log = 'gps_cntr_without_tropo_only_full_iono';
 ubx_log = 'gps_cntr_without_tropo_only_full_iono_2';
 % ubx_log ='gps_check_with_cntr_commit_hash_cbb16b6d';
 % ubx_log = 'gps_commit_d88b87a8';
+ubx_log = 'gps_bds_with_logger_v1';
+% ubx_log = 'gps_bds_with_logger_v3';
+ubx_log  = 'gps_bds_with_logger_v4';
+ubx_log = 'bds_with_logger_v6_all_gnss_position';
+
 
 %% Beidou
 % ubx_log = 'beidou_new_mess';
-
+ubx_log = 'bds_nav_mess_skip_bits_plus_one';
+ubx_log = 'bds_withoou_ionosph';
+ubx_log = 'bds_startcounter_plus_20ms';
 fpga_log = [ubx_log '.txt'];
 % ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
 
@@ -299,6 +306,8 @@ fullName = [folder ubx_log '.ubx'];
 [Mes0x0101, Mes0x0102, Mes0x1502, Mes0x0135] = ParserUbxpacket(fullName);
 
 true_position = [2758750.0, 1617300.0, 5500165.0]; % STC 
+all_gnss_file_position = [2758739.4, 1617299.2, 5500156.14];
+true_position = all_gnss_file_position;
 % true_position = [2758762.10206624 1617141.40083576 5500196.86403367]; % Misha
 
 
@@ -315,9 +324,9 @@ subplot(5, 1, 1);
 subplot(5, 1, 2);
 [h_error, t0102] = Process0x0102(Mes0x0102, true_position, ubx_log, x_min_val, x_max_val);
 
-subplot(5, 1, 3);
-HorizontalError(err_3D, h_error, t0101, t0102, ubx_log, ...
-                x_min_val, x_max_val);
+% subplot(5, 1, 3);
+% HorizontalError(err_3D, h_error, t0101, t0102, ubx_log, ...
+%                 x_min_val, x_max_val);
 subplot(5, 1, 4);
 [el, pr_res, t0135, sv_id] = Process0x0135(Mes0x0135, x_min_val, x_max_val);
 
@@ -368,7 +377,7 @@ for n = 1 : sizeStr(2)
     
     if RawData.numMeas > 0
         [ProcessedMes, fourSatIsValid] = DataProcessor(RawData, ...
-                                                       prms.gnss_id);
+                                                       prms.ublox_gnss_id);
         necessarySat = CheckCANumsMatchUp(ProcessedMes.svId, ...
                                                         PseudoCoord.svId);
         if flagWorkWithSomeCAcodesJustPsRngs % when less than 4 CA-codes
@@ -415,8 +424,8 @@ for n = 1 : sizeStr(2)
 %                 -1630.63952538371          60.2115170620382          561.940843828022         -2272.69398476928          593.911151405424         -1494.46435207129          -2569.8585446775]
             end
             
-            if(ProcessedMes.gnssId == prms.gnss_id)
-                if(prms.gnss_id == glonass_id)
+            if(ProcessedMes.gnssId == prms.ublox_gnss_id)
+                if(prms.ublox_gnss_id == glonass_id)
                     gps_ls = 18;
                     glonass_ls = 0;
     %                 ProcessedMes.rcvTow = 380137; % glonass tod = 45319
@@ -430,6 +439,8 @@ for n = 1 : sizeStr(2)
 %             ps_rng(posCnt, 1 : length(psRngs)) = psRngs;
 %             diffPsRngs(posCnt, 1 : length(psRngs)) = psRngs - psRngs(1);
 %             doppl_ubx(posCnt, 1 : length(doppler)) = doppler;
+                elseif prms.ublox_gnss_id == prms.ublox_gnss.beidou
+                    tow(posCnt) = ProcessedMes.rcvTow - 14;
                 else 
                     tow(posCnt) = ProcessedMes.rcvTow;
                 end
@@ -444,7 +455,7 @@ end
 %%
 figure; plot(diff(raw_time));
 CompareUbloxAndFpgaPseudoranges(sv_id_fpga, t, tow, ps_rng, ...
-                                doppl_ubx, x_min_val, x_max_val);
+                                doppl_ubx, x_min_val, x_max_val, prms);
 
 isDraw = 1;
 if isDraw
