@@ -7,7 +7,8 @@ addpath([cd '/Records']);
 %-- Parser of U-blox Messages: --%
 %---------------------------------
 % dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/home/incredible/Documents/';
+folder = '/home/s/Documents/';
+prms = Setup();
 % -- File with 4 interseals, 4 pps, 4 clocks: -----
 % fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
 %--------------------------------------------------
@@ -213,28 +214,40 @@ ubx_log = 'start_clk_time_6e6_third_time'; %% 11 ms delay
 % ubx_log = 'check_after_reset_arm_6e6_second'; %% 6 ms
 
 %% =========== Glonass ==============
-ubx_log = 'glonass_check_psrng';
-ubx_log = 'glonass_check_psrng_2';
-ubx_log = 'glonass_new_check';
-ubx_log = 'glonass_using_t_propag_for_calc';
-ubx_log = 'glonass_calc_min_1_sec';
-ubx_log = 'glon_plus_1sec';
-ubx_log = 'glon_plus_1sec_v3';
-ubx_log = 'glon_min_1sec_in_calc';
-ubx_log = 'glon_min_1sec_ch_num_plus_1';
-ubx_log = 'glon_minus_1sec_in_calc_without_sv12';
-ubx_log = 'glonass_minus_1sec_in_calc_without_sv12';
+% ubx_log = 'glonass_check_psrng';
+% ubx_log = 'glonass_check_psrng_2';
+% ubx_log = 'glonass_new_check';
+% ubx_log = 'glonass_using_t_propag_for_calc';
+% ubx_log = 'glonass_calc_min_1_sec';
+% ubx_log = 'glon_plus_1sec';
+% ubx_log = 'glon_plus_1sec_v3';
+% ubx_log = 'glon_min_1sec_in_calc';
+% ubx_log = 'glon_min_1sec_ch_num_plus_1';
+% ubx_log = 'glon_minus_1sec_in_calc_without_sv12';
+% ubx_log = 'glonass_minus_1sec_in_calc_without_sv12';
 ubx_log = 'glonass_3D_fix';
 % ubx_log = 'glonass_3dfix_min_omega_dote';
-% ubx_log = 'glonass_minus_omega_dot_e_calc_minus_1sec';
+% % ubx_log = 'glonass_minus_omega_dot_e_calc_minus_1sec';
 % ubx_log = 'glonass_minus_omega_dot_e_calc_plus_1sec';
-ubx_log = 'gps_check_new_message';
-ubx_log = 'gps_new_message_check';
+% ubx_log = 'gps_check_new_message';
+% ubx_log = 'gps_new_message_check';
+
+%% ========== Fpga counter for time ========
+%%             GPS
+ubx_log = 'gps_fpga_cntr_check'; % -8 ms error
+ubx_log = 'gps_fpga_cntr_check_2';
+ubx_log = 'gps_cntr_without_tropo_only_full_iono';
+ubx_log = 'gps_cntr_without_tropo_only_full_iono_2';
+% ubx_log ='gps_check_with_cntr_commit_hash_cbb16b6d';
+% ubx_log = 'gps_commit_d88b87a8';
+
+%% Beidou
+% ubx_log = 'beidou_new_mess';
 
 fpga_log = [ubx_log '.txt'];
 % ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
 
-[t, time, sv_id_fpga, chs_num] = ReadFpgaLog([folder fpga_log]);
+[t, time, sv_id_fpga, chs_num] = ReadFpgaLog(prms, [folder fpga_log]);
 if draw_log_fpga
     figure; plot(diff(time));
     for n = 1 : length(sv_id_fpga)
@@ -289,7 +302,7 @@ true_position = [2758750.0, 1617300.0, 5500165.0]; % STC
 % true_position = [2758762.10206624 1617141.40083576 5500196.86403367]; % Misha
 
 
-x_min_val = (start_time  -  60 * 10 ) * 1e3 ;
+x_min_val = (start_time  -  60 * 10 ) * 1e3;
 x_max_val = (start_time + 60 * mins) * 1e3;
 y_min_val = 0;
 y_max_val = 20;
@@ -332,7 +345,7 @@ if flagWorkWithSomeCAcodesJustPsRngs
     end
 end
 %========================
-glonass_id = 0;
+glonass_id = 6;
 PseudoCoord.svId = sv_id_fpga;
 svNum = length(PseudoCoord.svId);
 tow = zeros(1, sizeStr(2));
@@ -355,7 +368,7 @@ for n = 1 : sizeStr(2)
     
     if RawData.numMeas > 0
         [ProcessedMes, fourSatIsValid] = DataProcessor(RawData, ...
-                                                                                                       glonass_id);
+                                                       prms.gnss_id);
         necessarySat = CheckCANumsMatchUp(ProcessedMes.svId, ...
                                                         PseudoCoord.svId);
         if flagWorkWithSomeCAcodesJustPsRngs % when less than 4 CA-codes
@@ -402,25 +415,28 @@ for n = 1 : sizeStr(2)
 %                 -1630.63952538371          60.2115170620382          561.940843828022         -2272.69398476928          593.911151405424         -1494.46435207129          -2569.8585446775]
             end
             
-            if(ProcessedMes.gnssId == glonass_id)
-%                 gps_ls = 18;
-%                 glonass_ls = 0;
-% %                 ProcessedMes.rcvTow = 380137; % glonass tod = 45319
-%                 tod_gps = rem(ProcessedMes.rcvTow, 24 * 60 * 60); % - (gps_ls - glonass_ls);
-%                 utc_moscow = 3;
-%                 tod_glonass = tod_gps + utc_moscow * 60 * 60 - (gps_ls - glonass_ls);% + 1; ???? check in u-center
-%                 tow(posCnt) = tod_glonass;
+            if(ProcessedMes.gnssId == prms.gnss_id)
+                if(prms.gnss_id == glonass_id)
+                    gps_ls = 18;
+                    glonass_ls = 0;
+    %                 ProcessedMes.rcvTow = 380137; % glonass tod = 45319
+                    tod_gps = rem(ProcessedMes.rcvTow, 24 * 60 * 60); % - (gps_ls - glonass_ls);
+                    utc_moscow = 3;
+                    tod_glonass = tod_gps + utc_moscow * 60 * 60 - (gps_ls - glonass_ls);% + 1; ???? check in u-center
+                    tow(posCnt) = tod_glonass;
 % %             else
 % %                 tow(posCnt) = ProcessedMes.rcvTow;
 % %             end
 %             ps_rng(posCnt, 1 : length(psRngs)) = psRngs;
 %             diffPsRngs(posCnt, 1 : length(psRngs)) = psRngs - psRngs(1);
 %             doppl_ubx(posCnt, 1 : length(doppler)) = doppler;
-%             else 
-                 tow(posCnt) = ProcessedMes.rcvTow;
-                 ps_rng(posCnt, 1 : length(psRngs)) = psRngs;
+                else 
+                    tow(posCnt) = ProcessedMes.rcvTow;
+                end
+                ps_rng(posCnt, 1 : length(psRngs)) = psRngs;
                 diffPsRngs(posCnt, 1 : length(psRngs)) = psRngs - psRngs(1);
                 doppl_ubx(posCnt, 1 : length(doppler)) = doppler;
+%                 end
             end
         end
     end

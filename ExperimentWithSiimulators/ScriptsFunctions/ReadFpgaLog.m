@@ -1,8 +1,8 @@
-function [t, time, sv_id, chs_num] = ReadFpgaLog(fullpath)
+function [t, time, sv_id, chs_num] = ReadFpgaLog(prms, fullpath)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 chs_num = 12;
-sv_id =  [1 6 12 14 15 17 19 24 32];
+sv_id   = prms.sv_id;
 % sv_id = [13 22 12 4 21 3 14 23];
 svs_num = length(sv_id);
 % A = importdata([folder filename]);

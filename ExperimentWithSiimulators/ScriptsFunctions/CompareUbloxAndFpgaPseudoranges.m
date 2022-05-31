@@ -14,18 +14,20 @@ for n = 1 : length(un_round_tow)
      ind_1hz(n) = ind(1);
 end
 
+figure; plot(ps_rng_ubx(:, 4));
+
 % Round ublox data to integer TOW: 
 diff_ps_rng_ublox = ps_rng_ubx(ind_1hz, :) - ps_rng_ubx(ind_1hz, 1);
 diff_doppl_ubx      = doppl_ubx(  ind_1hz, :) - doppl_ubx(  ind_1hz, 1);
 diff_speed               = diff(ps_rng_ubx(ind_1hz, :));
 tow_ubx                   = tow_ubx(ind_1hz);
 
-delta_time = round(tow_ubx) - tow_ubx;% + 0.0201;% - 5e-3; %+5e-3;
+delta_time = round(tow_ubx) - tow_ubx;% - 8e-3;% + 0.0201;% - 5e-3; %+5e-3;
 add_psrange = diff_speed' .* delta_time(2 : end);
 data_size = size(add_psrange);
 
-diff_ps_rng_ublox = diff_ps_rng_ublox + ...
-                                        [zeros(data_size(1), 1) add_psrange]';
+diff_ps_rng_ublox = diff_ps_rng_ublox ;%+ ...
+%                                         [zeros(data_size(1), 1) add_psrange]';
 tow_ubx = round(tow_ubx);
         
 for n = 1 : length(sv_id)
@@ -50,7 +52,7 @@ for n = 1 : length(sv_id)
        
         bits_delay = floor(curr_del_calc_comm(idx(1)) / 1e10 / 20e-3);
         theor_delay(n, :)  = curr_del_calc_comm / 1e10 * c;
-        fpga_delay(  n, :)  = (bits_delay * 20e-3 + curr_clk_cnt_comm / 250e6) * c;
+        fpga_delay( n, :)  = (bits_delay * 20e-3 + curr_clk_cnt_comm / 250e6) * c;
         doppl_theor(n, :) = doppl_calc_comm;
         
 %         diff_secs = fpga_delay_sec - curr_del_calc / 1e10;
@@ -85,8 +87,8 @@ grid on;
 title("Diff between ublox and theor, met");
 xlabel("TOW, sec");
 ylabel("(psR_{ubx} - psR_{ubx}(1, :)) - (psR_{theor} - psR_{theor}(1, :)), m");
-xlim(x_lims); ylim([-50 50]);
-ylim auto
+xlim(x_lims); ylim([-10 10]);
+% ylim auto
 leg = legend(legend_text);
 
 % diff_delay_fpga = fpga_delay - fpga_delay(1, :);
@@ -107,6 +109,8 @@ plot(comm_tow(1, 2 : end), res1 ./ res2);
 title("diff betw ubx and theor) ./ diff(theor)");
 grid on;
 xlim(x_lims); %ylim([-0.2 0.2]);
+leg = legend(legend_text);
+
 % plot(comm_tow(1, 3 : end), a);
 
 % a = diff(diff((theor_delay(:, 1 : 10 : end))'));
