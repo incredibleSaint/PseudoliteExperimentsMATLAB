@@ -1,5 +1,5 @@
 function prms = Setup()
-gnss = 'bds';
+gnss = 'gln';
 % Ublox Gnss id:
 % 0 - gps
 % 1 - sbas
@@ -15,6 +15,8 @@ if gnss == 'gps'
     gnss_id = 0;
 elseif gnss == 'bds'
     gnss_id = 3;
+elseif gnss == 'gln'
+    gnss_id = 6;
 end
 prms.ublox_gnss_id = gnss_id;
 
@@ -33,6 +35,8 @@ if gnss == 'gps'
     gnss_id = 1;
 elseif gnss == 'bds'
     gnss_id = 3;
+elseif gnss == 'gln'
+    gnss_id = 0;
 end
 prms.fpga_gnss_id = gnss_id;
 
@@ -44,4 +48,6 @@ elseif prms.ublox_gnss_id == 6
     sv_id = [13 22 12 4 21 3 14 23];
 end
 prms.sv_id = sv_id;
+
+prms.glonass.litera = [1, -4, 5, 6, 1, -4, 5, 6, -2, -7, 0, -1, -2, -7, 0, -1, 4, -3, 3, 2, 4, -3, 3, 2];
 end

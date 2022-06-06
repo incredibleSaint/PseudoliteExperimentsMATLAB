@@ -225,7 +225,7 @@ ubx_log = 'start_clk_time_6e6_third_time'; %% 11 ms delay
 % ubx_log = 'glon_min_1sec_ch_num_plus_1';
 % ubx_log = 'glon_minus_1sec_in_calc_without_sv12';
 % ubx_log = 'glonass_minus_1sec_in_calc_without_sv12';
-ubx_log = 'glonass_3D_fix';
+% ubx_log = 'glonass_3D_fix';
 % ubx_log = 'glonass_3dfix_min_omega_dote';
 % % ubx_log = 'glonass_minus_omega_dot_e_calc_minus_1sec';
 % ubx_log = 'glonass_minus_omega_dot_e_calc_plus_1sec';
@@ -234,27 +234,39 @@ ubx_log = 'glonass_3D_fix';
 
 %% ========== Fpga counter for time ========
 %%             GPS
-ubx_log = 'gps_fpga_cntr_check'; % -8 ms error
-ubx_log = 'gps_fpga_cntr_check_2';
-ubx_log = 'gps_cntr_without_tropo_only_full_iono';
-ubx_log = 'gps_cntr_without_tropo_only_full_iono_2';
-% ubx_log ='gps_check_with_cntr_commit_hash_cbb16b6d';
-% ubx_log = 'gps_commit_d88b87a8';
-ubx_log = 'gps_bds_with_logger_v1';
-% ubx_log = 'gps_bds_with_logger_v3';
-ubx_log  = 'gps_bds_with_logger_v4';
-ubx_log = 'bds_with_logger_v6_all_gnss_position';
+% ubx_log = 'gps_fpga_cntr_check'; % -8 ms error
+% ubx_log = 'gps_fpga_cntr_check_2';
+% ubx_log = 'gps_cntr_without_tropo_only_full_iono';
+% ubx_log = 'gps_cntr_without_tropo_only_full_iono_2';
+% % ubx_log ='gps_check_with_cntr_commit_hash_cbb16b6d';
+% % ubx_log = 'gps_commit_d88b87a8';
+% ubx_log = 'gps_bds_with_logger_v1';
+% % ubx_log = 'gps_bds_with_logger_v3';
+% ubx_log  = 'gps_bds_with_logger_v4';
+% ubx_log = 'bds_with_logger_v6_all_gnss_position';
+% 
+% 
+% %% Beidou
+% % ubx_log = 'beidou_new_mess';
+% ubx_log = 'bds_nav_mess_skip_bits_plus_one';
+% ubx_log = 'bds_withoou_ionosph';
+% ubx_log = 'bds_startcounter_plus_20ms';
 
-
-%% Beidou
-% ubx_log = 'beidou_new_mess';
-ubx_log = 'bds_nav_mess_skip_bits_plus_one';
-ubx_log = 'bds_withoou_ionosph';
-ubx_log = 'bds_startcounter_plus_20ms';
+%% glonass 
+ubx_log = 'glonass_right_set_freq';
+ubx_log = 'glonass_right_log';
+% ubx_log = 'glonass_calc_without_t_propag';
+% ubx_log = 'glonass_calc_plus_t_propag';
+% ubx_log = 'glonass_calc_minus_t_propag';
+% ubx_log = 'glonass_calc_minus_t_propag_v2';
+ubx_log = 'glonass_fix_nav_bit_dur';
+ubx_log = 'glonass_without_ch_2';
 fpga_log = [ubx_log '.txt'];
-% ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
+ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
+% ubx_log = 'gps_real_6june2022';
+% ubx_log = 'glonass_real_6june2022';
 
-[t, time, sv_id_fpga, chs_num] = ReadFpgaLog(prms, [folder fpga_log]);
+% [t, time, sv_id_fpga, chs_num] = ReadFpgaLog(prms, [folder fpga_log]);
 if draw_log_fpga
     figure; plot(diff(time));
     for n = 1 : length(sv_id_fpga)
@@ -315,6 +327,10 @@ x_min_val = (start_time  -  60 * 10 ) * 1e3;
 x_max_val = (start_time + 60 * mins) * 1e3;
 y_min_val = 0;
 y_max_val = 20;
+
+% glonass real
+x_max_val = (145838 + 30 * 60)*1e3;
+x_min_val = (145258 ) * 1e3; 
 
 figure;
 title(ubx_log);

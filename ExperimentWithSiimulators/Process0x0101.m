@@ -15,7 +15,7 @@ end
 
 pos_ubx = [x' y' z'];
 err_3D = sqrt(sum((pos_ubx - true_position) .^ 2, 2));
-ind    = intersect(find(t >= x_min_val), find(t <= x_max_val));
+ind    = intersect(find(t >= min(t)), find(t <= max(t)));
 t      = t(ind);
 err_3D = err_3D(ind);
 x      = x(ind);

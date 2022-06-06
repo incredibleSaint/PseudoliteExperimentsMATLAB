@@ -22,8 +22,8 @@ diff_doppl_ubx      = doppl_ubx(  ind_1hz, :) - doppl_ubx(  ind_1hz, 1);
 diff_speed               = diff(ps_rng_ubx(ind_1hz, :));
 tow_ubx                   = tow_ubx(ind_1hz);
 
-delta_time = round(tow_ubx) - tow_ubx;% + 0.0201;% - 5e-3; %+5e-3;
-add_psrange = diff_speed' .* delta_time(2 : end);
+delta_time = round(tow_ubx) - tow_ubx;% + 50e-3;% + 0.0201;% - 5e-3; %+5e-3;
+add_psrange = (diff_speed - diff_speed(:, 1))' .* delta_time(2 : end);
 data_size = size(add_psrange);
 
 diff_ps_rng_ublox = diff_ps_rng_ublox  + ...
@@ -72,14 +72,19 @@ diff_delay_theor = theor_delay - theor_delay(1, :);
 diff_doppl_theor = doppl_theor - doppl_theor(1, :);
 
 diff_ubx_theor = ubx_diff_psrange - diff_delay_theor;
-diff_ubx_theor = ubx_diff_psrange - diff_delay_theor;
+
 diff_doppl_ubx_theor = -diff_doppl_ubx_proc - diff_doppl_theor;
 
-figure;
+plots_num = 2; figure;
+subplot(plots_num, 1, 1);
 plot(comm_tow(1, :), diff_doppl_ubx_theor');
-grid on;
-leg = legend(legend_text);
+grid on; leg = legend(legend_text);
 title("Diff doppler between ublox and theor, Hz");
+
+subplot(plots_num, 1, 2);
+plot(comm_tow(1, :), diff_doppl_theor);
+grid on; leg = legend(legend_text);
+title("Relative theorethical doppler, Hz");
 
 plots_num = 3; figure;
 x_lims = [comm_tow(1, 1) comm_tow(1, end)];% [379000 381720];
