@@ -13,7 +13,7 @@ prms = Setup();
 ubx_log = GetUbxLogFileName();
 
 fpga_log = [ubx_log '.txt'];
-ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
+% ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
 % ubx_log = 'gps_real_6june2022';
 % ubx_log = 'glonass_real_6june2022';
 
@@ -262,16 +262,16 @@ if is_draw_psr_error
     led.NumColumns = 2;
 end
 % --- Plot speed of changing difference pseudoranges (Ublox) ------
-speed_ubx_ps_rng = diff(ps_rng(1 : posCnt, :));
-figure; plot(tow(1 : posCnt -1), speed_ubx_ps_rng);
-title("diff(psR_{ubx}), m");
-xlabel('t, сек');
-ylabel('speed diff(R), м/c');
-grid on; ylim([-2e3 1e3]);
-leg = legend(legend_text);
-title(leg, 'CA number');
-leg.NumColumnsMode = 'manual';
-led.NumColumns = 2;
+% speed_ubx_ps_rng = diff(ps_rng(1 : posCnt, :));
+% figure; plot(tow(1 : posCnt -1), speed_ubx_ps_rng);
+% title("diff(psR_{ubx}), m");
+% xlabel('t, сек');
+% ylabel('speed diff(R), м/c');
+% grid on; ylim([-2e3 1e3]);
+% leg = legend(legend_text);
+% title(leg, 'CA number');
+% leg.NumColumnsMode = 'manual';
+% led.NumColumns = 2;
 % cd 'Results'
 % saveas(figErr, [fileName '.emf']);
 % cd ..

@@ -30,7 +30,14 @@ ubx_log = 'glonass_right_log';
 % ubx_log = 'glonass_fix_nav_bit_dur';
 % ubx_log = 'glonass_without_ch_2';
 ubx_log = 'glonass_around_t_b';
-% ubx_log = 'gln_around_tb_v2';
+ubx_log = 'gln_around_tb_v2';
 % ubx_log = 'glonass_t_b_minus_800sec';
+ubx_log = 'gln_ch_0_1_2_turned_off';
+% ubx_log = 'gln_ch_0_1_2_turned_off_v2';
+ubx_log = 'gln_ch_0_1_2_turned_off_v3';
+ubx_log = 'gln_exper_delta_delay_for_freq';
+% ubx_log ='gln_around_tb_v3';
+ubx_log ='gln_sign_of_dt_sv';
+ubx_log = 'gln_try_gps_relat';
 
 end

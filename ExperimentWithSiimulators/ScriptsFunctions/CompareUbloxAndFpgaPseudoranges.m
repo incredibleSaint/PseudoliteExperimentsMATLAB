@@ -1,7 +1,7 @@
 function CompareUbloxAndFpgaPseudoranges(sv_id, t, tow_ubx, ps_rng_ubx, ...
                                                       doppl_ubx, x_min_val, x_max_val, prms)
 c =  2.99792458e8;
-
+ref_ch = 4;
 
 
 %% ublox message frequency is more than 1 Hz:
@@ -17,17 +17,17 @@ end
 figure; plot(ps_rng_ubx(:, 4));
 
 % Round ublox data to integer TOW: 
-diff_ps_rng_ublox = ps_rng_ubx(ind_1hz, :) - ps_rng_ubx(ind_1hz, 1);
-diff_doppl_ubx      = doppl_ubx(  ind_1hz, :) - doppl_ubx(  ind_1hz, 1);
+diff_ps_rng_ublox = ps_rng_ubx(ind_1hz, :) - ps_rng_ubx(ind_1hz, ref_ch);
+diff_doppl_ubx      = doppl_ubx(  ind_1hz, :) - doppl_ubx(  ind_1hz, ref_ch);
 diff_speed               = diff(ps_rng_ubx(ind_1hz, :));
 tow_ubx                   = tow_ubx(ind_1hz);
 
 delta_time = round(tow_ubx) - tow_ubx;% + 50e-3;% + 0.0201;% - 5e-3; %+5e-3;
-add_psrange = (diff_speed - diff_speed(:, 1))' .* delta_time(2 : end);
+add_psrange = (diff_speed - diff_speed(:, ref_ch))' .* delta_time(2 : end);
 data_size = size(add_psrange);
 
-diff_ps_rng_ublox = diff_ps_rng_ublox + ...
-                                        [zeros(data_size(1), 1) add_psrange]';
+diff_ps_rng_ublox = diff_ps_rng_ublox;% + ...
+%                                         [zeros(data_size(1), 1) add_psrange]';
 tow_ubx = round(tow_ubx);
 gnss_idx = find(t.gnss_id == prms.fpga_gnss_id);        
 for n = 1 : length(sv_id)
@@ -68,10 +68,21 @@ for i = 1 : length(sv_id)
 end
 
 
-diff_delay_theor = theor_delay - theor_delay(1, :);
-diff_doppl_theor = doppl_theor - doppl_theor(1, :);
+diff_delay_theor = theor_delay - theor_delay(ref_ch, :);
+diff_doppl_theor = doppl_theor - doppl_theor(ref_ch, :);
 
 diff_ubx_theor = ubx_diff_psrange - diff_delay_theor;
+
+% Test (overamplification psrange) =======
+figure; subplot(2, 1, 1);
+obj_p = plot(ps_rng_ubx);
+obj_p(1).LineWidth = 2;
+title("Ublox psrange, m");
+subplot(2, 1, 2);
+plot(diff_delay_theor');
+title("Theor diff_psrange, m");
+% Test end ==========================
+
 
 diff_doppl_ubx_theor = -diff_doppl_ubx_proc - diff_doppl_theor;
 
@@ -89,7 +100,8 @@ title("Relative theorethical doppler, Hz");
 plots_num = 3; figure;
 x_lims = [comm_tow(1, 1) comm_tow(1, end)];% [379000 381720];
 subplot(plots_num, 1, 1);
-plot(comm_tow(1, :)', diff_ubx_theor');
+obj_p = plot(comm_tow(1, :)', diff_ubx_theor');
+obj_p(1).LineWidth = 2;
 grid on;
 title("Diff between ublox and theor, met");
 xlabel("TOW, sec");
