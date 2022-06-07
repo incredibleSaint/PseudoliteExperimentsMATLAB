@@ -5,268 +5,19 @@ addpath(folderPath);
 addpath([cd '/Records']);
 %---------------------------------
 %-- Parser of U-blox Messages: --%
-%---------------------------------
-% dirName  = 'D:\Windows\Programming\Matlab\GNSS\ModelHelgor\AddFunctions\';
-folder = '/home/s/Documents/';
+% 
+user = getenv('USERNAME');
+folder = ['/home/' user '/Documents/'];
 prms = Setup();
-% -- File with 4 interseals, 4 pps, 4 clocks: -----
-% fileName = 'Interseal_Real4sv_sv16_23_10_7_1d_launch_v1.ubx'; %'\ReleaseBuild_200meters.ubx';% 'COM5_201210_093149.ubx';
-%--------------------------------------------------
-fileName = 'COM33_220303_095213.ubx';
-fileName = 'COM33_220303_095822.ubx';
-fileName = 'COM33_220303_100600.ubx';
-fileName = 'COM33_220303_144854.ubx';
-fileName = 'COM33_220304_095833.ubx';
-fileName = 'COM33_220304_130253.ubx'; % non-constant speed of psR changing is working
-fileName = 'COM33___115200_220307_083208.ubx'; %486973 common error on 60 ms
-fileName = 'COM33___115200_220307_111931.ubx';
-fileName = 'COM33___115200_220308_111151.ubx'; % error should be 1 sec. Why error is 2 sec?
-fileName = 'COM33___115200_220308_112436.ubx';
-fileName = 'COM33___115200_220308_113533.ubx';
-fileName = 'COM33___115200_220308_112436.ubx';
-fileName = 'COM33___115200_220308_113533.ubx';
-fileName = 'GPS_220407_112629.ubx'; % Maks variant
-fileName = 'GPS_1Hz_upd_220408_125353.ubx'; % t_propag shouldn't be
-fileName = 'GPS_1Hz_upd_v2_220408_125353.ubx';
-fileName = 'gps_5ch_11_12_13_14_22.ubx';
-fileName = 'gps_5ch_11_12_13_14_22_v2.ubx';
-fileName = 'gps_5ch_11_12_13_14_22_with_propag.ubx';
-fileName = 'gps_new.ubx';
-fileName = 'gps_start_clk_time_corr_backwards_1Hz_v3.ubx';
-fileName = 'GPS_with_corr_220407_204053';
-fileName = 'gps_8_apr_version';
-fileName = 'gps_ionosph_null_3';
-% fileName = 'gps_ionosph_null_sv_clk_err_null_9sv_dt_sv_like_in_commit_2'; % good
-fileName = 'gps_ionosph_null_dt_sv_only_relat_effect'; %good
-% fileName = 'gps_with_ionosph_and_dt_sv_only_relat_effect';
-% fileName = 'gps_ionosph_null_sv_clk_err_null';
-% fileName = 'gps_ionosph_null_sv_clk_err_null_5sv';
-% fileName = 'gps_ionosph_null_sv_clk_err_null_5sv_without_t_prop';
-% fileName = 'gps_ionosph_null_sv_clk_err_null_5sv_with_2_t_prop';
-% ========== With ionosphere constant: ====================
-% fileName = 'gps_ionosph_null_sv_clk_err_null_9sv_1_t_prop';
-fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff';
 
-% fileName = 'gps_ionosph_null_dt_sv_null_with_t_iono_and_relat_eff_2';
-% fileName = 'gps_ionosph_constant_and_relat_eff_maks';
-% fileName = 'gps_trop_iono_relat_effect';
-% fileName = 'gps_only_relat_effect';
-% fileName = 'gps_check_old_my_way';
-% fileName = 'gps_with_troposp_satell_time';
-% fileName = 'gps_iono_trop_relat_eff';
-% fileName = 'gps_only_full_ionosph_and_relat_eff';
-% fileName = 'gps_only_full_ionosph_and_relat_eff';
-% fileName = 'gps_ideal start';
-% fileName = 'gps_with_all_sat_time'; % start = 379920 + 60 * 25;   WITHOUT troposph
-% fileName = 'gps_with_all_sat_time_379920_maybe_wrong_tgd'; % WITHOUT troposh
-% fileName = 'gps_fix_int_clk_count';
-% fileName = 'gps_user_time_fix_int_clk';
-% fileName = 'gps_379920';
-% fileName = 'gps_uint_clk_count';
-% fileName = 'withou_iono';
-% fileName = 'with_constant_iono_without_troposphere'; %non-zero alpha, betta in almanac ((
-% fileName = 'with_const_iono';
-% fileName = 'fix_int_clk_const_iono_without_tropo_with_sv_clk_err';
-% fileName = 'gps_const_iono_without_tropo'; % user time
-% fileName = 'gps_my_way_const_iono_full_clk_error_without_tropo';
-fileName = 'gps_full_iono_cold_start_on_high_error';
-fileName = 'gps_full_iono_cold_start_on_high_error_2';
-fileName = 'const_iono_sv_time_with_cold_start';
-fileName = 'const_iono_sv_time_with_several_cold_start';
-fileName = 'gps_1Hz_full_iono_user_time';
-% fileName = '10_sv_usual_tow_full_iono_sv_time';
-% fileName = '10_sv_tow_min_70_min_full_iono_sv_time';
+ubx_log = GetUbxLogFileName();
 
-
-% fileName = 'const_iono_sv_time_with_several_cold_start';
-% fileName = '380826_cold_start';
-fileName = 'full_iono_user_time_usual_tow';
-fileName = 'check_after_merge';
-fileName = 'check_after_new_commit';
-fileName = 'fpga_log_together';
-% fileName = 'without_0_ch_with_fpga_log';
-% fileName = 'log_fpga_without_0ch_user_time_second';
-% fileName = 'minus_70min_user_time_rec4_const_iono';
-fileName = 'gps_full_iono_log_379920_user_time';
-% =======================================================
-% fileName = 'gps_usual_corr_start_time_clk_9sv';
-% fileName = 'gps_maks_release_9sv';
-% fileName = 'gps_maks_release_9sv_v2';
-% fileName = 'gps_maks_release_9sv_new_2_propag';
-% fileName = 'gps_maks_release_9sv_new_2_propag_plus';
-% fileName = 'gps_maks_release_9sv_new_2_propag_with_bits_delay';
-% fileName = 'gps_maks_release_9sv_new_2_propag_minus';
-% fileName = 'gps_5ch_11_12_13_14_22_20ms.ubx';
-% fileName = 'gps_5ch_11_12_13_14_22_15ms.ubx';
-% fileName = 'gps_start_clk_time_corr.ubx';
-% fileName = 'gps_2Hz_start_clk_time_corr.ubx';
-% fileName = 'gps_start_clk_time_corr_10Hz.ubx';
-% fileName = 'gps_start_clk_time_corr_backwards_1Hz.ubx';
-% fileName = 'gps_20ms_delay_set_freq.ubx';
-% fileName = 'gps_start_clk_time_corr_backwards_1Hz_v2.ubx';
-% fileName = 'gps_start_clk_time_corr_backwards_1Hz_v3.ubx';
-% fileName = 'ReferenceForDebugSimulation_COM53_210702_151500.ubx';
-% fileName = 'Big_Case_Interseal_2Clocks_MixedPseudo_sv_10_11_15_16_1st_launch.ubx';
-
-draw_log_fpga = 0;
-%=== check fpga log ===========
-% filename = 'LogFpga_together_user_time.txt';
-% filename = 'LogFpga_second.txt';
-% filename = 'LogFpga.txt';
-filename = 'LogFpga_simult_dump.txt';
-% filename = 'LogFpga_4Hz.txt';
-filename = 'LogFpga_gps_full_iono_log_379920_user_time.txt';
-
-%% Compare u-blox and fpga simulator
-% case 1:
-ubx_log = 'gps_full_iono_log_379920_user_time';
-fpga_log = 'LogFpga_gps_full_iono_log_379920_user_time.txt';
-
-% % % case 2:
-ubx_log = 'check_psr_minus_10mins';
-fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time.txt';
-
-% % case 3:
-ubx_log = 'log_fpga_min10mins_full_iono_user_time_v2';
-fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_v2.txt';
-
-% % case 4:
-% ubx_log = 'log_fpga_min10mins_full_iono_user_time_v3';
-% fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_v3.txt';
-
-% case 5:
-% ubx_log = 'log_fpga_min10mins_full_iono_user_time_doppl_exper_delta_v4';
-% fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_exper_delta_v4.txt';
-
-% case 6
-% ubx_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz';
-% fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz.txt';
-
-% cold start 380150
-% ubx_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz_just_temp_exp';
-% fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz_cold_start_380150.txt';
-
-% coef_freq = -temp_theor / (1.0 - 5e-6);
-ubx_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz_coef_freq_5e6';
-fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz_coef_freq_5e6.txt';
-
-ubx_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz_both_coef_5e6';
-fpga_log = 'LogFpga_gps_full_iono_log_379920_minus10mins_user_time_5Hz_both_coef_5e6.txt';
-
-ubx_log = 'update_1e9_min_5e6';
-fpga_log = 'update_1e9_min_5e6.txt';
-
-ubx_log   = 'both_exper_delta_delay';
-fpga_log = 'both_exper_delta_delay.txt';
-
-ubx_log = 'both_exper_delta_user_time_minus70mins';
-
-ubx_log = 'upd_time_1e9minus5e6';
-fpga_log = 'upd_time_1e9minus5e6.txt';
-
-ubx_log = 'update_time_1e9minus5e3_user_time';
-fpga_log = 'update_time_1e9minus5e3_user_time.txt';
-
-%% const iono really
-ubx_log = '1e9minus1mcsec'; %% minus 10 mcs really
-fpga_log = '1e9minus1mcsec.txt';
-
-ubx_log = 'update_time_1e9minux10e3_2';
-fpga_log = 'update_time_1e9minux10e3_2.txt';
-
-ubx_log = 'update_time1e9min10e3_3';
-fpga_log = 'update_time1e9min10e3_3.txt';
-%% end const iono
-
-%% full iono
-ubx_log = '1e9min10e3_full_iono';
-fpga_log = '1e9min10e3_full_iono.txt';
-%% end iono
-
-%% full iono and tropo
-ubx_log = 'full_iono_full_tropo_user_time_upd_time_minus_10e3';
-fpga_log = 'full_iono_full_tropo_user_time_upd_time_minus_10e3.txt';
-
-ubx_log ='check_start_delay';
-fpga_log = 'check_start_delay.txt';
-
-ubx_log = 'plus5msForSetPsrng';
-fpga_log = 'plus5msForSetPsrng.txt';
-
-ubx_log = 'check_start_plus_5e6';
-fpga_log = 'check_start_plus_5e6.txt';
-
-ubx_log = 'chech_6e6_start_time';
-fpga_log = 'chech_6e6_start_time.txt';
-
-ubx_log = 'check_plus11e6_start_clk_time';
-
-% First ARM reboot =========
-ubx_log = 'start_clk_time_6e6';%% 6 ms
-
-ubx_log = 'check_6e6_start_clk_time_again';%% 6 ms
-
-ubx_log = 'start_clk_time_6e6_again_again';%% 6 ms
-
-% Second ARM reboot ========
-ubx_log = 'start_clk_time_6e6_third_time'; %% 11 ms delay
-
-% ubx_log = 'check_after_reset_arm_6e6_second'; %% 6 ms
-
-%% =========== Glonass ==============
-% ubx_log = 'glonass_check_psrng';
-% ubx_log = 'glonass_check_psrng_2';
-% ubx_log = 'glonass_new_check';
-% ubx_log = 'glonass_using_t_propag_for_calc';
-% ubx_log = 'glonass_calc_min_1_sec';
-% ubx_log = 'glon_plus_1sec';
-% ubx_log = 'glon_plus_1sec_v3';
-% ubx_log = 'glon_min_1sec_in_calc';
-% ubx_log = 'glon_min_1sec_ch_num_plus_1';
-% ubx_log = 'glon_minus_1sec_in_calc_without_sv12';
-% ubx_log = 'glonass_minus_1sec_in_calc_without_sv12';
-% ubx_log = 'glonass_3D_fix';
-% ubx_log = 'glonass_3dfix_min_omega_dote';
-% % ubx_log = 'glonass_minus_omega_dot_e_calc_minus_1sec';
-% ubx_log = 'glonass_minus_omega_dot_e_calc_plus_1sec';
-% ubx_log = 'gps_check_new_message';
-% ubx_log = 'gps_new_message_check';
-
-%% ========== Fpga counter for time ========
-%%             GPS
-% ubx_log = 'gps_fpga_cntr_check'; % -8 ms error
-% ubx_log = 'gps_fpga_cntr_check_2';
-% ubx_log = 'gps_cntr_without_tropo_only_full_iono';
-% ubx_log = 'gps_cntr_without_tropo_only_full_iono_2';
-% % ubx_log ='gps_check_with_cntr_commit_hash_cbb16b6d';
-% % ubx_log = 'gps_commit_d88b87a8';
-% ubx_log = 'gps_bds_with_logger_v1';
-% % ubx_log = 'gps_bds_with_logger_v3';
-% ubx_log  = 'gps_bds_with_logger_v4';
-% ubx_log = 'bds_with_logger_v6_all_gnss_position';
-% 
-% 
-% %% Beidou
-% % ubx_log = 'beidou_new_mess';
-% ubx_log = 'bds_nav_mess_skip_bits_plus_one';
-% ubx_log = 'bds_withoou_ionosph';
-% ubx_log = 'bds_startcounter_plus_20ms';
-
-%% glonass 
-ubx_log = 'glonass_right_set_freq';
-ubx_log = 'glonass_right_log';
-% ubx_log = 'glonass_calc_without_t_propag';
-% ubx_log = 'glonass_calc_plus_t_propag';
-% ubx_log = 'glonass_calc_minus_t_propag';
-% ubx_log = 'glonass_calc_minus_t_propag_v2';
-ubx_log = 'glonass_fix_nav_bit_dur';
-ubx_log = 'glonass_without_ch_2';
 fpga_log = [ubx_log '.txt'];
 ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
 % ubx_log = 'gps_real_6june2022';
 % ubx_log = 'glonass_real_6june2022';
 
-% [t, time, sv_id_fpga, chs_num] = ReadFpgaLog(prms, [folder fpga_log]);
+[t, time, sv_id_fpga, chs_num] = ReadFpgaLog(prms, [folder fpga_log]);
 if draw_log_fpga
     figure; plot(diff(time));
     for n = 1 : length(sv_id_fpga)
@@ -311,7 +62,7 @@ draw_elev_res = 0;
 % Start time in *.ubx file. GNSS time of week (seconds)
 start_time = 379900;
 % Limit for plot (minutes)
-mins = 30;
+mins = 90;
 
 fullName = [folder ubx_log '.ubx'];
 
@@ -329,8 +80,8 @@ y_min_val = 0;
 y_max_val = 20;
 
 % glonass real
-x_max_val = (145838 + 30 * 60)*1e3;
-x_min_val = (145258 ) * 1e3; 
+% x_max_val = (145838 + 30 * 60)*1e3;
+% x_min_val = (145258 ) * 1e3; 
 
 figure;
 title(ubx_log);
@@ -340,9 +91,9 @@ subplot(5, 1, 1);
 subplot(5, 1, 2);
 [h_error, t0102] = Process0x0102(Mes0x0102, true_position, ubx_log, x_min_val, x_max_val);
 
-% subplot(5, 1, 3);
-% HorizontalError(err_3D, h_error, t0101, t0102, ubx_log, ...
-%                 x_min_val, x_max_val);
+subplot(5, 1, 3);
+HorizontalError(err_3D, h_error, t0101, t0102, ubx_log, ...
+                x_min_val, x_max_val);
 subplot(5, 1, 4);
 [el, pr_res, t0135, sv_id] = Process0x0135(Mes0x0135, x_min_val, x_max_val);
 

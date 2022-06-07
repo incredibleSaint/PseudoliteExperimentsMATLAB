@@ -26,7 +26,7 @@ delta_time = round(tow_ubx) - tow_ubx;% + 50e-3;% + 0.0201;% - 5e-3; %+5e-3;
 add_psrange = (diff_speed - diff_speed(:, 1))' .* delta_time(2 : end);
 data_size = size(add_psrange);
 
-diff_ps_rng_ublox = diff_ps_rng_ublox  + ...
+diff_ps_rng_ublox = diff_ps_rng_ublox + ...
                                         [zeros(data_size(1), 1) add_psrange]';
 tow_ubx = round(tow_ubx);
 gnss_idx = find(t.gnss_id == prms.fpga_gnss_id);        
