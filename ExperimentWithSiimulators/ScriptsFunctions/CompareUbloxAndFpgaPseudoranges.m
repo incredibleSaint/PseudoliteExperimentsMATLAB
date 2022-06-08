@@ -1,7 +1,7 @@
 function CompareUbloxAndFpgaPseudoranges(sv_id, t, tow_ubx, ps_rng_ubx, ...
                                                       doppl_ubx, x_min_val, x_max_val, prms)
 c =  2.99792458e8;
-ref_ch = 4;
+ref_ch = 1;
 
 
 %% ublox message frequency is more than 1 Hz:
@@ -26,8 +26,8 @@ delta_time = round(tow_ubx) - tow_ubx;% + 50e-3;% + 0.0201;% - 5e-3; %+5e-3;
 add_psrange = (diff_speed - diff_speed(:, ref_ch))' .* delta_time(2 : end);
 data_size = size(add_psrange);
 
-diff_ps_rng_ublox = diff_ps_rng_ublox;% + ...
-%                                         [zeros(data_size(1), 1) add_psrange]';
+diff_ps_rng_ublox = diff_ps_rng_ublox + ...
+                                        [zeros(data_size(1), 1) add_psrange]';
 tow_ubx = round(tow_ubx);
 gnss_idx = find(t.gnss_id == prms.fpga_gnss_id);        
 for n = 1 : length(sv_id)
@@ -124,7 +124,8 @@ leg = legend(legend_text);
 subplot(plots_num, 1, 2);
 res1 = (diff_ubx_theor(:, 2 : end))';
 res2 = diff(theor_delay');
-plot(comm_tow(1, 2 : end), res1 ./ res2);
+obj_p = plot(comm_tow(1, 2 : end), res1 ./ res2);
+obj_p(1).LineWidth = 2;
 title("diff betw ubx and theor) ./ diff(theor)");
 grid on;
 xlim(x_lims); %ylim([-0.2 0.2]);

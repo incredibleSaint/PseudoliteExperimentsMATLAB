@@ -13,11 +13,12 @@ prms = Setup();
 ubx_log = GetUbxLogFileName();
 
 fpga_log = [ubx_log '.txt'];
-% ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
+ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
 % ubx_log = 'gps_real_6june2022';
 % ubx_log = 'glonass_real_6june2022';
 
 [t, time, sv_id_fpga, chs_num] = ReadFpgaLog(prms, [folder fpga_log]);
+draw_log_fpga = 0;
 if draw_log_fpga
     figure; plot(diff(time));
     for n = 1 : length(sv_id_fpga)

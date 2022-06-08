@@ -13,7 +13,7 @@ function ubx_log = GetUbxLogFileName()
 % ubx_log  = 'gps_bds_with_logger_v4';
 % ubx_log = 'bds_with_logger_v6_all_gnss_position';
 % 
-% 
+%  
 % %% Beidou
 % % ubx_log = 'beidou_new_mess';
 % ubx_log = 'bds_nav_mess_skip_bits_plus_one';
@@ -39,5 +39,9 @@ ubx_log = 'gln_exper_delta_delay_for_freq';
 % ubx_log ='gln_around_tb_v3';
 ubx_log ='gln_sign_of_dt_sv';
 ubx_log = 'gln_try_gps_relat';
-
+ubx_log = 'glnl_eph_utc_time';
+ubx_log = 'gln_turn_off_0_1_2_chs_with_cold_start';
+ubx_log = 'gln_with_tropo_2';
+ubx_log = 'gln_with_plus_troposph';
+ubx_log = 'gln_without_trop';
 end
