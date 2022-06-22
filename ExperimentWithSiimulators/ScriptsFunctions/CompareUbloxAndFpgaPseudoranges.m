@@ -1,7 +1,12 @@
-function CompareUbloxAndFpgaPseudoranges(sv_id, t, tow_ubx, ps_rng_ubx, ...
-                                                      doppl_ubx, x_min_val, x_max_val, prms)
+function CompareUbloxAndFpgaPseudoranges(sv_id, t, res, ...
+                                          x_min_val, x_max_val, prms)
 c =  2.99792458e8;
-ref_ch = 1;
+ref_ch = prms.ref_channel;
+
+tow_ubx     = res.tow;
+ps_rng_ubx  = res.ps_rng;
+doppl_ubx   = res.doppl_ubx;
+carr_ph_ubx = res.carrier_phase;
 
 
 %% ublox message frequency is more than 1 Hz:
@@ -9,25 +14,26 @@ rounded_t = round(tow_ubx);
 un_round_tow = unique(rounded_t);
 ind_1hz = zeros(1, length(un_round_tow));
 for n = 1 : length(un_round_tow)
-    min_diff = min(abs(tow_ubx - un_round_tow(n)));
-     ind          = find(abs(tow_ubx - un_round_tow(n)) == min_diff);
-     ind_1hz(n) = ind(1);
+    min_diff   = min( abs(tow_ubx - un_round_tow(n)));
+    ind        = find(abs(tow_ubx - un_round_tow(n)) == min_diff);
+    ind_1hz(n) = ind(1);
 end
 
 figure; plot(ps_rng_ubx(:, 4));
 
 % Round ublox data to integer TOW: 
-diff_ps_rng_ublox = ps_rng_ubx(ind_1hz, :) - ps_rng_ubx(ind_1hz, ref_ch);
-diff_doppl_ubx      = doppl_ubx(  ind_1hz, :) - doppl_ubx(  ind_1hz, ref_ch);
-diff_speed               = diff(ps_rng_ubx(ind_1hz, :));
-tow_ubx                   = tow_ubx(ind_1hz);
+diff_ps_rng_ublox = ps_rng_ubx( ind_1hz, :) - ps_rng_ubx(  ind_1hz, ref_ch);
+diff_doppl_ubx    = doppl_ubx(  ind_1hz, :) - doppl_ubx(   ind_1hz, ref_ch);
+diff_carr_ph_ubx  = carr_ph_ubx(ind_1hz, :)  - carr_ph_ubx(ind_1hz, ref_ch); 
+diff_speed        = diff(ps_rng_ubx(ind_1hz, :));
+tow_ubx           = tow_ubx(ind_1hz);
 
 delta_time = round(tow_ubx) - tow_ubx;% + 50e-3;% + 0.0201;% - 5e-3; %+5e-3;
 add_psrange = (diff_speed - diff_speed(:, ref_ch))' .* delta_time(2 : end);
 data_size = size(add_psrange);
 
-diff_ps_rng_ublox = diff_ps_rng_ublox + ...
-                                        [zeros(data_size(1), 1) add_psrange]';
+diff_ps_rng_ublox = diff_ps_rng_ublox ;%+ ...
+                                        %[zeros(data_size(1), 1) add_psrange]';
 tow_ubx = round(tow_ubx);
 gnss_idx = find(t.gnss_id == prms.fpga_gnss_id);        
 for n = 1 : length(sv_id)
@@ -41,7 +47,7 @@ for n = 1 : length(sv_id)
         doppl_calc    = t.doppler_calc(   idx);
 
         % Intersect with ublox TOW:
-        tow_fpga = round(tow_fpga);%delete this if update_freq ~= 1 Hz
+%         tow_fpga = round(tow_fpga);%delete this if update_freq ~= 1 Hz
         common_tow = intersect(tow_fpga, tow_ubx);
         
         fpga_idx   = ismember(tow_fpga, common_tow);
@@ -97,7 +103,7 @@ plot(comm_tow(1, :), diff_doppl_theor);
 grid on; leg = legend(legend_text);
 title("Relative theorethical doppler, Hz");
 
-plots_num = 3; figure;
+plots_num = 4; figure;
 x_lims = [comm_tow(1, 1) comm_tow(1, end)];% [379000 381720];
 subplot(plots_num, 1, 1);
 obj_p = plot(comm_tow(1, :)', diff_ubx_theor');
@@ -108,6 +114,14 @@ xlabel("TOW, sec");
 ylabel("(psR_{ubx} - psR_{ubx}(1, :)) - (psR_{theor} - psR_{theor}(1, :)), m");
 xlim(x_lims); ylim([-10 10]);
 % ylim auto
+leg = legend(legend_text);
+
+subplot(plots_num, 1, 2);
+obj_p = plot(diff_carr_ph_ubx);
+obj_p(1).LineWidth = 2;
+title("Diff Carrier phase, cycles");
+grid on;
+% xlim(x_lims);
 leg = legend(legend_text);
 
 % diff_delay_fpga = fpga_delay - fpga_delay(1, :);
@@ -121,7 +135,7 @@ leg = legend(legend_text);
 % xlim([379e3 381e3]); ylim([-20 30]);
 % leg = legend(legend_text);
 
-subplot(plots_num, 1, 2);
+subplot(plots_num, 1, 3);
 res1 = (diff_ubx_theor(:, 2 : end))';
 res2 = diff(theor_delay');
 obj_p = plot(comm_tow(1, 2 : end), res1 ./ res2);
@@ -144,7 +158,7 @@ leg = legend(legend_text);
 % xlim([379e3 381e3]); ylim([-10 20]);
 % leg = legend(legend_text);
 
-subplot(plots_num, 1, 3);
+subplot(plots_num, 1, 4);
 plot((comm_tow(1, 2 : end))', diff((theor_delay - theor_delay(1, :))')); 
 title("diff(psR_{theor}), m");
 xlabel("TOW, sec");

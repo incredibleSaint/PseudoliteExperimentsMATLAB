@@ -45,9 +45,13 @@ if prms.ublox_gnss_id == 0
 elseif prms.ublox_gnss_id == 3
     sv_id = [10 11 23 20 37 34 12 19];
 elseif prms.ublox_gnss_id == 6
-    sv_id = [13 22 12 4 21 3 14 23];
+%     sv_id = [13 22 12 4 21 3 14 23];
+    sv_id = [13 22 12 4 14 23 21 5];
 end
 prms.sv_id = sv_id;
+prms.ref_channel = 4;
 
 prms.glonass.litera = [1, -4, 5, 6, 1, -4, 5, 6, -2, -7, 0, -1, -2, -7, 0, -1, 4, -3, 3, 2, 4, -3, 3, 2];
+
+prms.light_speed = 299792458;
 end
