@@ -24,6 +24,13 @@ cnt0101 = 0;
 cnt0102 = 0;
 cnt0135 = 0;
 Mes0x0102 = [];
+t0215 = [];
+t0101 = [];
+t0102 = [];
+t0135 = [];
+min_tow = 1;
+max_tow = 60 * 60 * 24 * 7;
+sec_to_ms = 1e3;
 if(file ~= -1)
     while(portPos < portCnt)
         fseek(file, portion * portPos, 'bof');
@@ -56,7 +63,7 @@ if(file ~= -1)
                     switch (command)
                         case hex2dec('1502') % UBX-RXW-RAWX
                             
-                            cnt1502 = cnt1502 + 1;
+                            
                             pp     = pos + 6; % after header
                             rcvTowUInt8 = data(pp + (0 : 7));
                             Data.rcvTow = typecast(uint8(rcvTowUInt8), ...
@@ -122,39 +129,48 @@ if(file ~= -1)
                                 Data.trkStat{k} = ...
                                       dec2bin(data(pp + (46 + 32 * (k - 1))));
                             end
-                            Mes0x1502{cnt1502} = Data;
+                            if Data.rcvTow >= min_tow && Data.rcvTow <= max_tow
+                                if isempty(find(t0215 == Data.rcvTow))
+                                    cnt1502 = cnt1502 + 1;
+                                    t0215(cnt1502) = Data.rcvTow;
+                                    Mes0x1502{cnt1502} = Data;
+                                end
+                            end
                             Data = [];
                             
                         case hex2dec('3501') 
-                            cnt0135 = cnt0135 + 1;
+                            
                             pp = pos + 6;
                             Data.tow =   data(pos + 9) * 2^24    + ...
                                     data(pos + 8) * 2^16    + ...
                                     data(pos + 7) * 2^8     + ...
-                                    data(pos + 6) * 2^0;
-                                
+                                    data(pos + 6) * 2^0;                                
                             version = data(pp + 4);
-                            Data.version = typecast(uint8(version), 'uint8');
-                            
+                            Data.version = typecast(uint8(version), 'uint8');                           
                             Data.num_svs = data(pp + 5);
-    %                         Data.num_svs = typecast(uint8(num_svs), 'uint8');
-                            
                             for n = 1 : Data.num_svs
                                 Data.gnss_id(n) = data(pp + (8   + 12 * (n -1)));
                                 Data.sv_id(n)      = data(pp + (9   + 12 * (n -1)));
                                 Data.cn0(n)       = data(pp + (10 + 12 * (n -1)));
                                 elev                     = data(pp + (11 + 12 * (n -1)));
                                 Data.elev(n)     = typecast(uint8(elev), 'int8');
-    %                             ff   = data(pp + (40 + 32 * (n - 1) + 0 : 2));
                                 pr_res =    data(pp + (14 + 12 * (n - 1) + (0 : 1)));
                                 Data.pr_res(n) = 0.1 * typecast(uint8(pr_res), 'int16');
                                 Data.flags{n}  = data(pp + (16 + 12 * (n -1) + (0 : 3)));
                             end
-                            Mes0x0135{cnt0135} = Data;
+                            if  Data.tow >= min_tow * sec_to_ms ... 
+                             && Data.tow <= max_tow * sec_to_ms
+                                if isempty(find(t0135 == Data.tow))
+                                    cnt0135 = cnt0135 + 1;
+                                    t0135(cnt0135) = Data.tow;
+                                    Mes0x0135{cnt0135} = Data;
+                                end
+                            end
+
                             Data = [];
                       
                         case hex2dec('0101')
-                            cnt0101 = cnt0101 + 1;
+                            
                             pp = pos + 6;
                             Data.tow =   data(pos + 9) * 2^24    + ...
                                     data(pos + 8) * 2^16    + ...
@@ -172,11 +188,16 @@ if(file ~= -1)
     
                             acc = data(pp + (16 : 19));
                             Data.acc = typecast(uint8(acc), 'uint32');
-    
-                            Mes0x0101{cnt0101} = Data;
+                            if  Data.tow >= min_tow * sec_to_ms ...
+                             && Data.tow <= max_tow * sec_to_ms
+                                if isempty(find(t0101 == Data.tow))
+                                    cnt0101 = cnt0101 + 1;
+                                    t0101(cnt0101) = Data.tow;
+                                    Mes0x0101{cnt0101} = Data;
+                                end
+                            end
                             Data = [];
                         case hex2dec('0201')
-                            cnt0102 = cnt0102 + 1;
                             pp = pos + 6;
                             Data.tow =   data(pos + 9) * 2^24    + ...
                                     data(pos + 8) * 2^16    + ...
@@ -200,8 +221,14 @@ if(file ~= -1)
     
                             vert_acc = data(pp + (24 : 27));
                             Data.height_acc = typecast(uint8(vert_acc), 'uint32');
-    
-                            Mes0x0102{cnt0102} = Data;
+                            if  Data.tow >= min_tow * sec_to_ms ...
+                             && Data.tow <= max_tow * sec_to_ms
+                                if isempty(find(t0102 == Data.tow))
+                                    cnt0102 = cnt0102 + 1;
+                                    t0102(cnt0102) = Data.tow;
+                                    Mes0x0102{cnt0102} = Data;
+                                end
+                            end
                             Data = [];
     
     %                     case hex2dec('3001')

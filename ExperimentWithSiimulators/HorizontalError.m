@@ -8,8 +8,8 @@ t_common = intersect(t_3D, t_h);
 ind_3D = ismember(t_3D, t_common);
 ind_h  = ismember(t_h,  t_common);
 
-err_3D_new  = err_3D(ind_3D);
-h_error_new = h_error(ind_h);
+err_3D  = err_3D(ind_3D);
+h_error = h_error(ind_h);
 
 err_2D = sqrt(err_3D .^ 2 - h_error' .^ 2);
 

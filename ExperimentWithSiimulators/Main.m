@@ -14,7 +14,7 @@ ubx_log = GetUbxLogFileName();
 
 
 fpga_log = [ubx_log '.txt'];
-% ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
+ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
 fullName = [folder ubx_log '.ubx'];
 % ubx_log = 'gps_real_6june2022';
 % ubx_log = 'glonass_real_6june2022';
@@ -99,6 +99,7 @@ if compare_ublox_and_fpga
     subplot(5, 1, 1);
     [err_3D, t0101, x, y, z] = Process0x0101(Mes0x0101, true_position, ubx_log, ...
                                              x_min_val, x_max_val);
+
     subplot(5, 1, 2);
     [h_error, t0102] = Process0x0102(Mes0x0102, true_position, ubx_log, x_min_val, x_max_val);
     
