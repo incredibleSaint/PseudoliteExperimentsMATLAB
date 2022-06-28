@@ -1,7 +1,6 @@
 function res = Process0x0215(prms, Mes0x1502)
 sizeStr = size(Mes0x1502);
 sv_id = prms.sv_id;
-glonass_id = 6;
 
 svNum = length(sv_id);
 tow = zeros(1, sizeStr(2));
@@ -51,6 +50,8 @@ for n = 1 : sizeStr(2)
                     tow(posCnt) = tod_glonass;
                 elseif prms.ublox_gnss_id == prms.ublox_gnss.beidou
                     tow(posCnt) = ProcessedMes.rcvTow - 14;
+                elseif prms.ublox_gnss_id == prms.ublox_gnss.galileo
+                    tow(posCnt) = ProcessedMes.rcvTow;
                 else 
                     tow(posCnt) = ProcessedMes.rcvTow;
                 end

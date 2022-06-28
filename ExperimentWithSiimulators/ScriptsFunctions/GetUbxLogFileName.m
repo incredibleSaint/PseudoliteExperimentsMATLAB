@@ -56,7 +56,8 @@ ubx_log = 'gps_fpga_interaction_new_commits';
 ubx_log = 'bds_fpga_with_3gnss';
 
 ubx_log = 'gps_d14ec845_2758750_1617300_5500165';
-% ubx_log = 'gps_d1c893a0_2758739_1617299_5500156_';
-% ubx_log = 'gps_d1c893a0_2758750_1617300_5500165';
-ubx_log = 'ublox8_log0';
+% % ubx_log = 'gps_d1c893a0_2758739_1617299_5500156_';
+% % ubx_log = 'gps_d1c893a0_2758750_1617300_5500165';
+% ubx_log = 'ublox8_log0';
+% ubx_log = 'GalileoL1';
 end

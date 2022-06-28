@@ -35,7 +35,10 @@ data_size = size(add_psrange);
 diff_ps_rng_ublox = diff_ps_rng_ublox ;%+ ...
                                         %[zeros(data_size(1), 1) add_psrange]';
 tow_ubx = round(tow_ubx);
-gnss_idx = find(t.gnss_id == prms.fpga_gnss_id);        
+gnss_idx = find(t.gnss_id == prms.fpga_gnss_id);
+assert_message = ['There is no ' prms.current_gnss ...
+                  ' in fpga_log.txt. Please, check choosed GNSS in Config.m'];
+assert(~isempty(gnss_idx), assert_message);
 for n = 1 : length(sv_id)
         % Fpga TOW:
         
@@ -50,8 +53,8 @@ for n = 1 : length(sv_id)
 %         tow_fpga = round(tow_fpga);%delete this if update_freq ~= 1 Hz
         common_tow = intersect(tow_fpga, tow_ubx);
         
-        fpga_idx   = ismember(tow_fpga, common_tow);
-        ublox_idx = ismember(tow_ubx,   common_tow);
+        fpga_idx  = ismember(tow_fpga, common_tow);
+        ublox_idx = ismember(tow_ubx,  common_tow);
 
         curr_del_calc_comm = curr_del_calc(fpga_idx);
         curr_clk_cnt_comm   = curr_clk_cnt(fpga_idx);

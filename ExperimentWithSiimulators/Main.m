@@ -15,7 +15,7 @@ ubx_log = GetUbxLogFileName();
 
 fpga_log = [ubx_log '.txt'];
 ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
-fullName = [folder ubx_log '.ubx'];
+fullName = [folder ubx_log '.ubx']; 
 % ubx_log = 'gps_real_6june2022';
 % ubx_log = 'glonass_real_6june2022';
 draw_log_fpga = 0;
