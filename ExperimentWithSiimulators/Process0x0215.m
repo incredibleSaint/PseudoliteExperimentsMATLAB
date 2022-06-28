@@ -52,7 +52,7 @@ for n = 1 : sizeStr(2)
                     tow(posCnt) = ProcessedMes.rcvTow - 14;
                 elseif prms.ublox_gnss_id == prms.ublox_gnss.galileo
                     tow(posCnt) = ProcessedMes.rcvTow;
-                else 
+                elseif prms.ublox_gnss_id == prms.ublox_gnss.gps 
                     tow(posCnt) = ProcessedMes.rcvTow;
                 end
                 ps_rng(posCnt, 1 : length(psRngs)) = psRngs;
