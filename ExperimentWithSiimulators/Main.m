@@ -8,9 +8,9 @@ visualize_ublox_log = false;
 % 2. Compare (pseudoranges, doppler, etc) fpga log and u-blox data 
 compare_ublox_and_fpga = false;
 % 3. Compare two u-blox files:
-compare_ublox_files = true;
+compare_ublox_files = false;
 % 4. Compare two fpga files:
-compare_fpga_files = 0;
+compare_fpga_files = 1;
 %% =======================
 
 folderPath = [cd '/ScriptsFunctions'];
@@ -23,7 +23,7 @@ user = getenv('USERNAME');
 folder = ['/home/' user '/Documents/'];
 prms = Setup();
 
-USE_GUI = 1;
+USE_GUI = 0;
 
 if USE_GUI
     if compare_ublox_and_fpga
@@ -38,20 +38,35 @@ if USE_GUI
         second_path = [second_folder '/' second_file];
     end
     if compare_fpga_files
-        [fpga_log, fpga_folder] = uigetfile({'*.txt'}, 'Choose first fpga log file'); 
-         [second_fpga_log, second_fpga_folder] = uigetfile({'*.txt'}, 'Choose second fpga log file'); 
-         second_fpga_path = [second_fpga_folder '/' second_fpga_log];
+        [fpga_file1, fpga_path1] = uigetfile({'*.txt'}, 'Choose first fpga log file');
+        fpga_log1 = fullfile(fpga_path1, fpga_file1);
+        [fpga_file1, fpga_path2] = uigetfile({'*.txt'}, 'Choose second fpga log file'); 
+        fpga_log2 = fullfile(fpga_path1, fpga_file1);
     end
 else
+    
     ubx_log = GetUbxLogFileName();
     
     ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
     fullName = [folder ubx_log '.ubx']; 
     fpga_log = [ubx_log '.txt'];
     fpga_folder = folder;
+    if compare_fpga_files
+        fpga_file1 = 'fpga_522062003';
+        fpga_file2 = 'fpga_522062401';
+        fpga_log1 = fullfile(folder, fpga_file2);
+        fpga_log2 = fullfile(folder, fpga_file1);
+        prms.fpga_logs{1} = fpga_log1;
+        prms.fpga_logs{2} = fpga_log2;
+    end
 end
 
+if compare_fpga_files
+    [t1, time1, sv_id_fpga1, chs_num1] = ReadFpgaLog(prms, fpga_log1);
+    [t2, time2, sv_id_fpga2, chs_num2] = ReadFpgaLog(prms, fpga_log2);
 
+    CompareFpgaLogFiles(t1, t2, time1, time2, prms);
+end
 
 
 if compare_ublox_and_fpga
