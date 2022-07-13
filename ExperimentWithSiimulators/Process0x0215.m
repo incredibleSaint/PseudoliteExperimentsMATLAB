@@ -36,7 +36,7 @@ for n = 1 : sizeStr(2)
             end
             inTimeShifts = (ProcessedMes.prMes - ProcessedMes.prMes(1)) / ...
                             prms.light_speed;
-            posCnt = posCnt + 1;
+            posCnt =  posCnt + 1;
             
             if(ProcessedMes.gnssId == prms.ublox_gnss_id)
                 if(prms.ublox_gnss_id == prms.ublox_gnss.glonass)

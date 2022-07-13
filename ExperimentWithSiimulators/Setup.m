@@ -48,6 +48,7 @@ prms.fpga_gnss_id = gnss_id;
 
 if gnss == 'gps'
     sv_id =  [1 6 12 14 15 17 19 24 32];
+%     sv_id = [23 27 18 16 10 15 13 8 26 7];
 elseif gnss == 'bds'
     sv_id = [10 11 23 20 37 34 12 19];
 elseif gnss == 'gln'

@@ -60,4 +60,6 @@ ubx_log = 'gps_d14ec845_2758750_1617300_5500165';
 % % ubx_log = 'gps_d1c893a0_2758750_1617300_5500165';
 % ubx_log = 'ublox8_log0';
 % ubx_log = 'GalileoL1';
+% ubx_log = 'gps_check_commit_5Jule';
+% ubx_log = 'gps_source_is_chip';
 end
