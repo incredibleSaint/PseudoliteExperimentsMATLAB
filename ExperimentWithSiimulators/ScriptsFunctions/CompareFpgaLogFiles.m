@@ -18,10 +18,10 @@ for n = 1 : length(sv_id)
     for k = 1 : files_num
         sv_idx = find(t{k}.sv_num == sv_id(n));
         idx{k} = intersect(gnss_idx, sv_idx);
-        tow_fpga{k}      = t{k}.tow(idx{k});
+        tow_fpga{k}        = t{k}.tow(idx{k});
         curr_del_calc{k} = t{k}.curr_delay_calc(idx{k});
-        curr_clk_cnt{k}  = t{k}.curr_clk_count( idx{k});
-        doppl_calc{k}    = t{k}.doppler_calc(   idx{k});
+        curr_clk_cnt{k}   = t{k}.curr_clk_count( idx{k});
+        doppl_calc{k}      = t{k}.doppler_calc(    idx{k});
     end
 
     common_tow = intersect(tow_fpga{1}, tow_fpga{2});
@@ -41,7 +41,7 @@ for n = 1 : length(sv_id)
 
     bits_delay = floor(curr_del_calc_comm1(idx{1}(1)) / 1e10 / 20e-3);
     theor_delay1(n, :)  = curr_del_calc_comm1 / 1e10 * c;
-    fpga_delay1( n, :)  = (bits_delay * 20e-3 + curr_clk_cnt_comm1 / 250e6) * c;
+    fpga_delay1( n, :)  = (bits_delay * 20e-3 + curr_clk_cnt_comm1 / 250e6) * c; % todo make bit_duration, clk_freq
     doppl_theor1(n, :) = doppl_calc_comm1;
 
     bits_delay = floor(curr_del_calc_comm2(idx{2}(2)) / 1e10 / 20e-3);
@@ -61,7 +61,10 @@ diff_theor_fpga = diff_delay_theor1 - diff_delay_theor2;
 figure;
 subplot(2, 1, 1);
 obj_p = plot(comm_tow(1, :), diff_theor_fpga);
+title('Diff of calculated pseudoranges, units');
 
 
 subplot(2, 1, 2);
 obj_p = plot(comm_tow(1, :), diff_hardware_delay');
+title('Diff of real  fpga pseudoranges, meter');
+end

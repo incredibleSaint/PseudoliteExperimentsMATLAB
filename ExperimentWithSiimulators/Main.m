@@ -1,67 +1,73 @@
 clear;
 close all;
+USE_GUI = 0; % true - choose file with GUI
+
+ANALYZED_GNSS = 'gln'; % gps - GPS, gln - GLONASS, gal - GALILEO, bds - BEIDOU
+
 % todo добавить режим - просто нарисовать результат юблокс лога
 %% ====== Modes =========
+% Choose only one mode (if several modes is used => 
+%                                                script is using first true)
 % 0. Plot ubx
 % 1. Plot figures for u-blox receiver gnss chip
-visualize_ublox_log = false;
-% 2. Compare (pseudoranges, doppler, etc) fpga log and u-blox data 
-compare_ublox_and_fpga = false;
+modes.visualize_ublox_log = false;
+% 2. Compare fpga log and u-blox data (pseudoranges, doppler, etc)
+modes.compare_ublox_and_fpga = false;
 % 3. Compare two u-blox files:
-compare_ublox_files = false;
+modes.compare_ublox_files = false;
 % 4. Compare two fpga files:
-compare_fpga_files = 1;
-%% =======================
+modes.compare_fpga_files = 1;
 
-folderPath = [cd '/ScriptsFunctions'];
-addpath(folderPath);
-addpath([cd '/Records']);
-%---------------------------------
+
+addpath(fullfile(cd, 'ScriptsFunctions'));
+addpath(fullfile(cd, 'Records'));
+
+modes = CheckForOnlyOneMode(modes);
+%-------------------------------------------------
 %-- Parser of U-blox Messages: --%
-% 
-user = getenv('USERNAME');
-folder = ['/home/' user '/Documents/'];
-prms = Setup();
 
-USE_GUI = 0;
+prms = Setup(ANALYZED_GNSS);
 
 if USE_GUI
-    if compare_ublox_and_fpga
+    if modes.compare_ublox_and_fpga
         [fpga_log, fpga_folder] = uigetfile({'*.txt'}, 'Choose fpga log file'); 
         [ubx_log, ubx_folder] = uigetfile({'*.ubx'}, 'Choose u-blox receiver log file');
-        fullName = [ubx_folder '/' ubx_log];
+        fullName = fullfile(ubx_folder, ubx_log);
     end
-    if compare_ublox_files
+    if modes.compare_ublox_files
         [ubx_log, ubx_folder] = uigetfile({'*.ubx'}, 'Choose first u-blox receiver log file');
-        fullName = [ubx_folder '/' ubx_log];
+        fullName = fullfile(ubx_folder, ubx_log);
         [second_file, second_folder] = uigetfile({'*.ubx'}, 'Choose second u-blox receiver  log file');
-        second_path = [second_folder '/' second_file];
+        second_path = fullfile(second_folder, second_file);
     end
-    if compare_fpga_files
+    if modes.compare_fpga_files
         [fpga_file1, fpga_path1] = uigetfile({'*.txt'}, 'Choose first fpga log file');
         fpga_log1 = fullfile(fpga_path1, fpga_file1);
         [fpga_file1, fpga_path2] = uigetfile({'*.txt'}, 'Choose second fpga log file'); 
         fpga_log2 = fullfile(fpga_path1, fpga_file1);
     end
 else
-    
+    user = getenv('USERNAME');
+    folder = ['/home/' user '/Documents/'];  % this folder should containt files, if USE_GUI = false;
     ubx_log = GetUbxLogFileName();
     
     ubx_log  = 'ALL_GNSS_ZED9_220317_092639';
+
+   
     fullName = [folder ubx_log '.ubx']; 
     fpga_log = [ubx_log '.txt'];
     fpga_folder = folder;
-    if compare_fpga_files
-        fpga_file1 = 'fpga_522062003';
-        fpga_file2 = 'fpga_522062401';
-        fpga_log1 = fullfile(folder, fpga_file2);
-        fpga_log2 = fullfile(folder, fpga_file1);
+    if modes.compare_fpga_files
+        fpga_file1 = 'gln_ch_0_1_2_turned_off_v3';% 'fpga_522062003';
+        fpga_file2 = 'gln_ch_0_1_2_turned_off_v2';% 'fpga_522062401';
+        fpga_log1 = fullfile(folder, fpga_file1);
+        fpga_log2 = fullfile(folder, fpga_file2);
         prms.fpga_logs{1} = fpga_log1;
         prms.fpga_logs{2} = fpga_log2;
     end
 end
 
-if compare_fpga_files
+if modes.compare_fpga_files
     [t1, time1, sv_id_fpga1, chs_num1] = ReadFpgaLog(prms, fpga_log1);
     [t2, time2, sv_id_fpga2, chs_num2] = ReadFpgaLog(prms, fpga_log2);
 
@@ -69,9 +75,9 @@ if compare_fpga_files
 end
 
 
-if compare_ublox_and_fpga
+if modes.compare_ublox_and_fpga
     draw_log_fpga = 0;
-    fprintf("Compare u-blox log and fpga log\n");
+    fprintf('Compare u-blox log and fpga log\n');
     [t, time, sv_id_fpga, chs_num] = ReadFpgaLog(prms, [fpga_folder fpga_log]);
     
     
@@ -185,17 +191,17 @@ if compare_ublox_and_fpga
     CompareUbloxAndFpgaPseudoranges(sv_id_fpga, t, ubx_raw_measure, x_min_val, x_max_val, prms);
 end
 
-if compare_ublox_files
+if modes.compare_ublox_files
     fprintf("Compare u-blox files with each other\n");
     if ~USE_GUI
         second_file = 'ALL_GNSS_ZED9_220317_092639';
     %     second_file = 'glnl_eph_utc_time';
         second_path = [folder second_file '.ubx'];
     end
-    [Mes0x0101, Mes0x0102, Mes0x1502, Mes0x0135] = ParserUbxpacket(second_path);
+    [~, ~, Mes0x1502, ~] = ParserUbxpacket(second_path);
     ubx_raw_measure1 = Process0x0215(prms, Mes0x1502);
 
-    [Mes0x0101, Mes0x0102, Mes0x1502, Mes0x0135] = ParserUbxpacket(fullName);
+    [~, ~, Mes0x1502, ~] = ParserUbxpacket(fullName);
     ubx_raw_measure2 = Process0x0215(prms, Mes0x1502);
 
     CompareUbloxFiles(prms, ubx_raw_measure1, ubx_raw_measure2);
