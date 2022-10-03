@@ -96,9 +96,10 @@ tow2_int = round(tow2);
     
     
     figure;
-    plots_num = 3;
+    plots_num = 4;
     subplot(plots_num, 1, 1);
-    obj_p = plot(comm_tow, diff_ps_rng2 - diff_ps_rng1);
+    diff_of_diff_ps_rng = diff_ps_rng2 - diff_ps_rng1;
+    obj_p = plot(comm_tow, diff_of_diff_ps_rng);
     obj_p(1).LineWidth = 2;
     title("Diff PsRanges, m");
     grid on;
@@ -126,6 +127,16 @@ tow2_int = round(tow2);
     ylim([-10 10]);
     legend(legend_text);
 
-
+    subplot(plots_num, 1, 4);
+    a = diff(diff_ps_rng1);
+    obj_p = plot(comm_tow(2 : end), a);
+    obj_p(1).LineWidth = 2;
+    title("Diff of real ps_rng, m");
+    grid on;
+    xlim([min(comm_tow) max(comm_tow)]);
+%     ylim([-1 10]);
+    legend(legend_text);
+    
+%     obj_p = plot(comm_tow, diff_of_diff_ps_rng - )
     
 end

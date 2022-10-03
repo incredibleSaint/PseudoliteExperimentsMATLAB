@@ -162,7 +162,7 @@ leg = legend(legend_text);
 % leg = legend(legend_text);
 
 subplot(plots_num, 1, 4);
-plot((comm_tow(1, 2 : end))', diff((theor_delay - theor_delay(1, :))')); 
+plot((comm_tow(1, 2 : end))', diff((theor_delay - theor_delay(ref_ch, :))')); 
 title("diff(psR_{theor}), m");
 xlabel("TOW, sec");
 grid on; 

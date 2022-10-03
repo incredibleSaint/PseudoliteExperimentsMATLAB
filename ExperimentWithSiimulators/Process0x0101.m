@@ -27,7 +27,7 @@ title("3D Error, m"); grid on;
 xlabel(file_name);
 xlim([x_min_val x_max_val]); ylim([0 20]);
 
-Params = Setup();
+% Params = Setup();
 
 %% Export Results to *.kml (receiver gnss chip position)
 kml_filename = [file_name '.kml'];

@@ -53,7 +53,8 @@ elseif gnss == 'gln'
 %     sv_id = [13 22 12 4 21 3 14 23];
     sv_id = [13 22 12 4 14 23 21 5];
 elseif gnss == 'gal'
-    sv_id = [27 14 19 34 21 30 15 36 4];
+%     sv_id = [27 14 19 34 21 30 15 36 4];
+    sv_id = [34 21 4 15 19 36];
 end
 prms.sv_id = sv_id;
 prms.ref_channel = 4;
