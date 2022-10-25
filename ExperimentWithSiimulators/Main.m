@@ -1,8 +1,8 @@
 clear;
-% close all;
+close all;
 USE_GUI = 0; % true - choose file with GUI
 
-ANALYZED_GNSS = 'gal'; % gps - GPS, gln - GLONASS, gal - GALILEO, bds - BEIDOU
+ANALYZED_GNSS = 'bds'; % gps - GPS, gln - GLONASS, gal - GALILEO, bds - BEIDOU
 
 % todo добавить режим - просто нарисовать результат юблокс лога
 %% ====== Modes =========
@@ -12,11 +12,11 @@ ANALYZED_GNSS = 'gal'; % gps - GPS, gln - GLONASS, gal - GALILEO, bds - BEIDOU
 % 1. Plot figures for u-blox receiver gnss chip
 modes.visualize_ublox_log = false;
 % 2. Compare fpga log and u-blox data (pseudoranges, doppler, etc)
-modes.compare_ublox_and_fpga = true;
+modes.compare_ublox_and_fpga = false;
 % 3. Compare two u-blox files:
 modes.compare_ublox_files = false;
 % 4. Compare two fpga files:
-modes.compare_fpga_files = false;
+modes.compare_fpga_files = true;
 
 
 addpath(fullfile(cd, 'ScriptsFunctions'));
@@ -53,7 +53,7 @@ else
     
     ubx_log  = 'zedf9t_gps_gln_bds_3d_long';%'gps_bds_gln_1200m_long';%'matalb';% 'saved_almanac_0108'; %'ALL_GNSS_ZED9_220317_092639';
    
-    fullName = [folder ubx_log '.ubx']; 
+    fullName = fullfile(folder, [ubx_log '.ubx']); 
     fpga_log = [ubx_log '.txt'];
     fpga_folder = folder;
     if modes.compare_ublox_and_fpga
@@ -62,16 +62,16 @@ else
         fullName = fullfile(folder, ubx_log);
     end
     if modes.compare_fpga_files
-        fpga_file1 = 'ubx_file_0108';%'gln_ch_0_1_2_turned_off_v3';% 'fpga_522062003';
-        fpga_file2 = 'saved_almanac_0108';% 'gln_ch_0_1_2_turned_off_v2';% 'fpga_522062401';
+        fpga_file1 = 'all_gnss_bits_delay_0.txt';%'ALL_GNSS_delay_0.txt';%'ALL_GNSS_delay_bits_not_zero.txt';% 'Gps_with_delay_not_virt_GetNextBs.txt';% 'ubx_file_0108';%'gln_ch_0_1_2_turned_off_v3';% 'fpga_522062003';
+        fpga_file2 = 'all_gnss_bits_delay_not_zero.txt';%'ALL_GNSS_delay_isnot_0_except_galileo.txt';%'ALL_GNSS_zero_bits_delay_common_GetNextBs.txt';%'GPS_without_delay_virt_GetNextBitstream.txt';%'saved_almanac_0108';% 'gln_ch_0_1_2_turned_off_v2';% 'fpga_522062401';
         fpga_log1 = fullfile(folder, fpga_file1);
         fpga_log2 = fullfile(folder, fpga_file2);
         prms.fpga_logs{1} = fpga_log1;
         prms.fpga_logs{2} = fpga_log2;
     end
     if modes.compare_ublox_files
-        ubx_file1 = ['gal_calc_plus_1sec_v2.ubx']; %['gal_calc_plus_1sec_v2.ubx'];% ['gal_calc_plus_1sec.ubx']; %['gal_3d_fix_6ch' '.ubx'];
-        ubx_file2 = ['ALL_GNSS_ZED9_220317_092639' '.ubx'];
+        ubx_file1 = ['ublox_gps.ubx'];% ['gal_calc_plus_1sec_v2.ubx']; %['gal_calc_plus_1sec_v2.ubx'];% ['gal_calc_plus_1sec.ubx']; %['gal_3d_fix_6ch' '.ubx'];
+        ubx_file2 = ['rinex_gps_v2.ubx'];% ['ALL_GNSS_ZED9_220317_092639' '.ubx'];
         fullName = fullfile(folder, ubx_file1);
         second_path = fullfile(folder, ubx_file2);
     end

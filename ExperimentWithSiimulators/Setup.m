@@ -47,6 +47,7 @@ prms.fpga_gnss_id = gnss_id;
 
 if gnss == 'gps'
     sv_id =  [1 6 12 14 15 17 19 24 32];
+%     sv_id = [12 2 4 5 26 29 31 25 20 18];
 elseif gnss == 'bds'
     sv_id = [10 11 23 20 37 34 12 19];
 elseif gnss == 'gln'
@@ -57,6 +58,18 @@ elseif gnss == 'gal'
     sv_id = [34 21 4 15 19 36];
 end
 prms.sv_id = sv_id;
+
+if gnss == 'gps'
+    bit_duration = 20e-3;
+elseif gnss == 'bds'
+    bit_duration = 20e-3; 
+elseif gnss == 'gln'
+    bit_duration = 10e-3;
+elseif gnss == 'gal'
+    bit_duration = 4e-3;
+end
+prms.nav_mess_bit_duration = bit_duration;
+
 prms.ref_channel = 4;
 
 prms.glonass.litera = [1, -4, 5, 6, 1, -4, 5, 6, -2, -7, 0, -1, -2, -7, 0, -1, 4, -3, 3, 2, 4, -3, 3, 2];
